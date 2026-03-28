@@ -33,7 +33,6 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .card{background:#0f0f0f;border:1px solid #1a1a1a;border-radius:8px;padding:14px}
 .lbl{font-size:9px;letter-spacing:1.6px;text-transform:uppercase;color:#2a2a2a;margin-bottom:4px}
 .g2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
 .g4{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
 .btn{background:#e0ddd6;color:#0a0a0a;border:none;padding:7px 14px;border-radius:6px;font-family:inherit;font-weight:600;font-size:12px;cursor:pointer;white-space:nowrap}
 .btn:disabled{opacity:.2;cursor:not-allowed}
@@ -61,25 +60,22 @@ tr:hover td{background:#0d0d0d}
 .zone:hover,.zone.drag{border-color:#2a2a2a;background:#0d0d0d}
 .zone.ok{border-style:solid}
 .spin{width:28px;height:28px;border:2px solid #1a1a1a;border-top-color:#e0ddd6;border-radius:50%;animation:spin .7s linear infinite;margin:0 auto}
-
-/* DRE Table Styles */
-.dre-wrap{border:1px solid #1a1a1a;border-radius:8px;overflow:hidden}
-.dre-header{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:#0d0d0d;cursor:pointer;transition:background .12s;user-select:none}
-.dre-header:hover{background:#111}
-.dre-section-title{font-size:11px;font-weight:600;letter-spacing:.8px;text-transform:uppercase}
-.dre-section-val{font-size:12px;font-weight:700;font-family:'SF Mono','Fira Code',monospace}
-.dre-section-body{display:none}
-.dre-section-body.open{display:block}
-.dre-area-row{display:flex;justify-content:space-between;align-items:center;padding:7px 14px 4px 24px;background:#0a0a0a;border-top:1px solid #111}
-.dre-area-name{font-size:10px;color:#444;font-weight:600;letter-spacing:.5px;text-transform:uppercase}
-.dre-area-val{font-size:11px;color:#555;font-family:'SF Mono','Fira Code',monospace}
-.dre-sub-row{display:flex;justify-content:space-between;align-items:center;padding:4px 14px 4px 36px;border-top:1px solid #0d0d0d}
-.dre-sub-name{font-size:12px;color:#555}
-.dre-sub-val{font-size:12px;font-family:'SF Mono','Fira Code',monospace;color:#666}
+.dre-wrap{border:1px solid #1a1a1a;border-radius:8px;overflow:hidden;margin-bottom:4px}
+.dre-hdr{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:#0d0d0d;cursor:pointer;user-select:none}
+.dre-hdr:hover{background:#111}
+.dre-stitle{font-size:11px;font-weight:600;letter-spacing:.8px;text-transform:uppercase}
+.dre-sval{font-size:12px;font-weight:700;font-family:'SF Mono','Fira Code',monospace}
+.dre-body{display:none}
+.dre-body.open{display:block}
+.dre-area{display:flex;justify-content:space-between;align-items:center;padding:7px 14px 4px 24px;background:#0a0a0a;border-top:1px solid #111}
+.dre-area-n{font-size:10px;color:#444;font-weight:600;letter-spacing:.5px;text-transform:uppercase}
+.dre-area-v{font-size:11px;color:#555;font-family:'SF Mono','Fira Code',monospace}
+.dre-sub{display:flex;justify-content:space-between;align-items:center;padding:4px 14px 4px 36px;border-top:1px solid #0d0d0d}
+.dre-sub-n{font-size:12px;color:#555}
+.dre-sub-v{font-size:12px;font-family:'SF Mono','Fira Code',monospace;color:#666}
 .dre-result{display:flex;justify-content:space-between;align-items:center;padding:12px 14px;background:#0d0d0d;border-top:2px solid #1e1e1e}
-.dre-result-title{font-size:12px;font-weight:700;color:#e0ddd6;letter-spacing:.5px;text-transform:uppercase}
-.dre-result-val{font-size:16px;font-weight:700;font-family:'SF Mono','Fira Code',monospace}
-.dre-divider{height:1px;background:#1a1a1a}
+.dre-result-t{font-size:12px;font-weight:700;color:#e0ddd6;letter-spacing:.5px;text-transform:uppercase}
+.dre-result-v{font-size:16px;font-weight:700;font-family:'SF Mono','Fira Code',monospace}
 .kpi-n{font-size:20px;font-weight:700;font-family:'SF Mono','Fira Code',monospace;margin:3px 0 1px;color:#fff}
 .ksub{font-size:10px;color:#333}
 .ibox{border-radius:6px;padding:8px 12px;margin-bottom:8px;font-size:12px;line-height:1.6}
@@ -106,7 +102,6 @@ tr:hover td{background:#0d0d0d}
   </nav>
   <div class="sidebar-bot"><button class="ni" onclick="nav('settings')" style="margin:0"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="2.5"/><path d="M8 1v2M8 13v2M1 8h2M13 8h2M3.05 3.05l1.41 1.41M11.54 11.54l1.41 1.41M3.05 12.95l1.41-1.41M11.54 4.46l1.41-1.41"/></svg>Configurações</button></div>
 </div>
-
 <div class="content">
 
 <!-- DASHBOARD -->
@@ -119,7 +114,7 @@ tr:hover td{background:#0d0d0d}
       <div class="g4" id="kpis" style="margin-bottom:14px"></div>
       <div class="g2" style="margin-bottom:14px">
         <div class="card"><div class="lbl">Gastos por área</div><canvas id="chart-bar" height="240"></canvas></div>
-        <div class="card"><div class="lbl">Distribuição dos gastos</div><canvas id="chart-pie" height="240"></canvas></div>
+        <div class="card"><div class="lbl">Distribuição</div><canvas id="chart-pie" height="240"></canvas></div>
       </div>
       <div class="g2" style="margin-bottom:14px">
         <div id="bank-cards"></div>
@@ -174,11 +169,11 @@ tr:hover td{background:#0d0d0d}
     <div id="cmp-empty" class="empty" style="display:none"><div style="opacity:.1;font-size:24px;margin-bottom:8px">📈</div><div>Importe pelo menos 2 meses.</div></div>
     <div id="cmp-content">
       <div class="g2" style="margin-bottom:14px">
-        <div class="card"><div class="lbl">Receita vs Gastos por mês</div><canvas id="chart-cmp" height="180"></canvas></div>
+        <div class="card"><div class="lbl">Receita vs Gastos</div><canvas id="chart-cmp" height="180"></canvas></div>
         <div class="card"><div class="lbl">Resultado mensal</div><canvas id="chart-res" height="180"></canvas></div>
       </div>
       <div class="card" style="padding:0;overflow:hidden">
-        <div style="padding:10px 14px 7px;border-bottom:1px solid #141414"><div class="lbl">DRE comparativa — gastos por área</div></div>
+        <div style="padding:10px 14px 7px;border-bottom:1px solid #141414"><div class="lbl">DRE comparativa</div></div>
         <div style="overflow-x:auto"><table><thead id="cmp-head"></thead><tbody id="cmp-body"></tbody></table></div>
       </div>
     </div>
@@ -243,12 +238,12 @@ tr:hover td{background:#0d0d0d}
 <div id="page-categories" class="page">
   <div class="topbar"><h1>Categorias</h1><div class="tr"><button class="btn btn-sm" onclick="showAddForm()">+ Nova subcategoria</button></div></div>
   <div style="padding:20px;max-width:700px">
-    <div id="add-form" style="display:none" class="card" style="margin-bottom:12px">
+    <div id="add-form" style="display:none;margin-bottom:12px" class="card">
       <div class="lbl">Nova subcategoria</div>
       <div style="display:grid;grid-template-columns:auto 1fr auto auto auto;gap:8px;align-items:center;margin-top:8px">
         <input type="color" id="new-cor" value="#4a90d9">
         <input type="text" id="new-sub" placeholder="Nome da subcategoria">
-        <select id="new-cat"><option value="DESPESAS">DESPESAS</option><option value="RECEITA_LIQUIDA">RECEITA_LIQUIDA</option><option value="INVESTIMENTO_PESSOAL">INVESTIMENTO_PESSOAL</option><option value="INVESTIMENTOS_FINANCEIROS">INVESTIMENTOS_FINANCEIROS</option><option value="PLANOS_PESSOAIS">PLANOS_PESSOAIS</option><option value="PREVIDENCIA">PREVIDENCIA</option><option value="TRANSFERENCIAS">TRANSFERENCIAS</option></select>
+        <select id="new-cat" onchange="updateGrupos()"><option value="DESPESAS">DESPESAS</option><option value="RECEITA_LIQUIDA">RECEITA_LIQUIDA</option><option value="INVESTIMENTO_PESSOAL">INVESTIMENTO_PESSOAL</option><option value="INVESTIMENTOS_FINANCEIROS">INVESTIMENTOS_FINANCEIROS</option><option value="PLANOS_PESSOAIS">PLANOS_PESSOAIS</option><option value="PREVIDENCIA">PREVIDENCIA</option><option value="TRANSFERENCIAS">TRANSFERENCIAS</option></select>
         <select id="new-grupo" style="width:180px"></select>
         <button class="btn btn-sm" onclick="addSub()">Adicionar</button>
       </div>
@@ -272,16 +267,13 @@ tr:hover td{background:#0d0d0d}
 
 </div>
 </div>
-
 <script>
 pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 const MONTHS=["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"];
 const BRL=v=>'R$\u00a0'+Math.abs(v).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
 const MK=(y,m)=>y+'-'+String(m).padStart(2,'0');
 
-// ── DICIONÁRIO COMPLETO ────────────────────────────────────────────────────────
 const DEFAULT_DICT=[
-  // RECEITA LÍQUIDA
   {cat:'RECEITA_LIQUIDA',sub:'Salário',tipo:'R',grupo:'Receita',cor:'#3a9a68'},
   {cat:'RECEITA_LIQUIDA',sub:'Almoço da Edi',tipo:'R',grupo:'Receita',cor:'#3a9a68'},
   {cat:'RECEITA_LIQUIDA',sub:'Vale Alimentação',tipo:'R',grupo:'Receita',cor:'#3a9a68'},
@@ -290,7 +282,6 @@ const DEFAULT_DICT=[
   {cat:'RECEITA_LIQUIDA',sub:'Rendimentos Financeiros',tipo:'R',grupo:'Receita',cor:'#3a9a68'},
   {cat:'RECEITA_LIQUIDA',sub:'Dividendos',tipo:'R',grupo:'Receita',cor:'#3a9a68'},
   {cat:'RECEITA_LIQUIDA',sub:'Outras Receitas',tipo:'R',grupo:'Receita',cor:'#3a9a68'},
-  // DESPESAS FIXAS - MORADIA
   {cat:'DESPESAS',sub:'Aluguel/Prestação',tipo:'D',grupo:'Fixa/Moradia',cor:'#b8960a'},
   {cat:'DESPESAS',sub:'Condomínio',tipo:'D',grupo:'Fixa/Moradia',cor:'#b8960a'},
   {cat:'DESPESAS',sub:'Luz',tipo:'D',grupo:'Fixa/Moradia',cor:'#b8960a'},
@@ -298,60 +289,47 @@ const DEFAULT_DICT=[
   {cat:'DESPESAS',sub:'Gás',tipo:'D',grupo:'Fixa/Moradia',cor:'#b8960a'},
   {cat:'DESPESAS',sub:'Internet',tipo:'D',grupo:'Fixa/Moradia',cor:'#b8960a'},
   {cat:'DESPESAS',sub:'Outros Moradia',tipo:'D',grupo:'Fixa/Moradia',cor:'#b8960a'},
-  // DESPESAS VARIÁVEIS - ALIMENTAÇÃO
   {cat:'DESPESAS',sub:'Supermercado',tipo:'D',grupo:'Variável/Alimentação',cor:'#c04040'},
   {cat:'DESPESAS',sub:'Padaria',tipo:'D',grupo:'Variável/Alimentação',cor:'#c04040'},
   {cat:'DESPESAS',sub:'Restaurantes',tipo:'D',grupo:'Variável/Alimentação',cor:'#c04040'},
   {cat:'DESPESAS',sub:'Delivery',tipo:'D',grupo:'Variável/Alimentação',cor:'#c04040'},
   {cat:'DESPESAS',sub:'Sorveteria',tipo:'D',grupo:'Variável/Alimentação',cor:'#c04040'},
   {cat:'DESPESAS',sub:'Outros Alimentação',tipo:'D',grupo:'Variável/Alimentação',cor:'#c04040'},
-  // DESPESAS VARIÁVEIS - TRANSPORTE
   {cat:'DESPESAS',sub:'Uber',tipo:'D',grupo:'Variável/Transporte',cor:'#c07820'},
   {cat:'DESPESAS',sub:'Ônibus',tipo:'D',grupo:'Variável/Transporte',cor:'#c07820'},
   {cat:'DESPESAS',sub:'Gasolina',tipo:'D',grupo:'Variável/Transporte',cor:'#c07820'},
   {cat:'DESPESAS',sub:'Manutenção Veículo',tipo:'D',grupo:'Variável/Transporte',cor:'#c07820'},
   {cat:'DESPESAS',sub:'Estacionamento',tipo:'D',grupo:'Variável/Transporte',cor:'#c07820'},
   {cat:'DESPESAS',sub:'Outros Transporte',tipo:'D',grupo:'Variável/Transporte',cor:'#c07820'},
-  // DESPESAS FIXAS - TRANSPORTE
   {cat:'DESPESAS',sub:'Seguro Veículo',tipo:'D',grupo:'Fixa/Transporte',cor:'#c07820'},
   {cat:'DESPESAS',sub:'Prestação Veículo',tipo:'D',grupo:'Fixa/Transporte',cor:'#c07820'},
-  // DESPESAS FIXAS - SAÚDE
   {cat:'DESPESAS',sub:'Plano de Saúde',tipo:'D',grupo:'Fixa/Saúde',cor:'#8040a0'},
-  // DESPESAS VARIÁVEIS - SAÚDE
   {cat:'DESPESAS',sub:'Consultas/Exames',tipo:'D',grupo:'Variável/Saúde',cor:'#8040a0'},
   {cat:'DESPESAS',sub:'Dentista',tipo:'D',grupo:'Variável/Saúde',cor:'#8040a0'},
   {cat:'DESPESAS',sub:'Farmácia',tipo:'D',grupo:'Variável/Saúde',cor:'#8040a0'},
   {cat:'DESPESAS',sub:'Outros Saúde',tipo:'D',grupo:'Variável/Saúde',cor:'#8040a0'},
-  // DESPESAS VARIÁVEIS - PESSOAL
   {cat:'DESPESAS',sub:'Barbearia',tipo:'D',grupo:'Variável/Pessoal',cor:'#4060a0'},
   {cat:'DESPESAS',sub:'Luta',tipo:'D',grupo:'Variável/Pessoal',cor:'#4060a0'},
   {cat:'DESPESAS',sub:'Loteria',tipo:'D',grupo:'Variável/Pessoal',cor:'#4060a0'},
   {cat:'DESPESAS',sub:'Roupas',tipo:'D',grupo:'Variável/Pessoal',cor:'#4060a0'},
   {cat:'DESPESAS',sub:'Outros Pessoal',tipo:'D',grupo:'Variável/Pessoal',cor:'#4060a0'},
-  // DESPESAS FIXAS - TELEFONIA
   {cat:'DESPESAS',sub:'TIM',tipo:'D',grupo:'Fixa/Telefonia',cor:'#6040a0'},
   {cat:'DESPESAS',sub:'Outros Telefonia',tipo:'D',grupo:'Fixa/Telefonia',cor:'#6040a0'},
-  // DESPESAS FIXAS - LAZER
   {cat:'DESPESAS',sub:'Streaming',tipo:'D',grupo:'Fixa/Lazer',cor:'#a04060'},
-  // DESPESAS VARIÁVEIS - LAZER
   {cat:'DESPESAS',sub:'Cinema',tipo:'D',grupo:'Variável/Lazer',cor:'#a04060'},
   {cat:'DESPESAS',sub:'Bar',tipo:'D',grupo:'Variável/Lazer',cor:'#a04060'},
   {cat:'DESPESAS',sub:'Futebol',tipo:'D',grupo:'Variável/Lazer',cor:'#a04060'},
   {cat:'DESPESAS',sub:'Viagem',tipo:'D',grupo:'Variável/Lazer',cor:'#a04060'},
   {cat:'DESPESAS',sub:'Outros Lazer',tipo:'D',grupo:'Variável/Lazer',cor:'#a04060'},
-  // DESPESAS - EDUCAÇÃO
   {cat:'DESPESAS',sub:'Outros Educação',tipo:'D',grupo:'Variável/Educação',cor:'#2060a0'},
-  // DESPESAS - IGREJA
   {cat:'DESPESAS',sub:'Dízimo',tipo:'D',grupo:'Fixa/Igreja',cor:'#a06020'},
   {cat:'DESPESAS',sub:'Ofertório',tipo:'D',grupo:'Variável/Igreja',cor:'#a06020'},
   {cat:'DESPESAS',sub:'Outros Igreja',tipo:'D',grupo:'Variável/Igreja',cor:'#a06020'},
-  // TRIBUTOS
   {cat:'DESPESAS',sub:'INSS',tipo:'D',grupo:'Tributos',cor:'#505050'},
   {cat:'DESPESAS',sub:'IRRF',tipo:'D',grupo:'Tributos',cor:'#505050'},
   {cat:'DESPESAS',sub:'IPTU',tipo:'D',grupo:'Tributos',cor:'#505050'},
   {cat:'DESPESAS',sub:'IPVA',tipo:'D',grupo:'Tributos',cor:'#505050'},
   {cat:'DESPESAS',sub:'Outros Tributos',tipo:'D',grupo:'Tributos',cor:'#505050'},
-  // INVESTIMENTO PESSOAL
   {cat:'INVESTIMENTO_PESSOAL',sub:'Faculdade',tipo:'D',grupo:'Investimento Pessoal',cor:'#2080c0'},
   {cat:'INVESTIMENTO_PESSOAL',sub:'Padre Paulo Ricardo',tipo:'D',grupo:'Investimento Pessoal',cor:'#2080c0'},
   {cat:'INVESTIMENTO_PESSOAL',sub:'Guilherme Freire',tipo:'D',grupo:'Investimento Pessoal',cor:'#2080c0'},
@@ -360,31 +338,26 @@ const DEFAULT_DICT=[
   {cat:'INVESTIMENTO_PESSOAL',sub:'Cursos',tipo:'D',grupo:'Investimento Pessoal',cor:'#2080c0'},
   {cat:'INVESTIMENTO_PESSOAL',sub:'Academia',tipo:'D',grupo:'Investimento Pessoal',cor:'#2080c0'},
   {cat:'INVESTIMENTO_PESSOAL',sub:'Outros Invest Pessoal',tipo:'D',grupo:'Investimento Pessoal',cor:'#2080c0'},
-  // INVESTIMENTOS FINANCEIROS
   {cat:'INVESTIMENTOS_FINANCEIROS',sub:'RDB/CDB',tipo:'D',grupo:'Investimento Financeiro',cor:'#20a080'},
   {cat:'INVESTIMENTOS_FINANCEIROS',sub:'Ações',tipo:'D',grupo:'Investimento Financeiro',cor:'#20a080'},
   {cat:'INVESTIMENTOS_FINANCEIROS',sub:'Derivativos',tipo:'D',grupo:'Investimento Financeiro',cor:'#20a080'},
   {cat:'INVESTIMENTOS_FINANCEIROS',sub:'Cripto',tipo:'D',grupo:'Investimento Financeiro',cor:'#20a080'},
   {cat:'INVESTIMENTOS_FINANCEIROS',sub:'Outros Financeiros',tipo:'D',grupo:'Investimento Financeiro',cor:'#20a080'},
-  // PLANOS PESSOAIS
   {cat:'PLANOS_PESSOAIS',sub:'Casamento',tipo:'D',grupo:'Planejamento',cor:'#c08020'},
   {cat:'PLANOS_PESSOAIS',sub:'Carro',tipo:'D',grupo:'Planejamento',cor:'#c08020'},
   {cat:'PLANOS_PESSOAIS',sub:'Casa',tipo:'D',grupo:'Planejamento',cor:'#c08020'},
   {cat:'PLANOS_PESSOAIS',sub:'Outros Planos',tipo:'D',grupo:'Planejamento',cor:'#c08020'},
-  // PREVIDÊNCIA
   {cat:'PREVIDENCIA',sub:'CXSE3',tipo:'D',grupo:'Previdência',cor:'#209080'},
   {cat:'PREVIDENCIA',sub:'CMIG4',tipo:'D',grupo:'Previdência',cor:'#209080'},
   {cat:'PREVIDENCIA',sub:'PETR4',tipo:'D',grupo:'Previdência',cor:'#209080'},
   {cat:'PREVIDENCIA',sub:'JHSF3',tipo:'D',grupo:'Previdência',cor:'#209080'},
   {cat:'PREVIDENCIA',sub:'Renda Fixa',tipo:'D',grupo:'Previdência',cor:'#209080'},
   {cat:'PREVIDENCIA',sub:'Outros Previdência',tipo:'D',grupo:'Previdência',cor:'#209080'},
-  // TRANSFERÊNCIAS (excluídas da DRE)
   {cat:'TRANSFERENCIAS',sub:'Pagamento Fatura',tipo:'T',grupo:'Transferência',cor:'#303030'},
   {cat:'TRANSFERENCIAS',sub:'Transferência entre contas',tipo:'T',grupo:'Transferência',cor:'#303030'},
   {cat:'TRANSFERENCIAS',sub:'Resgate',tipo:'T',grupo:'Transferência',cor:'#303030'},
 ];
 
-// ── GRUPOS DISPONÍVEIS ─────────────────────────────────────────────────────────
 const GRUPOS_BY_CAT={
   DESPESAS:['Fixa/Moradia','Fixa/Transporte','Fixa/Saúde','Fixa/Telefonia','Fixa/Lazer','Fixa/Igreja','Variável/Alimentação','Variável/Transporte','Variável/Saúde','Variável/Pessoal','Variável/Educação','Variável/Lazer','Variável/Igreja','Tributos'],
   RECEITA_LIQUIDA:['Receita'],
@@ -395,36 +368,37 @@ const GRUPOS_BY_CAT={
   TRANSFERENCIAS:['Transferência'],
 };
 
-// ── STORAGE ────────────────────────────────────────────────────────────────────
 const gm=()=>JSON.parse(localStorage.getItem('fc_m')||'{}');
 const sm=d=>localStorage.setItem('fc_m',JSON.stringify(d));
 const gt=k=>(gm()[k]||[]);
 const getDict=()=>JSON.parse(localStorage.getItem('fc_d')||JSON.stringify(DEFAULT_DICT));
 const saveDict=d=>localStorage.setItem('fc_d',JSON.stringify(d));
-const findDict=(sub)=>getDict().find(x=>x.sub===sub)||{cor:'#333',grupo:'',cat:'DESPESAS',tipo:'D'};
+const findDict=sub=>getDict().find(x=>x.sub===sub)||{cor:'#333',grupo:'',cat:'DESPESAS',tipo:'D'};
 
-// ── STATE ──────────────────────────────────────────────────────────────────────
-let curPage='dashboard',curMonth=MK(new Date().getFullYear(),new Date().getMonth()+1);
+let curPage='dashboard';
+// Inicializa curMonth com o mês mais recente com dados, ou mês atual
+function initCurMonth(){
+  const keys=Object.keys(gm()).sort().reverse();
+  return keys.length?keys[0]:MK(new Date().getFullYear(),new Date().getMonth()+1);
+}
+let curMonth=initCurMonth();
 let pending=[],barC=null,pieC=null,cmpC=null,resC=null;
 let files={nuCard:null,nuAcc:null,saCard:null,saAcc:null};
 
-// ── DRE CALCULATION ────────────────────────────────────────────────────────────
 function calcDRE(month){
   const txns=gt(month);
   const sec={
-    receita:    txns.filter(t=>t.cat==='RECEITA_LIQUIDA'||t.tipo==='R'),
-    despFixas:  txns.filter(t=>t.cat==='DESPESAS'&&t.grupo&&t.grupo.startsWith('Fixa/')),
-    despVar:    txns.filter(t=>t.cat==='DESPESAS'&&t.grupo&&t.grupo.startsWith('Variável/')),
-    tributos:   txns.filter(t=>t.cat==='DESPESAS'&&t.grupo==='Tributos'),
-    invPessoal: txns.filter(t=>t.cat==='INVESTIMENTO_PESSOAL'),
-    invFin:     txns.filter(t=>t.cat==='INVESTIMENTOS_FINANCEIROS'),
-    planos:     txns.filter(t=>t.cat==='PLANOS_PESSOAIS'),
-    prev:       txns.filter(t=>t.cat==='PREVIDENCIA'),
-    transf:     txns.filter(t=>t.cat==='TRANSFERENCIAS'),
+    receita:txns.filter(t=>t.cat==='RECEITA_LIQUIDA'||t.tipo==='R'),
+    despFixas:txns.filter(t=>t.cat==='DESPESAS'&&t.grupo&&t.grupo.startsWith('Fixa/')),
+    despVar:txns.filter(t=>t.cat==='DESPESAS'&&t.grupo&&t.grupo.startsWith('Variável/')),
+    tributos:txns.filter(t=>t.cat==='DESPESAS'&&t.grupo==='Tributos'),
+    invPessoal:txns.filter(t=>t.cat==='INVESTIMENTO_PESSOAL'),
+    invFin:txns.filter(t=>t.cat==='INVESTIMENTOS_FINANCEIROS'),
+    planos:txns.filter(t=>t.cat==='PLANOS_PESSOAIS'),
+    prev:txns.filter(t=>t.cat==='PREVIDENCIA'),
   };
   const sumPos=arr=>arr.filter(t=>t.value>0).reduce((s,t)=>s+t.value,0);
   const sumNeg=arr=>arr.filter(t=>t.value<0).reduce((s,t)=>s+Math.abs(t.value),0);
-  const sumAbs=arr=>arr.reduce((s,t)=>s+Math.abs(t.value),0);
   const totalReceita=sumPos(sec.receita);
   const totalFixas=sumNeg(sec.despFixas);
   const totalVar=sumNeg(sec.despVar);
@@ -441,10 +415,7 @@ function calcDRE(month){
 
 function groupBySub(txns){
   const m={};
-  txns.filter(t=>t.value<0).forEach(t=>{
-    const k=t.sub||'Outros';
-    m[k]=(m[k]||0)+Math.abs(t.value);
-  });
+  txns.filter(t=>t.value<0).forEach(t=>{const k=t.sub||'Outros';m[k]=(m[k]||0)+Math.abs(t.value);});
   return Object.entries(m).sort((a,b)=>b[1]-a[1]).filter(([,v])=>v>0);
 }
 
@@ -458,7 +429,6 @@ function groupByArea(txns,prefix){
   return m;
 }
 
-// ── NAV ────────────────────────────────────────────────────────────────────────
 function nav(p){
   curPage=p;
   document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));
@@ -466,7 +436,7 @@ function nav(p){
   document.getElementById('page-'+p).classList.add('active');
   const btn=document.querySelector(`[onclick="nav('${p}')"]`);if(btn)btn.classList.add('active');
   if(p==='dashboard')renderDash();
-  if(p==='dre'){buildPills('dre-pills',()=>{renderDRE()});renderDRE();}
+  if(p==='dre')renderDRE();
   if(p==='transactions')renderTxns();
   if(p==='compare')renderCmp();
   if(p==='import')initImport();
@@ -474,21 +444,15 @@ function nav(p){
   if(p==='settings')initSettings();
 }
 
-function buildPills(elId,cb){
+function buildMonthPills(elId,onSelect){
   const keys=Object.keys(gm()).sort().reverse();
-  document.getElementById(elId).innerHTML=keys.slice(0,6).map(k=>{
+  const el=document.getElementById(elId);
+  if(!el)return;
+  el.innerHTML=keys.slice(0,8).map(k=>{
     const[y,m]=k.split('-');
-    return`<button class="mb${k===curMonth?' active':''}" onclick="curMonth='${k}';buildPills('${elId}',()=>{});${cb.toString().replace(/\(\)=>\{/,'').replace(/\}/,'')}renderDash();renderDRE();">${MONTHS[parseInt(m)-1].slice(0,3)}/${y.slice(2)}</button>`;
+    return`<button class="mb${k===curMonth?' active':''}" onclick="curMonth='${k}';buildMonthPills('${elId}',null);${onSelect||'renderDash();renderDRE();'}">${MONTHS[parseInt(m)-1].slice(0,3)}/${y.slice(2)}</button>`;
   }).join('');
 }
-function buildMonthPills(){
-  const keys=Object.keys(gm()).sort().reverse();
-  document.getElementById('mpills').innerHTML=keys.slice(0,6).map(k=>{
-    const[y,m]=k.split('-');
-    return`<button class="mb${k===curMonth?' active':''}" onclick="setMonth('${k}')">${MONTHS[parseInt(m)-1].slice(0,3)}/${y.slice(2)}</button>`;
-  }).join('');
-}
-function setMonth(k){curMonth=k;buildMonthPills();renderDash();}
 
 function srcBadge(s){
   const m={'Nubank Cartão':['#7a5fd0','#7a5fd018'],'Nubank Conta':['#9060c0','#9060c018'],'Santander Cartão':['#b07010','#b0701018'],'Santander Conta':['#c08010','#c0801018']};
@@ -498,31 +462,31 @@ function srcBadge(s){
 function catBadge(cat){
   const m={RECEITA_LIQUIDA:'#3a9a68',DESPESAS:'#c04040',INVESTIMENTO_PESSOAL:'#2080c0',INVESTIMENTOS_FINANCEIROS:'#20a080',PLANOS_PESSOAIS:'#c08020',PREVIDENCIA:'#209080',TRANSFERENCIAS:'#444'};
   const c=m[cat]||'#444';
-  return`<span class="sb" style="background:${c}18;color:${c}">${(cat||'').replace('_',' ').toLowerCase()}</span>`;
+  return`<span class="sb" style="background:${c}18;color:${c}">${(cat||'').replace(/_/g,' ').toLowerCase()}</span>`;
 }
 
 // ── DASHBOARD ──────────────────────────────────────────────────────────────────
 function renderDash(){
-  buildMonthPills();
+  const keys=Object.keys(gm()).sort().reverse();
+  if(keys.length&&!gt(curMonth).length)curMonth=keys[0];
+  buildMonthPills('mpills','renderDash();');
   const txns=gt(curMonth);
   const empty=document.getElementById('dash-empty'),content=document.getElementById('dash-content');
   if(!txns.length){empty.style.display='block';content.style.display='none';return;}
   empty.style.display='none';content.style.display='block';
 
   const dre=calcDRE(curMonth);
-  const keys=Object.keys(gm()).sort(),idx=keys.indexOf(curMonth);
-  const prevDRE=idx>0?calcDRE(keys[idx-1]):null;
-  const diff=prevDRE?((dre.totalGastos-prevDRE.totalGastos)/prevDRE.totalGastos*100):null;
+  const allKeys=Object.keys(gm()).sort(),idx=allKeys.indexOf(curMonth);
+  const prevDRE=idx>0?calcDRE(allKeys[idx-1]):null;
+  const diff=prevDRE&&prevDRE.totalGastos>0?((dre.totalGastos-prevDRE.totalGastos)/prevDRE.totalGastos*100):null;
 
-  // KPIs
   document.getElementById('kpis').innerHTML=[
     {l:'Receita líquida',v:BRL(dre.totalReceita),s:'entradas do mês',c:'#3a9a68'},
     {l:'Gastos reais',v:BRL(dre.totalGastos),s:diff!==null?(diff>0?'▲ ':'▼ ')+Math.abs(diff).toFixed(0)+'% vs anterior':'Primeiro mês',c:diff!==null&&diff<-5?'#3a9a68':'#c04040'},
-    {l:'Alocado (Inv+Prev)',v:BRL(dre.totalAlocado),s:'investimentos e planos',c:'#20a080'},
+    {l:'Alocado',v:BRL(dre.totalAlocado),s:'inv. + prev. + planos',c:'#20a080'},
     {l:'Resultado',v:BRL(Math.abs(dre.resultado)),s:dre.resultado>=0?'✓ Sobrou':'⚠ Faltou',c:dre.resultado>=0?'#3a9a68':'#c04040'},
   ].map(k=>`<div class="card" style="margin-bottom:0"><div class="lbl">${k.l}</div><div class="kpi-n" style="color:${k.c}">${k.v}</div><div class="ksub" style="color:${k.c}88">${k.s}</div></div>`).join('');
 
-  // Gastos por área para gráficos
   const allExp=txns.filter(t=>t.value<0&&t.cat==='DESPESAS');
   const byArea={};
   allExp.forEach(t=>{
@@ -530,15 +494,10 @@ function renderDash(){
     byArea[area]=(byArea[area]||0)+Math.abs(t.value);
   });
   const areaData=Object.entries(byArea).sort((a,b)=>b[1]-a[1]).slice(0,10);
-  const areaColors=areaData.map(([a])=>{
-    const d=getDict().find(x=>x.grupo&&(x.grupo.includes(a)));
-    return d?d.cor+'cc':'#555';
-  });
 
   if(barC)barC.destroy();
-  barC=new Chart(document.getElementById('chart-bar'),{type:'bar',data:{labels:areaData.map(([a])=>a),datasets:[{data:areaData.map(([,v])=>v),backgroundColor:areaColors,borderRadius:3,borderSkipped:false}]},options:{indexAxis:'y',responsive:true,plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>BRL(ctx.raw)}}},scales:{x:{display:false,grid:{display:false}},y:{ticks:{color:'#444',font:{size:10}},grid:{display:false},border:{display:false}}}}});
+  barC=new Chart(document.getElementById('chart-bar'),{type:'bar',data:{labels:areaData.map(([a])=>a),datasets:[{data:areaData.map(([,v])=>v),backgroundColor:areaData.map(([a])=>{const d=getDict().find(x=>x.grupo&&x.grupo.includes(a));return d?d.cor+'cc':'#555';}),borderRadius:3,borderSkipped:false}]},options:{indexAxis:'y',responsive:true,plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>BRL(ctx.raw)}}},scales:{x:{display:false,grid:{display:false}},y:{ticks:{color:'#444',font:{size:10}},grid:{display:false},border:{display:false}}}}});
 
-  // Pie: Gastos vs Alocado
   const pieData=[
     {l:'Desp. Fixas',v:dre.totalFixas,c:'#b8960a'},
     {l:'Desp. Variáveis',v:dre.totalVar,c:'#c04040'},
@@ -551,34 +510,23 @@ function renderDash(){
   if(pieC)pieC.destroy();
   pieC=new Chart(document.getElementById('chart-pie'),{type:'doughnut',data:{labels:pieData.map(x=>x.l),datasets:[{data:pieData.map(x=>x.v),backgroundColor:pieData.map(x=>x.c),borderWidth:0}]},options:{responsive:true,cutout:'55%',plugins:{legend:{position:'right',labels:{color:'#444',font:{size:10},boxWidth:8,padding:6}},tooltip:{callbacks:{label:ctx=>`${ctx.label}: ${BRL(ctx.raw)}`}}}}});
 
-  // Bank cards
   const sources=['Nubank Cartão','Nubank Conta','Santander Cartão','Santander Conta'];
   const bankColors={'Nubank Cartão':'#7a5fd0','Nubank Conta':'#9060c0','Santander Cartão':'#b07010','Santander Conta':'#c08010'};
-  const bankCards=sources.map(s=>{
+  document.getElementById('bank-cards').innerHTML='<div style="display:flex;flex-direction:column;gap:8px">'+sources.map(s=>{
     const st=txns.filter(t=>t.source===s);
     const out=st.filter(t=>t.value<0&&t.cat!=='TRANSFERENCIAS').reduce((a,t)=>a+Math.abs(t.value),0);
     const inc=st.filter(t=>t.value>0&&t.cat!=='TRANSFERENCIAS').reduce((a,t)=>a+t.value,0);
     if(!out&&!inc)return'';
-    return`<div class="card" style="border-left:2px solid ${bankColors[s]};padding:12px 14px">
-      <div style="display:flex;justify-content:space-between;margin-bottom:6px">
-        <span style="font-size:10px;font-weight:700;color:${bankColors[s]};letter-spacing:.5px">${s.toUpperCase()}</span>
-        <span style="font-size:9px;color:#2a2a2a">${st.length} lançamentos</span>
-      </div>
-      ${inc>0?`<div style="font-size:11px;color:#2a2a2a;margin-bottom:2px">Entradas <span class="mono grn">${BRL(inc)}</span></div>`:''}
-      ${out>0?`<div style="font-size:11px;color:#2a2a2a;margin-bottom:2px">Saídas <span class="mono red">${BRL(out)}</span></div>`:''}
-    </div>`;
-  }).filter(Boolean).join('');
-  document.getElementById('bank-cards').innerHTML=`<div style="display:flex;flex-direction:column;gap:8px">${bankCards}</div>`;
+    return`<div class="card" style="border-left:2px solid ${bankColors[s]};padding:12px 14px"><div style="display:flex;justify-content:space-between;margin-bottom:6px"><span style="font-size:10px;font-weight:700;color:${bankColors[s]};letter-spacing:.5px">${s.toUpperCase()}</span><span style="font-size:9px;color:#2a2a2a">${st.length} lançamentos</span></div>${inc>0?`<div style="font-size:11px;color:#2a2a2a;margin-bottom:2px">Entradas <span class="mono grn">${BRL(inc)}</span></div>`:''}${out>0?`<div style="font-size:11px;color:#2a2a2a">Saídas <span class="mono red">${BRL(out)}</span></div>`:''}</div>`;
+  }).filter(Boolean).join('')+'</div>';
 
-  // Insights
   const ins=[];
   const uberV=allExp.filter(t=>t.sub==='Uber').reduce((s,t)=>s+Math.abs(t.value),0);
   if(uberV>0&&dre.totalGastos>0&&uberV/dre.totalGastos>0.12)ins.push({t:'w',m:`🚗 Uber: ${BRL(uberV)} — ${((uberV/dre.totalGastos)*100).toFixed(0)}% dos gastos reais`});
   if(dre.resultado<0)ins.push({t:'w',m:`⚠ Mês no vermelho: gastou ${BRL(Math.abs(dre.resultado))} a mais do que entrou`});
-  if(dre.resultado>0&&dre.totalAlocado>0)ins.push({t:'g',m:`✓ Sobrou ${BRL(dre.resultado)} após todos os gastos e investimentos`});
+  if(dre.resultado>0)ins.push({t:'g',m:`✓ Sobrou ${BRL(dre.resultado)} após todos os gastos e investimentos`});
   document.getElementById('dash-ins').innerHTML=ins.map(x=>`<div class="ibox ${x.t}">${x.m}</div>`).join('');
 
-  // Top vendors
   const vm={};
   txns.filter(t=>t.value<0&&t.cat==='DESPESAS').forEach(t=>{const k=t.description.trim().split(/\s+/).slice(0,4).join(' ');vm[k]=(vm[k]||0)+Math.abs(t.value);});
   document.getElementById('top-tbody').innerHTML=Object.entries(vm).sort((a,b)=>b[1]-a[1]).slice(0,8).map(([n,v],i)=>`<tr><td><div style="display:flex;align-items:center;gap:8px"><span class="mono mut" style="font-size:9px;min-width:14px">${String(i+1).padStart(2,'0')}</span><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:140px">${n}</span></div></td><td class="mono red" style="text-align:right">${BRL(v)}</td></tr>`).join('');
@@ -586,123 +534,61 @@ function renderDash(){
 
 // ── DRE COMPLETA ───────────────────────────────────────────────────────────────
 function renderDRE(){
-  buildMonthPills2();
+  const keys=Object.keys(gm()).sort().reverse();
+  if(!keys.length){document.getElementById('dre-empty').style.display='block';document.getElementById('dre-content').innerHTML='';return;}
+  if(!gt(curMonth).length)curMonth=keys[0];
+  buildMonthPills('dre-pills','renderDRE();');
+
   const txns=gt(curMonth);
   const dreEl=document.getElementById('dre-empty'),dreC=document.getElementById('dre-content');
   if(!txns.length){dreEl.style.display='block';dreC.innerHTML='';return;}
   dreEl.style.display='none';
 
   const dre=calcDRE(curMonth);
-  const [y,m]=curMonth.split('-');
+  const[y,m]=curMonth.split('-');
 
-  function dreSection(id,sign,title,txnArr,total,groupPrefix,colorHex,open=false){
+  function secBlock(sign,title,txnArr,total,color,startOpen){
     if(total===0)return'';
-    const byArea=groupPrefix?groupByArea(txnArr,groupPrefix):{'':{all:txnArr}};
+    let bodyHtml='';
+    groupBySub(txnArr).forEach(([sub,val])=>{bodyHtml+=`<div class="dre-sub"><span class="dre-sub-n">${sub}</span><span class="dre-sub-v">${BRL(val)}</span></div>`;});
+    return`<div class="dre-wrap"><div class="dre-hdr" onclick="this.nextElementSibling.classList.toggle('open')"><span class="dre-stitle" style="color:${color}">${sign} ${title}</span><span class="dre-sval" style="color:${color}">${BRL(total)}</span></div><div class="dre-body${startOpen?' open':''}"><div style="height:1px;background:#1a1a1a"></div>${bodyHtml}</div></div>`;
+  }
+
+  function secBlockByArea(sign,title,txnArr,total,color,prefix,startOpen){
+    if(total===0)return'';
+    const byArea=groupByArea(txnArr,prefix);
     let bodyHtml='';
     Object.entries(byArea).forEach(([area,items])=>{
-      const areaTotal=items.filter(t=>t.value<0).reduce((s,t)=>s+Math.abs(t.value),0);
-      if(areaTotal===0)return;
-      if(area)bodyHtml+=`<div class="dre-area-row"><span class="dre-area-name">${area}</span><span class="dre-area-val">${BRL(areaTotal)}</span></div>`;
-      groupBySub(items).forEach(([sub,val])=>{
-        bodyHtml+=`<div class="dre-sub-row"><span class="dre-sub-name">${sub}</span><span class="dre-sub-val">${BRL(val)}</span></div>`;
-      });
+      const at=items.filter(t=>t.value<0).reduce((s,t)=>s+Math.abs(t.value),0);
+      if(!at)return;
+      bodyHtml+=`<div class="dre-area"><span class="dre-area-n">${area}</span><span class="dre-area-v">${BRL(at)}</span></div>`;
+      groupBySub(items).forEach(([sub,val])=>{bodyHtml+=`<div class="dre-sub"><span class="dre-sub-n">${sub}</span><span class="dre-sub-v">${BRL(val)}</span></div>`;});
     });
-    return`<div class="dre-wrap" style="margin-bottom:4px">
-      <div class="dre-header" onclick="this.nextElementSibling.classList.toggle('open')">
-        <span class="dre-section-title" style="color:${colorHex}">${sign} ${title}</span>
-        <span class="dre-section-val" style="color:${colorHex}">${BRL(total)}</span>
-      </div>
-      <div class="dre-section-body${open?' open':''}">
-        <div class="dre-divider"></div>
-        ${bodyHtml}
-      </div>
-    </div>`;
+    return`<div class="dre-wrap"><div class="dre-hdr" onclick="this.nextElementSibling.classList.toggle('open')"><span class="dre-stitle" style="color:${color}">${sign} ${title}</span><span class="dre-sval" style="color:${color}">${BRL(total)}</span></div><div class="dre-body${startOpen?' open':''}"><div style="height:1px;background:#1a1a1a"></div>${bodyHtml}</div></div>`;
   }
 
   let html=`<div style="font-size:11px;font-weight:600;color:#2a2a2a;letter-spacing:.8px;text-transform:uppercase;margin-bottom:8px">DRE — ${MONTHS[parseInt(m)-1]} ${y}</div>`;
+  html+=secBlock('(+)','RECEITA LÍQUIDA',dre.sec.receita,dre.totalReceita,'#3a9a68',true);
+  html+=secBlockByArea('(-)','DESPESAS FIXAS',dre.sec.despFixas,dre.totalFixas,'#b8960a','Fixa',true);
+  html+=secBlockByArea('(-)','DESPESAS VARIÁVEIS',dre.sec.despVar,dre.totalVar,'#c04040','Variável',true);
+  html+=secBlock('(-)','TRIBUTOS',dre.sec.tributos,dre.totalTrib,'#505050',false);
 
-  // Receita
-  html+=dreSection('rec','(+)','RECEITA LÍQUIDA',dre.sec.receita,dre.totalReceita,'','#3a9a68',true);
-
-  // Despesas fixas
-  if(dre.totalFixas>0){
-    const byArea2=groupByArea(dre.sec.despFixas,'Fixa');
-    let fBody='';
-    Object.entries(byArea2).forEach(([area,items])=>{
-      const at=items.filter(t=>t.value<0).reduce((s,t)=>s+Math.abs(t.value),0);
-      if(!at)return;
-      fBody+=`<div class="dre-area-row"><span class="dre-area-name">${area}</span><span class="dre-area-val">${BRL(at)}</span></div>`;
-      groupBySub(items).forEach(([sub,val])=>{fBody+=`<div class="dre-sub-row"><span class="dre-sub-name">${sub}</span><span class="dre-sub-val">${BRL(val)}</span></div>`;});
-    });
-    html+=`<div class="dre-wrap" style="margin-bottom:4px">
-      <div class="dre-header" onclick="this.nextElementSibling.classList.toggle('open')">
-        <span class="dre-section-title" style="color:#b8960a">(-) DESPESAS FIXAS</span>
-        <span class="dre-section-val" style="color:#b8960a">${BRL(dre.totalFixas)}</span>
-      </div>
-      <div class="dre-section-body open"><div class="dre-divider"></div>${fBody}</div>
-    </div>`;
-  }
-
-  // Despesas variáveis
-  if(dre.totalVar>0){
-    const byArea3=groupByArea(dre.sec.despVar,'Variável');
-    let vBody='';
-    Object.entries(byArea3).forEach(([area,items])=>{
-      const at=items.filter(t=>t.value<0).reduce((s,t)=>s+Math.abs(t.value),0);
-      if(!at)return;
-      vBody+=`<div class="dre-area-row"><span class="dre-area-name">${area}</span><span class="dre-area-val">${BRL(at)}</span></div>`;
-      groupBySub(items).forEach(([sub,val])=>{vBody+=`<div class="dre-sub-row"><span class="dre-sub-name">${sub}</span><span class="dre-sub-val">${BRL(val)}</span></div>`;});
-    });
-    html+=`<div class="dre-wrap" style="margin-bottom:4px">
-      <div class="dre-header" onclick="this.nextElementSibling.classList.toggle('open')">
-        <span class="dre-section-title" style="color:#c04040">(-) DESPESAS VARIÁVEIS</span>
-        <span class="dre-section-val" style="color:#c04040">${BRL(dre.totalVar)}</span>
-      </div>
-      <div class="dre-section-body open"><div class="dre-divider"></div>${vBody}</div>
-    </div>`;
-  }
-
-  // Tributos
-  html+=dreSection('trib','(-)','TRIBUTOS',dre.sec.tributos,dre.totalTrib,'','#505050');
-
-  // Resultado parcial gastos
   const resGastos=dre.totalReceita-dre.totalGastos-dre.totalTrib;
-  html+=`<div class="dre-wrap" style="margin-bottom:4px">
-    <div style="display:flex;justify-content:space-between;padding:8px 14px;background:#111;border-top:1px solid #1e1e1e">
-      <span style="font-size:10px;color:#333;letter-spacing:.5px;text-transform:uppercase">= Resultado antes de investimentos</span>
-      <span class="mono" style="font-size:11px;color:${resGastos>=0?'#3a9a68':'#c04040'}">${BRL(Math.abs(resGastos))}</span>
-    </div>
-  </div>`;
+  html+=`<div class="dre-wrap"><div style="display:flex;justify-content:space-between;padding:8px 14px;background:#111"><span style="font-size:10px;color:#333;letter-spacing:.5px;text-transform:uppercase">= Resultado antes de investimentos</span><span class="mono" style="font-size:11px;color:${resGastos>=0?'#3a9a68':'#c04040'}">${BRL(Math.abs(resGastos))}</span></div></div>`;
 
-  html+=dreSection('invp','(-)','INVESTIMENTO PESSOAL',dre.sec.invPessoal,dre.totalInvP,'','#2080c0');
-  html+=dreSection('invf','(-)','INVESTIMENTOS FINANCEIROS',dre.sec.invFin,dre.totalInvF,'','#20a080');
-  html+=dreSection('plan','(-)','PLANOS PESSOAIS',dre.sec.planos,dre.totalPlanos,'','#c08020');
-  html+=dreSection('prev','(-)','PREVIDÊNCIA',dre.sec.prev,dre.totalPrev,'','#209080');
+  html+=secBlock('(-)','INVESTIMENTO PESSOAL',dre.sec.invPessoal,dre.totalInvP,'#2080c0',false);
+  html+=secBlock('(-)','INVESTIMENTOS FINANCEIROS',dre.sec.invFin,dre.totalInvF,'#20a080',false);
+  html+=secBlock('(-)','PLANOS PESSOAIS',dre.sec.planos,dre.totalPlanos,'#c08020',false);
+  html+=secBlock('(-)','PREVIDÊNCIA',dre.sec.prev,dre.totalPrev,'#209080',false);
 
-  // Resultado final
-  html+=`<div class="dre-wrap">
-    <div class="dre-result">
-      <span class="dre-result-title">= RESULTADO DO MÊS</span>
-      <span class="dre-result-val" style="color:${dre.resultado>=0?'#3a9a68':'#c04040'}">${dre.resultado>=0?'+':'−'} ${BRL(Math.abs(dre.resultado))}</span>
-    </div>
-  </div>`;
-
+  html+=`<div class="dre-wrap"><div class="dre-result"><span class="dre-result-t">= Resultado do mês</span><span class="dre-result-v" style="color:${dre.resultado>=0?'#3a9a68':'#c04040'}">${dre.resultado>=0?'+':'−'} ${BRL(Math.abs(dre.resultado))}</span></div></div>`;
   dreC.innerHTML=html;
-}
-
-function buildMonthPills2(){
-  const keys=Object.keys(gm()).sort().reverse();
-  if(!document.getElementById('dre-pills'))return;
-  document.getElementById('dre-pills').innerHTML=keys.slice(0,6).map(k=>{
-    const[y,mo]=k.split('-');
-    return`<button class="mb${k===curMonth?' active':''}" onclick="curMonth='${k}';buildMonthPills2();renderDRE()">${MONTHS[parseInt(mo)-1].slice(0,3)}/${y.slice(2)}</button>`;
-  }).join('');
 }
 
 // ── TRANSACTIONS ───────────────────────────────────────────────────────────────
 function renderTxns(){
   const months=gm(),keys=Object.keys(months).sort().reverse();
-  const sel=document.getElementById('txn-month'),cur=sel.value||curMonth;
+  const sel=document.getElementById('txn-month'),cur=sel.value||(keys[0]||curMonth);
   sel.innerHTML=keys.map(k=>{const[y,m]=k.split('-');return`<option value="${k}"${k===cur?' selected':''}>${MONTHS[parseInt(m)-1]} ${y}</option>`;}).join('')||'<option value="">—</option>';
   const dict=getDict();
   const cats=[...new Set(dict.map(d=>d.cat))];
@@ -724,9 +610,7 @@ function renderTxns(){
     <td>${srcBadge(t.source)}</td>
     <td class="mono" style="text-align:right;white-space:nowrap;font-weight:500;color:${t.value<0?'#c04040':'#3a9a68'}">${t.value>0?'+':''}${BRL(t.value)}</td>
     <td>${catBadge(t.cat)}</td>
-    <td><select style="border-color:${findDict(t.sub).cor}44;font-size:10px;padding:2px 5px" onchange="updTxn('${sel.value}',${t.id},this.value)">
-      ${allSubs.map(s=>`<option${s===t.sub?' selected':''}>${s}</option>`).join('')}
-    </select></td>
+    <td><select style="border-color:${findDict(t.sub).cor}44;font-size:10px;padding:2px 5px" onchange="updTxn('${sel.value}',${t.id},this.value)">${allSubs.map(s=>`<option${s===t.sub?' selected':''}>${s}</option>`).join('')}</select></td>
     <td style="font-size:10px;color:#2a2a2a;max-width:100px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${t.obs||''}">${t.obs||''}</td>
   </tr>`).join('');
   const out=vis.filter(t=>t.value<0).reduce((s,t)=>s+Math.abs(t.value),0);
@@ -735,15 +619,10 @@ function renderTxns(){
   document.getElementById('txn-out').textContent=BRL(out);
   document.getElementById('txn-in').textContent=BRL(inc);
 }
-
 function updTxn(mk,id,sub){
   const m=gm();if(!m[mk])return;
   const t=m[mk].find(t=>t.id===id);
-  if(t){
-    const d=findDict(sub);
-    t.sub=sub;t.cat=d.cat;t.grupo=d.grupo;t.tipo=d.tipo;
-    sm(m);
-  }
+  if(t){const d=findDict(sub);t.sub=sub;t.cat=d.cat;t.grupo=d.grupo;t.tipo=d.tipo;sm(m);}
 }
 
 // ── COMPARE ────────────────────────────────────────────────────────────────────
@@ -758,22 +637,24 @@ function renderCmp(){
   cmpC=new Chart(document.getElementById('chart-cmp'),{type:'bar',data:{labels,datasets:[{label:'Receita',data:dres.map(d=>d.totalReceita),backgroundColor:'#3a9a6844',borderRadius:4},{label:'Gastos',data:dres.map(d=>d.totalGastos),backgroundColor:'#c0404088',borderRadius:4}]},options:{responsive:true,plugins:{legend:{labels:{color:'#444',font:{size:10},boxWidth:8}},tooltip:{callbacks:{label:ctx=>ctx.dataset.label+': '+BRL(ctx.raw)}}},scales:{x:{ticks:{color:'#444',font:{size:10}},grid:{display:false},border:{display:false}},y:{ticks:{color:'#333',font:{size:10},callback:v=>BRL(v)},grid:{color:'#111'},border:{display:false}}}}});
   if(resC)resC.destroy();
   resC=new Chart(document.getElementById('chart-res'),{type:'bar',data:{labels,datasets:[{data:dres.map(d=>d.resultado),backgroundColor:dres.map(d=>d.resultado>=0?'#3a9a6888':'#c0404088'),borderRadius:4,borderSkipped:false}]},options:{responsive:true,plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>BRL(ctx.raw)}}},scales:{x:{ticks:{color:'#444',font:{size:10}},grid:{display:false},border:{display:false}},y:{ticks:{color:'#333',font:{size:10},callback:v=>BRL(v)},grid:{color:'#111'},border:{display:false}}}}});
-
-  // Tabela comparativa por área
-  const areas=[...new Set(keys.flatMap(k=>gt(k).filter(t=>t.value<0&&t.cat==='DESPESAS').map(t=>t.grupo?t.grupo.replace('Fixa/','').replace('Variável/',''):'Outros')))].filter(Boolean);
-  document.getElementById('cmp-head').innerHTML='<tr><th>Área</th>'+labels.map(l=>`<th style="text-align:right">${l}</th>`).join('')+'<th style="text-align:right">Var.</th></tr>';
-  document.getElementById('cmp-body').innerHTML=[
-    ['RECEITA',labels.map((_,i)=>dres[i].totalReceita),'#3a9a68'],
-    ['Gastos fixos',labels.map((_,i)=>dres[i].totalFixas),'#b8960a'],
-    ['Gastos variáveis',labels.map((_,i)=>dres[i].totalVar),'#c04040'],
-    ['Inv. pessoal',labels.map((_,i)=>dres[i].totalInvP),'#2080c0'],
-    ['Inv. financeiro',labels.map((_,i)=>dres[i].totalInvF),'#20a080'],
-    ['Resultado',labels.map((_,i)=>dres[i].resultado),''],
-  ].map(([name,vals,clr])=>{
+  document.getElementById('cmp-head').innerHTML='<tr><th>Linha DRE</th>'+labels.map(l=>`<th style="text-align:right">${l}</th>`).join('')+'<th style="text-align:right">Var.</th></tr>';
+  const rows=[
+    ['(+) Receita Líquida',dres.map(d=>d.totalReceita),'#3a9a68'],
+    ['(-) Desp. Fixas',dres.map(d=>d.totalFixas),'#b8960a'],
+    ['(-) Desp. Variáveis',dres.map(d=>d.totalVar),'#c04040'],
+    ['(-) Tributos',dres.map(d=>d.totalTrib),'#505050'],
+    ['(-) Inv. Pessoal',dres.map(d=>d.totalInvP),'#2080c0'],
+    ['(-) Inv. Financeiro',dres.map(d=>d.totalInvF),'#20a080'],
+    ['(-) Previdência',dres.map(d=>d.totalPrev),'#209080'],
+    ['(-) Planos',dres.map(d=>d.totalPlanos),'#c08020'],
+    ['= Resultado',dres.map(d=>d.resultado),''],
+  ];
+  document.getElementById('cmp-body').innerHTML=rows.map(([name,vals,clr])=>{
     const f=vals[0],l=vals[vals.length-1];
+    const isResult=name.startsWith('=');
     const vp=f!==0?((l-f)/Math.abs(f)*100).toFixed(0):'—';
-    const vc=typeof vp==='string'?'#333':parseFloat(vp)>0?(name==='RECEITA'||name==='Resultado'?'#3a9a68':'#c04040'):'#3a9a68';
-    return`<tr><td style="color:${clr||'#e0ddd6'};font-weight:${name==='Resultado'?700:400};font-size:${name==='Resultado'?12:11}px">${name}</td>${vals.map(v=>`<td class="mono" style="text-align:right;color:${v>0?(name==='Resultado'?'#3a9a68':'#888'):v<0?'#c04040':'#222'}">${v!==0?BRL(v):'—'}</td>`).join('')}<td class="mono" style="text-align:right;color:${vc};font-size:10px">${typeof vp==='string'?vp:(parseFloat(vp)>0?'▲ ':'▼ ')+Math.abs(vp)+'%'}</td></tr>`;
+    const vc=typeof vp==='string'?'#333':parseFloat(vp)>0?(name.includes('Receita')||isResult?'#3a9a68':'#c04040'):'#3a9a68';
+    return`<tr style="background:${isResult?'#0d0d0d':'transparent'}"><td style="color:${clr||'#e0ddd6'};font-weight:${isResult?700:400};font-size:${isResult?12:11}px;border-top:${isResult?'1px solid #1e1e1e':'none'}">${name}</td>${vals.map(v=>`<td class="mono" style="text-align:right;border-top:${isResult?'1px solid #1e1e1e':'none'};color:${v>0?(isResult?'#3a9a68':'#888'):v<0?'#c04040':'#222'};font-weight:${isResult?700:400}">${v!==0?BRL(v):'—'}</td>`).join('')}<td class="mono" style="text-align:right;font-size:10px;color:${vc};border-top:${isResult?'1px solid #1e1e1e':'none'}">${typeof vp==='string'?vp:(parseFloat(vp)>0?'▲ ':'▼ ')+Math.abs(vp)+'%'}</td></tr>`;
   }).join('');
 }
 
@@ -787,7 +668,6 @@ function initImport(){
   setupZ('f-sa-card','z-sa-card','n-sa-card','#b07010',f=>files.saCard=f);
   setupZ('f-sa-acc','z-sa-acc','n-sa-acc','#c08010',f=>files.saAcc=f);
 }
-
 function setupZ(fid,zid,nid,color,setter){
   const input=document.getElementById(fid);
   if(input._s)return;input._s=true;
@@ -824,36 +704,40 @@ async function callClaude(txns,pdfTexts){
   const dictStr=dict.map(d=>`${d.sub} → cat:${d.cat}, grupo:${d.grupo}, tipo:${d.tipo}`).join('\n');
   const prompt=`Você é especialista em finanças pessoais brasileiras. Classifique os lançamentos abaixo usando EXATAMENTE as subcategorias do dicionário.
 
-DICIONÁRIO DE SUBCATEGORIAS (use exatamente esses nomes):
+DICIONÁRIO (use EXATAMENTE esses nomes no campo "sub"):
 ${dictStr}
 
 REGRAS CRÍTICAS:
-1. Use EXATAMENTE o nome da subcategoria do dicionário — não invente nomes
-2. Para o campo "sub" escolha a subcategoria mais específica do dicionário
-3. Tipo T = TRANSFERENCIAS (Pagamento Fatura, Transferência entre contas, Resgate)
-4. Tipo R = RECEITA_LIQUIDA (Salário, etc)
-5. Tipo D = qualquer saída de dinheiro real
+1. Use EXATAMENTE o nome da subcategoria — não invente novos nomes
+2. Tipo T = TRANSFERENCIAS (excluído da DRE)
+3. Tipo R = RECEITA_LIQUIDA
+4. Tipo D = saída real de dinheiro
 
-CLASSIFICAÇÕES ESPECÍFICAS:
-- "Resgate RDB", "Transferência recebida do próprio Victor/SICOOB" → sub:"Resgate", cat:TRANSFERENCIAS, tipo:T
-- "Aplicação RDB", "Compra de Ações CMIG4/PETR4/JHSF3" → sub correspondente em PREVIDENCIA ou INVESTIMENTOS_FINANCEIROS
-- "Pagamento de fatura", "Pagamento cartão" → sub:"Pagamento Fatura", cat:TRANSFERENCIAS, tipo:T
-- "PIX enviado para si mesmo entre contas" → sub:"Transferência entre contas", tipo:T
-- "PIX recebido de Victor/próprio titular" → sub:"Transferência entre contas", tipo:T
-- "FUMEC", "Faculdade" → sub:"Faculdade", cat:INVESTIMENTO_PESSOAL
+CLASSIFICAÇÕES OBRIGATÓRIAS:
+- "Resgate RDB", recebimentos do próprio Victor → sub:"Resgate", cat:TRANSFERENCIAS, tipo:T
+- "Aplicação RDB" → sub:"RDB/CDB", cat:INVESTIMENTOS_FINANCEIROS, tipo:D
+- "Compra Ações CMIG4" → sub:"CMIG4", cat:PREVIDENCIA
+- "Compra Ações PETR4" → sub:"PETR4", cat:PREVIDENCIA
+- "Compra Ações JHSF3" → sub:"JHSF3", cat:PREVIDENCIA
+- "Pagamento de fatura", "PAGAMENTO CARTAO" → sub:"Pagamento Fatura", cat:TRANSFERENCIAS, tipo:T
+- PIX enviado para si mesmo → sub:"Transferência entre contas", cat:TRANSFERENCIAS, tipo:T
+- PIX recebido do próprio titular → sub:"Transferência entre contas", cat:TRANSFERENCIAS, tipo:T
+- "FUMEC", "Faculdade", "Universidade" → sub:"Faculdade", cat:INVESTIMENTO_PESSOAL
 - "Padre Paulo Ricardo" → sub:"Padre Paulo Ricardo", cat:INVESTIMENTO_PESSOAL
 - "Guilherme Freire" → sub:"Guilherme Freire", cat:INVESTIMENTO_PESSOAL
 - "Li Flos Carmeli" → sub:"Li Flos Carmeli", cat:INVESTIMENTO_PESSOAL
-- "Netflix","Spotify","Amazon","YouTube","ChatGPT","OpenAI","TIM" → Streaming ou Fixa/Telefonia
+- "Insider" → sub:"Cursos", cat:INVESTIMENTO_PESSOAL
+- "Netflix","Spotify","Amazon Prime","YouTube","Disney" → sub:"Streaming"
+- "ChatGPT","OpenAI" → sub:"Streaming"
+- "TIM","Claro","Vivo" → sub:"TIM" ou "Outros Telefonia"
 - "iFood","Uber Eats","Rappi" → sub:"Delivery"
-- "Giovaniburgue","Walmor","Cafe","Padaria","Empório" → sub:"Restaurantes" ou "Padaria"
-- "Uber Trip" → sub:"Uber"
-- "Gympass","Wellhub" → sub:"Academia"
-- "Barbearia","ASA*Barbear" → sub:"Barbearia"
-- "Deltaexpresso" → sub:"Ônibus" (transporte intermunicipal)
+- "Giovaniburgue","Walmor","Campos Altos","Deltaexpresso" → sub:"Restaurantes" ou "Ônibus"
+- "Uber Trip","Uber TRIP" → sub:"Uber"
+- "Gympass","Wellhub" → sub:"Academia", cat:INVESTIMENTO_PESSOAL
+- "Barbearia","Best Barbe" → sub:"Barbearia"
 - "Caixa Instantânea" → sub:"Loteria"
-- "FANTEC" → avaliar contexto
-- "Dízimo","Ofertório" → DESPESAS Igreja
+- Salário, depósitos do empregador → sub:"Salário", cat:RECEITA_LIQUIDA, tipo:R
+- Recebimentos de terceiros (não próprio) → sub:"Outras Receitas", cat:RECEITA_LIQUIDA, tipo:R
 
 LANÇAMENTOS NUBANK (${txns.length}):
 ${JSON.stringify(txns.map(t=>({idx:t.id,data:t.date,desc:t.description,valor:t.value,fonte:t.source})))}
@@ -866,12 +750,11 @@ RESPONDA APENAS COM JSON VÁLIDO:
   "santander_card":[{"date":"DD/MM","description":"NOME","value":-50.00}],
   "santander_acc":[{"date":"DD/MM","description":"NOME","value":-339.00}],
   "result":{
-    "0":{"sub":"Restaurantes","cat":"DESPESAS","grupo":"Variável/Alimentação","tipo":"D","obs":"Recorrente — frequente"},
-    "1":{"sub":"RDB/CDB","cat":"INVESTIMENTOS_FINANCEIROS","grupo":"Investimento Financeiro","tipo":"D","obs":"Aplicação mensal"}
+    "0":{"sub":"Restaurantes","cat":"DESPESAS","grupo":"Variável/Alimentação","tipo":"D","obs":"Recorrente"},
+    "1":{"sub":"RDB/CDB","cat":"INVESTIMENTOS_FINANCEIROS","grupo":"Investimento Financeiro","tipo":"D","obs":""}
   }
 }
-Inclua TODOS os lançamentos nubank no result (incluindo entradas e transferências).
-Santander card indexado a partir de ${txns.length}. Santander acc logo após.`;
+Inclua TODOS os lançamentos nubank no result. Santander card indexado a partir de ${txns.length}. Acc logo após.`;
 
   const res=await fetch('/api/claude',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:8000,messages:[{role:'user',content:prompt}]})});
   if(!res.ok){const e=await res.text();throw new Error('API '+res.status+': '+e);}
@@ -899,13 +782,13 @@ async function startProcess(){
     msg.textContent='Claude analisando e classificando...';
     prog.textContent=allTxns.length+' lançamentos + PDFs Santander em análise';
     const result=await callClaude(allTxns,pdfs);
-    const applyResult=(t)=>{
+    const apply=t=>{
       const r=result.result?.[String(t.id)];
       if(!r)return t;
       const d=findDict(r.sub);
       return{...t,sub:r.sub||t.sub,cat:r.cat||d.cat,grupo:r.grupo||d.grupo,tipo:r.tipo||d.tipo,obs:r.obs||''};
     };
-    const nuTxns=allTxns.map(applyResult);
+    const nuTxns=allTxns.map(apply);
     let saId=id;
     const saCardTxns=(result.santander_card||[]).map((t,i)=>{
       const r=result.result?.[String(saId+i)];
@@ -946,9 +829,7 @@ function showReview(){
     <td>${srcBadge(t.source)}</td>
     <td class="mono" style="text-align:right;white-space:nowrap;font-weight:500;color:${t.value<0?'#c04040':'#3a9a68'}">${t.value>0?'+':''}${BRL(t.value)}</td>
     <td>${catBadge(t.cat)}</td>
-    <td><select style="border-color:${findDict(t.sub).cor}44;font-size:10px;padding:2px 5px" onchange="updPend(${t.id},this.value)">
-      ${allSubs.map(s=>`<option${s===t.sub?' selected':''}>${s}</option>`).join('')}
-    </select></td>
+    <td><select style="border-color:${findDict(t.sub).cor}44;font-size:10px;padding:2px 5px" onchange="updPend(${t.id},this.value)">${allSubs.map(s=>`<option${s===t.sub?' selected':''}>${s}</option>`).join('')}</select></td>
     <td style="font-size:10px;color:#2a2a2a;max-width:100px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${t.obs||''}">${t.obs||''}</td>
   </tr>`).join('');
   document.getElementById('rev-state').style.display='block';
@@ -988,40 +869,23 @@ function renderCats(){
   const defaultSubs=new Set(DEFAULT_DICT.map(d=>d.sub));
   let html='';
   Object.entries(byCat).forEach(([cat,items])=>{
-    const defLen=items.filter(d=>defaultSubs.has(d.sub)).length;
-    html+=`<div class="card" style="margin-bottom:10px;padding:0;overflow:hidden">
-      <div style="padding:10px 14px;background:#0a0a0a;border-bottom:1px solid #141414;display:flex;justify-content:space-between">
-        <span style="font-size:10px;font-weight:700;letter-spacing:.8px;color:${catColors[cat]||'#888'}">${cat}</span>
-        <span style="font-size:9px;color:#2a2a2a">${items.length} subcategorias</span>
-      </div>`;
-    items.forEach((d,i)=>{
+    html+=`<div class="card" style="margin-bottom:10px;padding:0;overflow:hidden"><div style="padding:10px 14px;background:#0a0a0a;border-bottom:1px solid #141414;display:flex;justify-content:space-between"><span style="font-size:10px;font-weight:700;letter-spacing:.8px;color:${catColors[cat]||'#888'}">${cat}</span><span style="font-size:9px;color:#2a2a2a">${items.length} subcategorias</span></div>`;
+    items.forEach(d=>{
       const isDefault=defaultSubs.has(d.sub);
       const idx=dict.findIndex(x=>x.sub===d.sub&&x.cat===d.cat);
-      html+=`<div style="display:flex;align-items:center;gap:10px;padding:7px 14px;border-bottom:1px solid #0d0d0d">
-        <div style="width:8px;height:8px;border-radius:50%;background:${d.cor};flex-shrink:0"></div>
-        <span style="flex:1;font-size:12px;color:#666">${d.sub}</span>
-        <span style="font-size:9px;color:#1e1e1e">${d.grupo}</span>
-        ${!isDefault?`<button class="btn-d" onclick="delSub(${idx})">×</button>`:'<span style="font-size:9px;color:#1a1a1a">padrão</span>'}
-      </div>`;
+      html+=`<div style="display:flex;align-items:center;gap:10px;padding:7px 14px;border-bottom:1px solid #0d0d0d"><div style="width:8px;height:8px;border-radius:50%;background:${d.cor};flex-shrink:0"></div><span style="flex:1;font-size:12px;color:#666">${d.sub}</span><span style="font-size:9px;color:#1e1e1e">${d.grupo}</span>${!isDefault?`<button class="btn-d" onclick="delSub(${idx})">×</button>`:'<span style="font-size:9px;color:#1a1a1a">padrão</span>'}</div>`;
     });
     html+='</div>';
   });
   document.getElementById('cat-list').innerHTML=html;
 }
 
-function showAddForm(){
-  document.getElementById('add-form').style.display='block';
-  updateGrupos();
-}
+function showAddForm(){document.getElementById('add-form').style.display='block';updateGrupos();}
 function updateGrupos(){
   const cat=document.getElementById('new-cat').value;
   const grupos=GRUPOS_BY_CAT[cat]||[];
   document.getElementById('new-grupo').innerHTML=grupos.map(g=>`<option>${g}</option>`).join('');
 }
-document.addEventListener('DOMContentLoaded',()=>{
-  const nc=document.getElementById('new-cat');
-  if(nc)nc.addEventListener('change',updateGrupos);
-});
 function addSub(){
   const sub=document.getElementById('new-sub').value.trim();
   const cat=document.getElementById('new-cat').value;
