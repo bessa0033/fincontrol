@@ -544,8 +544,7 @@ async function extractPDF(f){
 }
 
 async function callClaude(allTxns,pdfTexts){
-  const key=getApiKey();
-  if(!key)throw new Error('Configure sua API key nas Configurações.');
+  const key='via-server';
   const catList=getCats().map(c=>c.name).join(', ');
 
   const prompt=`Você é um especialista em finanças pessoais brasileiras. Analise os lançamentos bancários abaixo e faça uma categorização inteligente.
