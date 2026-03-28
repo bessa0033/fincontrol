@@ -1004,41 +1004,59 @@ async function callClaude(txns,pdfs){
 DICIONÁRIO (use EXATAMENTE esses nomes no campo "sub"):
 ${dictStr}
 
-REGRAS:
+REGRAS DE CLASSIFICAÇÃO:
 - Resgate RDB, recebimentos próprios → sub:"Resgate", cat:TRANSFERENCIAS, tipo:T
-- Aplicação RDB → sub:"RDB/CDB", cat:INVESTIMENTOS_FINANCEIROS
+- Aplicação RDB → sub:"RDB/CDB", cat:INVESTIMENTOS_FINANCEIROS, tipo:D
 - Ações CMIG4→sub:"CMIG4", PETR4→sub:"PETR4", JHSF3→sub:"JHSF3" (cat:PREVIDENCIA)
 - Pagamento fatura/cartão → sub:"Pagamento Fatura", cat:TRANSFERENCIAS, tipo:T
 - PIX próprio entre contas → sub:"Transferência entre contas", cat:TRANSFERENCIAS, tipo:T
-- FUMEC/Faculdade → sub:"Faculdade", cat:INVESTIMENTO_PESSOAL
+- FUMEC/Faculdade/Universidade → sub:"Faculdade", cat:INVESTIMENTO_PESSOAL
 - Padre Paulo Ricardo → sub:"Padre Paulo Ricardo", cat:INVESTIMENTO_PESSOAL
 - Guilherme Freire → sub:"Guilherme Freire", cat:INVESTIMENTO_PESSOAL
 - Li Flos Carmeli → sub:"Li Flos Carmeli", cat:INVESTIMENTO_PESSOAL
-- Netflix/Spotify/Amazon/YouTube/ChatGPT/Disney → sub:"Streaming"
-- iFood/Uber Eats/Rappi → sub:"Delivery"
-- Giovaniburgue/Walmor/Cafe/Padaria/Empório → sub:"Restaurantes" ou "Padaria"
-- Uber Trip → sub:"Uber"
+- Insider Come*Insiderst → sub:"Cursos", cat:INVESTIMENTO_PESSOAL
+- Ec *Truepaleo → sub:"Outros Alimentação", cat:DESPESAS
+- Netflix/Spotify/Amazon Prime/YouTube/ChatGPT/Disney/OpenAI/Google Tandem → sub:"Streaming"
+- iFood/IFD*/Uber Eats/Rappi → sub:"Delivery"
+- Giovaniburgue/Walmor Grill/Cafe Campos Altos/Empório/Distribuidora → sub:"Restaurantes"
+- Padaria la Panetteria/Supermercado e Padaria → sub:"Padaria" ou "Supermercado"
+- Uber*/UBER* → sub:"Uber", cat:DESPESAS, grupo:Variável/Transporte
 - Gympass/Wellhub → sub:"Academia", cat:INVESTIMENTO_PESSOAL
-- Barbearia → sub:"Barbearia"
+- ASA*Barbearia/Barbearia → sub:"Barbearia"
 - Caixa Instantânea → sub:"Loteria"
-- TIM/Claro/Vivo → sub:"TIM"
+- TIM*/Tim* → sub:"TIM"
 - Deltaexpresso → sub:"Ônibus"
+- Azul Linhas Aéreas → sub:"Viagem", cat:DESPESAS, grupo:Variável/Lazer
+- Amazon BR/AmazonPrimeBR → sub:"Streaming"
 - Salário, depósitos empregador → sub:"Salário", cat:RECEITA_LIQUIDA, tipo:R
-- Recebimentos terceiros → sub:"Outras Receitas", cat:RECEITA_LIQUIDA, tipo:R
-- Dízimo → sub:"Dízimo"
-- Ofertório → sub:"Ofertório"
-- Luta/artes marciais → sub:"Luta"
+- Recebimentos terceiros (não próprios) → sub:"Outras Receitas", cat:RECEITA_LIQUIDA, tipo:R
+- Pagamentos em DEZ/Pagamento recebido = crédito na fatura → IGNORAR (não incluir)
 
-LANÇAMENTOS NUBANK (${txns.length}):
+IMPORTANTE — FORMATO DO JSON:
+Para transações de PDF (nubank_card, santander_card, santander_acc), inclua sub/cat/grupo/tipo/obs DENTRO de cada objeto de transação.
+Para transações de CSV (lançamentos nubank), use o campo "result" com chave = idx.
+
+${txns.length>0?`LANÇAMENTOS NUBANK CSV (${txns.length}):
 ${JSON.stringify(txns.map(t=>({idx:t.id,data:t.date,desc:t.description,valor:t.value,fonte:t.source})))}
+`:'Sem lançamentos CSV.'}
 
-${pdfs.nc?`\nFATURA NUBANK CARTÃO (PDF):\n${pdfs.nc.substring(0,4000)}`:''}
-${pdfs.sc?`\nFATURA SANTANDER CARTÃO (PDF):\n${pdfs.sc.substring(0,4000)}`:''}
-${pdfs.sa?`\nEXTRATO SANTANDER CONTA (PDF):\n${pdfs.sa.substring(0,2000)}`:''}
+${pdfs.nc?`FATURA NUBANK CARTÃO (PDF — extraia TODAS as transações de compra, exceto pagamentos recebidos):\n${pdfs.nc.substring(0,5000)}`:''}
+${pdfs.sc?`FATURA SANTANDER CARTÃO (PDF — extraia TODAS as despesas e parcelamentos, exceto pagamento de fatura):\n${pdfs.sc.substring(0,5000)}`:''}
+${pdfs.sa?`EXTRATO SANTANDER CONTA (PDF):\n${pdfs.sa.substring(0,2000)}`:''}
 
-RESPONDA APENAS COM JSON VÁLIDO:
-{"nubank_card":[{"date":"DD/MM","description":"X","value":-50.00}],"santander_card":[{"date":"DD/MM","description":"X","value":-50.00}],"santander_acc":[{"date":"DD/MM","description":"X","value":-100.00}],"result":{"0":{"sub":"Restaurantes","cat":"DESPESAS","grupo":"Variável/Alimentação","tipo":"D","obs":"Recorrente"}}}
-Inclua TODOS os lançamentos nubank CSV no result. Se houver FATURA NUBANK CARTÃO PDF, parse em nubank_card. Santander card indexado após nubank_card. Santander acc por último.`;
+RESPONDA APENAS COM JSON VÁLIDO, sem texto antes ou depois:
+{
+  "nubank_card": [
+    {"date":"13/12","description":"Mp *Giovaniburgue","value":-13.00,"sub":"Restaurantes","cat":"DESPESAS","grupo":"Variável/Alimentação","tipo":"D","obs":"Recorrente — frequente"},
+    {"date":"10/12","description":"Insider Come*Insiderst","value":-86.80,"sub":"Cursos","cat":"INVESTIMENTO_PESSOAL","grupo":"Investimento Pessoal","tipo":"D","obs":"Parcela 2/3"}
+  ],
+  "santander_card": [
+    {"date":"02/12","description":"UBER UBER *TRIP HELP U","value":-25.68,"sub":"Uber","cat":"DESPESAS","grupo":"Variável/Transporte","tipo":"D","obs":""},
+    {"date":"07/07","description":"PADRE PAULO RICARDO","value":-55.93,"sub":"Padre Paulo Ricardo","cat":"INVESTIMENTO_PESSOAL","grupo":"Investimento Pessoal","tipo":"D","obs":"Parcela 06/12"}
+  ],
+  "santander_acc": [],
+  "result": ${txns.length>0?'{"0":{"sub":"Restaurantes","cat":"DESPESAS","grupo":"Variável/Alimentação","tipo":"D","obs":""}}':'{}'}
+}`;
 
   const r=await fetch('/api/claude',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:8000,messages:[{role:'user',content:prompt}]})});
   if(!r.ok){const e=await r.text();throw new Error('API '+r.status+': '+e);}
@@ -1078,28 +1096,42 @@ async function startProc(){
     msg.textContent='Claude categorizando...';
     prog.textContent=(all.length?all.length+' lançamentos CSV':'')+(Object.values(pdfs).some(x=>x)?' + PDFs':'');
     const result=await callClaude(all,pdfs);
+
+    // Helper: apply inline categorization from PDF transactions
+    const applyInline=(t,source,idx)=>{
+      const sub=t.sub||'Outros Pessoal';
+      const d=fd(sub);
+      return{
+        id:idx,date:t.date||'',description:t.description||'',
+        value:parseFloat(t.value)||0,source,
+        s:sub,c:t.cat||d.c,g:t.grupo||d.g,t:t.tipo||d.t,obs:t.obs||''
+      };
+    };
+
+    // CSV transactions (Nubank conta/cartão via CSV)
     const apply=t=>{
       const r=result.result?.[String(t.id)];if(!r)return t;
       const d=fd(r.sub);
       return{...t,s:r.sub||t.s,c:r.cat||d.c,g:r.grupo||d.g,t:r.tipo||d.t,obs:r.obs||''};
     };
     const nu=all.map(apply);
-    // Nubank Cartão from PDF (if uploaded as PDF)
+
+    // PDF transactions — categorization is inline in each object
     let sid=id;
-    const ncPdf=(result.nubank_card||[]).map((t,i)=>{
-      const r=result.result?.[String(sid+i)];const d=r?fd(r.sub):{c:'DESPESAS',g:'Variável/Alimentação',t:'D'};
-      return{id:sid+i,date:t.date||'',description:t.description||'',value:parseFloat(t.value)||0,source:'Nubank Cartão',s:r?.sub||'Restaurantes',c:r?.cat||d.c,g:r?.grupo||d.g,t:r?.tipo||'D',obs:r?.obs||''};
-    }).filter(t=>t.description&&t.value!==0);
+    const ncPdf=(result.nubank_card||[])
+      .map((t,i)=>applyInline(t,'Nubank Cartão',sid+i))
+      .filter(t=>t.description&&t.value!==0);
     sid+=ncPdf.length;
-    const sc=(result.santander_card||[]).map((t,i)=>{
-      const r=result.result?.[String(sid+i)];const d=r?fd(r.sub):{c:'DESPESAS',g:'Variável/Pessoal',t:'D'};
-      return{id:sid+i,date:t.date||'',description:t.description||'',value:parseFloat(t.value)||0,source:'Santander Cartão',s:r?.sub||'Outros Pessoal',c:r?.cat||d.c,g:r?.grupo||d.g,t:r?.tipo||'D',obs:r?.obs||''};
-    }).filter(t=>t.description&&t.value!==0);
+
+    const sc=(result.santander_card||[])
+      .map((t,i)=>applyInline(t,'Santander Cartão',sid+i))
+      .filter(t=>t.description&&t.value!==0);
     sid+=sc.length;
-    const sa=(result.santander_acc||[]).map((t,i)=>{
-      const r=result.result?.[String(sid+i)];const d=r?fd(r.sub):{c:'DESPESAS',g:'Variável/Pessoal',t:'D'};
-      return{id:sid+i,date:t.date||'',description:t.description||'',value:parseFloat(t.value)||0,source:'Santander Conta',s:r?.sub||'Outros Pessoal',c:r?.cat||d.c,g:r?.grupo||d.g,t:r?.tipo||'D',obs:r?.obs||''};
-    }).filter(t=>t.description&&t.value!==0);
+
+    const sa=(result.santander_acc||[])
+      .map((t,i)=>applyInline(t,'Santander Conta',sid+i))
+      .filter(t=>t.description&&t.value!==0);
+
     pending=[...nu,...ncPdf,...sc,...sa];
     document.getElementById('proc-wrap').style.display='none';
     showRev();
