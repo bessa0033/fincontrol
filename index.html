@@ -893,7 +893,12 @@ async function processarImp(){
       pending=json.transacoes.map((t,i)=>({id:i,data_competencia:t.data_competencia||'',data_pagamento:t.data_pagamento||venc,descricao:t.descricao||'',subcategoria:t.subcategoria||'Outros Pessoal',cat:t.cat||'DESPESA',grupo:t.grupo||'Pessoal',valor:parseFloat(t.valor)||0,parcela:t.parcela||''})).filter(t=>t.valor>0&&t.descricao);
     } else {
       const rows=rawRows||[];
-      pending=json.transacoes.map((t,i)=>{const orig=rows[t.id]||rows[i]||{};return{id:i,data:t.data||orig.data||'',descricao:orig.descricao||'',descricao_limpa:t.descricao_limpa||orig.descricao||'',origem:t.origem||'',subcategoria:t.subcategoria||'Outros',cat:t.cat||'TRANSFERENCIA',grupo:t.grupo||'Transferência',valor:parseFloat(t.valor!==undefined?t.valor:orig.valor)||0};}).filter(t=>t.descricao);
+      pending=json.transacoes.map((t,i)=>{
+        const orig=rows[t.id]||rows[i]||{};
+        // Para PDF (st-ext): descricao vem do Claude (descricao_limpa). Para CSV (nu-ext): vem do orig
+        const descRaw=orig.descricao||t.descricao_limpa||t.descricao||'';
+        return{id:i,data:t.data||orig.data||'',descricao:descRaw,descricao_limpa:t.descricao_limpa||descRaw,origem:t.origem||'',subcategoria:t.subcategoria||'Outros',cat:t.cat||'TRANSFERENCIA',grupo:t.grupo||'Transferência',valor:parseFloat(t.valor!==undefined?t.valor:orig.valor)||0};
+      }).filter(t=>t.descricao_limpa||t.descricao);
     }
     pendData[impTab]=pending;
     document.getElementById('imp-proc').style.display='none';
