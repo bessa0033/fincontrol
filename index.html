@@ -4,11 +4,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>FinControl</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap');
-
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
   --bg:#080808;--bg2:#0d0d0d;--bg3:#111;--border:#1c1c1c;--border2:#222;
@@ -21,35 +21,26 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:var(--sa
 ::-webkit-scrollbar{width:3px;height:3px}::-webkit-scrollbar-thumb{background:#1e1e1e}
 @keyframes spin{to{transform:rotate(360deg)}}
 @keyframes fadeUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
-
-/* LAYOUT */
 .app{display:flex;height:100vh;overflow:hidden}
 .sidebar{width:200px;flex-shrink:0;background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column}
 .main{flex:1;overflow-y:auto;min-width:0}
-
-/* SIDEBAR */
 .logo{padding:20px 16px 16px;border-bottom:1px solid var(--border)}
 .logo-name{font-family:var(--mono);font-size:13px;font-weight:600;color:var(--white);letter-spacing:.5px}
 .logo-sub{font-size:9px;color:var(--txt3);letter-spacing:2px;text-transform:uppercase;margin-top:2px}
 .nav{flex:1;padding:8px}
+.nav-section{font-family:var(--mono);font-size:8px;letter-spacing:1.5px;text-transform:uppercase;color:var(--txt3);padding:10px 10px 4px;margin-top:4px}
 .nav-item{display:flex;align-items:center;gap:9px;padding:8px 10px;border-radius:4px;cursor:pointer;color:var(--txt3);font-size:11px;font-weight:500;letter-spacing:.3px;margin-bottom:1px;border:none;background:none;width:100%;text-align:left;transition:all .15s}
 .nav-item:hover{color:var(--txt2);background:#111}
 .nav-item.active{color:var(--white);background:#161616}
 .nav-item svg{width:14px;height:14px;flex-shrink:0;opacity:.6}
 .nav-item.active svg{opacity:1}
 .nav-bottom{padding:8px;border-top:1px solid var(--border)}
-
-/* TOPBAR */
 .topbar{display:flex;align-items:center;padding:12px 20px;border-bottom:1px solid var(--border);background:var(--bg);position:sticky;top:0;z-index:10;gap:10px}
 .topbar-title{font-family:var(--mono);font-size:12px;font-weight:600;color:var(--white);letter-spacing:.3px}
 .topbar-right{margin-left:auto;display:flex;gap:6px;align-items:center;flex-wrap:wrap}
-
-/* PAGES */
 .page{display:none;animation:fadeUp .2s ease}
 .page.active{display:block}
 .page-body{padding:20px}
-
-/* BUTTONS */
 .btn{background:var(--white);color:#080808;border:none;padding:6px 14px;border-radius:4px;font-family:var(--sans);font-weight:600;font-size:11px;cursor:pointer;letter-spacing:.2px;white-space:nowrap;transition:opacity .1s}
 .btn:hover{opacity:.9}
 .btn:disabled{opacity:.25;cursor:not-allowed}
@@ -57,21 +48,14 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:var(--sa
 .btn-ghost:hover{border-color:#333;color:var(--txt)}
 .btn-sm{padding:3px 10px;font-size:10px}
 .btn-danger{background:transparent;color:#a03030;border:1px solid #a0303030;padding:3px 8px;border-radius:3px;font-family:var(--sans);font-size:10px;cursor:pointer}
-
-/* CARDS */
 .card{background:var(--bg2);border:1px solid var(--border);border-radius:6px;padding:14px}
 .card-label{font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--txt3);margin-bottom:4px;font-family:var(--mono)}
 .kv{font-family:var(--mono);font-size:20px;font-weight:600;color:var(--white);margin:3px 0 2px}
 .ks{font-size:10px;color:var(--txt3)}
-
-/* GRID */
 .g2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
 .g4{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
 .g5{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
-
-/* TABLE */
-.table-wrap{overflow-y:auto}
 table{width:100%;border-collapse:collapse}
 th{font-family:var(--mono);font-size:9px;letter-spacing:.8px;text-transform:uppercase;color:var(--txt3);padding:8px 12px;text-align:left;border-bottom:1px solid var(--border);background:var(--bg2);position:sticky;top:0;z-index:1;white-space:nowrap}
 td{padding:7px 12px;border-bottom:1px solid #0e0e0e;font-size:12px;color:var(--txt2);vertical-align:middle}
@@ -79,51 +63,34 @@ tr:hover td{background:#0a0a0a}
 .td-mono{font-family:var(--mono);font-size:11px}
 .td-red{color:var(--red)!important}
 .td-grn{color:var(--grn)!important}
-
-/* BADGES */
 .badge{font-size:9px;padding:2px 7px;border-radius:3px;font-weight:600;letter-spacing:.5px;white-space:nowrap;font-family:var(--mono)}
-
-/* INPUTS */
 select,input[type=text],input[type=number]{background:#0e0e0e;border:1px solid var(--border2);color:var(--txt);padding:5px 8px;border-radius:4px;font-family:var(--sans);font-size:11px;outline:none}
 select:focus,input:focus{border-color:#333}
-
-/* UPLOAD ZONE */
-.upload-zone{border:2px dashed var(--border2);border-radius:8px;padding:32px 20px;text-align:center;cursor:pointer;transition:all .15s}
+.upload-zone{border:2px dashed var(--border2);border-radius:8px;padding:28px 20px;text-align:center;cursor:pointer;transition:all .15s}
 .upload-zone:hover,.upload-zone.drag{border-color:#333;background:#0a0a0a}
 .upload-zone.loaded{border-style:solid;border-color:var(--grn)}
-
-/* SPIN */
 .spin{width:24px;height:24px;border:2px solid var(--border2);border-top-color:var(--white);border-radius:50%;animation:spin .7s linear infinite;margin:0 auto}
-
-/* DRE */
 .dre-row{display:flex;justify-content:space-between;align-items:center;padding:8px 14px;border-bottom:1px solid #0e0e0e}
 .dre-row:hover{background:#0a0a0a}
-.dre-row.header{background:#0a0a0a;border-bottom:1px solid var(--border);padding:6px 14px}
+.dre-row.header{background:#0a0a0a;border-bottom:1px solid var(--border);padding:10px 14px}
 .dre-row.result{background:#0c0c0c;border-top:2px solid var(--border2);padding:12px 14px}
 .dre-row.sub{padding-left:30px}
 .dre-label{font-size:11px;color:var(--txt2)}
 .dre-label.bold{font-weight:600;color:var(--white);font-size:12px;letter-spacing:.3px}
-.dre-label.cat{font-family:var(--mono);font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--txt3);font-weight:600}
 .dre-val{font-family:var(--mono);font-size:11px;color:var(--txt2)}
 .dre-val.bold{font-size:14px;font-weight:600}
 .dre-meta-wrap{display:flex;align-items:center;gap:12px}
 .dre-meta{font-size:10px;color:var(--txt3);font-family:var(--mono)}
 .progress{height:3px;background:#141414;border-radius:2px;width:80px;overflow:hidden;flex-shrink:0}
 .progress-fill{height:100%;border-radius:2px;transition:width .4s}
-
-/* TABS */
 .tabs{display:flex;border-bottom:1px solid var(--border);margin-bottom:16px}
 .tab{padding:8px 14px;font-size:11px;color:var(--txt3);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;font-weight:500;letter-spacing:.2px;transition:all .1s}
 .tab:hover{color:var(--txt2)}
 .tab.active{color:var(--white);border-bottom-color:var(--white)}
-
-/* ALERTS */
 .alert{border-radius:4px;padding:8px 12px;margin-bottom:8px;font-size:11px;line-height:1.6}
 .alert-warn{background:#140a0a;border:1px solid #2a1010;color:#c04040}
 .alert-ok{background:#0a140a;border:1px solid #102a10;color:#2a7a50}
 .alert-info{background:#0a0a14;border:1px solid #10102a;color:#4060b0}
-
-/* EMPTY */
 .empty{text-align:center;padding:48px 20px;color:var(--txt3);font-size:12px}
 .empty-icon{font-size:24px;opacity:.1;margin-bottom:10px}
 </style>
@@ -131,7 +98,6 @@ select:focus,input:focus{border-color:#333}
 <body>
 <div class="app">
 
-<!-- SIDEBAR -->
 <div class="sidebar">
   <div class="logo">
     <div class="logo-name">FinControl</div>
@@ -142,10 +108,16 @@ select:focus,input:focus{border-color:#333}
       <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="1" width="6" height="6" rx="1"/><rect x="9" y="1" width="6" height="6" rx="1"/><rect x="1" y="9" width="6" height="6" rx="1"/><rect x="9" y="9" width="6" height="6" rx="1"/></svg>
       Dashboard
     </button>
-    <button class="nav-item" onclick="goTo('lancamentos')">
-      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 4h12M2 8h12M2 12h8"/></svg>
-      Lançamentos
+    <div class="nav-section">Nubank</div>
+    <button class="nav-item" onclick="goTo('fatura')">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="4" width="14" height="9" rx="1"/><path d="M1 7h14"/></svg>
+      Cartão
     </button>
+    <button class="nav-item" onclick="goTo('extrato')">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 4h12M2 8h12M2 12h8"/></svg>
+      Extrato Conta
+    </button>
+    <div class="nav-section">Análise</div>
     <button class="nav-item" onclick="goTo('dre')">
       <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 2h12v12H2zM2 6h12M2 10h12M6 2v12"/></svg>
       DRE
@@ -163,7 +135,6 @@ select:focus,input:focus{border-color:#333}
   </div>
 </div>
 
-<!-- MAIN -->
 <div class="main">
 
 <!-- DASHBOARD -->
@@ -172,14 +143,14 @@ select:focus,input:focus{border-color:#333}
     <div class="topbar-title">Dashboard</div>
     <div class="topbar-right">
       <div id="dash-pills" style="display:flex;gap:4px"></div>
-      <button class="btn-ghost btn-sm" onclick="goTo('import')">+ Importar fatura</button>
+      <button class="btn-ghost btn-sm" onclick="goTo('import')">+ Importar</button>
     </div>
   </div>
   <div class="page-body">
     <div id="dash-empty" class="empty" style="display:none">
       <div class="empty-icon">📊</div>
       Nenhum dado importado ainda.<br>
-      <span style="cursor:pointer;color:var(--txt2);text-decoration:underline" onclick="goTo('import')">Importar fatura Nubank →</span>
+      <span style="cursor:pointer;color:var(--txt2);text-decoration:underline" onclick="goTo('import')">Importar dados →</span>
     </div>
     <div id="dash-content">
       <div id="dash-alerts" style="margin-bottom:14px"></div>
@@ -188,54 +159,86 @@ select:focus,input:focus{border-color:#333}
         <div class="card"><div class="card-label" style="margin-bottom:10px">Receita vs Despesas vs Investimentos</div><canvas id="ch-bar" height="180"></canvas></div>
         <div class="card"><div class="card-label" style="margin-bottom:10px">Distribuição dos gastos</div><canvas id="ch-pie" height="180"></canvas></div>
       </div>
-      <div class="card" style="padding:0;overflow:hidden">
-        <div style="padding:10px 14px;border-bottom:1px solid var(--border)"><div class="card-label">Top estabelecimentos</div></div>
-        <table><tbody id="dash-top"></tbody></table>
+      <div class="g2">
+        <div class="card" style="padding:0;overflow:hidden">
+          <div style="padding:10px 14px;border-bottom:1px solid var(--border)"><div class="card-label">Top estabelecimentos (cartão)</div></div>
+          <table><tbody id="dash-top-fatura"></tbody></table>
+        </div>
+        <div class="card" style="padding:0;overflow:hidden">
+          <div style="padding:10px 14px;border-bottom:1px solid var(--border)"><div class="card-label">Movimentações relevantes (conta)</div></div>
+          <table><tbody id="dash-top-extrato"></tbody></table>
+        </div>
       </div>
     </div>
   </div>
 </div>
 
-<!-- LANÇAMENTOS -->
-<div id="pg-lancamentos" class="page">
+<!-- FATURA (CARTÃO) -->
+<div id="pg-fatura" class="page">
   <div class="topbar">
-    <div class="topbar-title">Lançamentos</div>
+    <div class="topbar-title">Cartão Nubank — Lançamentos</div>
     <div class="topbar-right">
-      <select id="f-mes" onchange="renderLancamentos()"></select>
-      <select id="f-cat" onchange="renderLancamentos()"><option value="">Todas categorias</option></select>
-      <select id="f-tipo" onchange="renderLancamentos()">
-        <option value="">Todos</option>
-        <option value="despesa">Despesas</option>
-        <option value="investimento">Investimentos</option>
-        <option value="transferencia">Transferências</option>
-      </select>
-      <input type="text" id="f-busca" placeholder="Buscar..." style="width:130px" oninput="renderLancamentos()">
+      <select id="fat-mes" onchange="renderFatura()"></select>
+      <select id="fat-cat" onchange="renderFatura()"><option value="">Todas as categorias</option></select>
+      <input type="text" id="fat-busca" placeholder="Buscar..." style="width:130px" oninput="renderFatura()">
     </div>
   </div>
   <div class="page-body" style="padding:0">
-    <div id="lanc-empty" class="empty" style="display:none">
-      <div class="empty-icon">📋</div>Sem lançamentos para este período.
-    </div>
-    <div id="lanc-wrap">
-      <div class="table-wrap" style="max-height:calc(100vh - 120px)">
+    <div id="fat-empty" class="empty" style="display:none"><div class="empty-icon">💳</div>Nenhum lançamento de cartão.</div>
+    <div id="fat-wrap">
+      <div style="max-height:calc(100vh - 120px);overflow-y:auto">
         <table>
-          <thead>
-            <tr>
-              <th>Dt. Pagamento</th>
-              <th>Dt. Competência</th>
-              <th>Descrição</th>
-              <th>Subcategoria</th>
-              <th>Categoria</th>
-              <th>Parcela</th>
-              <th style="text-align:right">Valor</th>
-            </tr>
-          </thead>
-          <tbody id="lanc-tbody"></tbody>
+          <thead><tr>
+            <th>Dt. Pagamento</th><th>Dt. Competência</th><th>Descrição</th>
+            <th>Subcategoria</th><th>Categoria</th><th>Parcela</th>
+            <th style="text-align:right">Valor</th>
+          </tr></thead>
+          <tbody id="fat-tbody"></tbody>
         </table>
       </div>
       <div style="padding:8px 14px;border-top:1px solid var(--border);background:var(--bg);display:flex;justify-content:space-between;font-size:10px;color:var(--txt3);font-family:var(--mono)">
-        <span id="lanc-count"></span>
-        <span>Total: <strong id="lanc-total" style="color:var(--red)"></strong></span>
+        <span id="fat-count"></span>
+        <span>Total: <strong id="fat-total" style="color:var(--red)"></strong></span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- EXTRATO (CONTA) -->
+<div id="pg-extrato" class="page">
+  <div class="topbar">
+    <div class="topbar-title">Extrato Nubank — Conta Corrente</div>
+    <div class="topbar-right">
+      <select id="ext-mes" onchange="renderExtrato()"></select>
+      <select id="ext-tipo" onchange="renderExtrato()">
+        <option value="">Todos</option>
+        <option value="entrada">Entradas</option>
+        <option value="saida">Saídas</option>
+      </select>
+      <select id="ext-cat" onchange="renderExtrato()"><option value="">Todas categorias</option></select>
+      <input type="text" id="ext-busca" placeholder="Buscar..." style="width:130px" oninput="renderExtrato()">
+    </div>
+  </div>
+  <div class="page-body" style="padding:0">
+    <div id="ext-empty" class="empty" style="display:none"><div class="empty-icon">🏦</div>Nenhum extrato importado.<br><span style="cursor:pointer;color:var(--txt2);text-decoration:underline" onclick="goTo('import');setImportTab('extrato')">Importar extrato CSV →</span></div>
+    <div id="ext-wrap">
+      <div style="max-height:calc(100vh - 120px);overflow-y:auto">
+        <table>
+          <thead><tr>
+            <th>Data</th><th>Descrição</th><th>Origem/Destino</th>
+            <th>Subcategoria</th><th>Categoria</th>
+            <th style="text-align:right">Valor</th>
+          </tr></thead>
+          <tbody id="ext-tbody"></tbody>
+        </table>
+      </div>
+      <div style="padding:8px 14px;border-top:1px solid var(--border);background:var(--bg);display:flex;justify-content:space-between;font-size:10px;color:var(--txt3);font-family:var(--mono)">
+        <span id="ext-count"></span>
+        <div style="display:flex;gap:14px">
+          <span>Entradas: <strong id="ext-in" style="color:var(--grn)"></strong></span>
+          <span>Saídas: <strong id="ext-out" style="color:var(--red)"></strong></span>
+          <span>Saldo: <strong id="ext-saldo"></strong></span>
+        </div>
       </div>
     </div>
   </div>
@@ -251,96 +254,137 @@ select:focus,input:focus{border-color:#333}
     </div>
   </div>
   <div class="page-body" style="max-width:860px">
-    <div id="dre-empty" class="empty" style="display:none">
-      <div class="empty-icon">📋</div>Nenhum dado importado.
-    </div>
-
-    <!-- Receita input -->
-    <div class="card" style="margin-bottom:10px" id="dre-receita-card">
-      <div style="display:flex;align-items:center;justify-content:space-between">
+    <div id="dre-empty" class="empty" style="display:none"><div class="empty-icon">📋</div>Nenhum dado importado.</div>
+    <div class="card" style="margin-bottom:10px" id="dre-rec-card">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px">
         <div>
           <div class="card-label">Receita do mês</div>
-          <div style="font-size:10px;color:var(--txt3);margin-top:2px">Informe sua receita líquida para calcular os percentuais</div>
+          <div style="font-size:10px;color:var(--txt3);margin-top:2px" id="dre-rec-hint">Informe a receita líquida para calcular os percentuais</div>
         </div>
         <div style="display:flex;align-items:center;gap:8px">
           <span style="font-size:11px;color:var(--txt3)">R$</span>
-          <input type="number" id="receita-input" placeholder="0,00" style="width:130px;font-family:var(--mono);font-size:14px;font-weight:600;color:var(--white);background:#111;border-color:#222;padding:7px 10px" oninput="saveReceita();renderDRE()">
+          <input type="number" id="receita-input" placeholder="0,00" style="width:140px;font-family:var(--mono);font-size:14px;font-weight:600;color:var(--white);background:#111;border-color:#222;padding:7px 10px" oninput="saveReceita();renderDRE()">
           <span style="font-size:10px;color:var(--txt3)" id="receita-ref"></span>
         </div>
       </div>
     </div>
-
     <div id="dre-content"></div>
   </div>
 </div>
 
 <!-- IMPORTAR -->
 <div id="pg-import" class="page">
-  <div class="topbar"><div class="topbar-title">Importar — Nubank Cartão</div></div>
-  <div class="page-body" style="max-width:680px">
-
-    <!-- Mês -->
-    <div class="card" style="margin-bottom:10px">
-      <div class="card-label">Mês de referência</div>
-      <select id="imp-mes" style="width:100%;margin-top:6px"></select>
+  <div class="topbar"><div class="topbar-title">Importar Dados</div></div>
+  <div class="page-body" style="max-width:700px">
+    <div class="tabs" id="import-tabs">
+      <div class="tab active" onclick="setImportTab('fatura')">💳 Fatura Cartão (PDF)</div>
+      <div class="tab" onclick="setImportTab('extrato')">🏦 Extrato Conta (CSV)</div>
     </div>
 
-    <!-- Upload -->
-    <div class="card" style="margin-bottom:10px">
-      <div class="card-label" style="margin-bottom:10px">Fatura PDF</div>
-      <div class="upload-zone" id="upload-zone" onclick="document.getElementById('pdf-input').click()">
-        <input type="file" id="pdf-input" accept=".pdf" style="display:none">
-        <div style="font-size:20px;margin-bottom:8px;opacity:.3">📄</div>
-        <div style="font-size:12px;color:var(--txt2);margin-bottom:4px" id="upload-label">Arraste o PDF da fatura ou clique para selecionar</div>
-        <div style="font-size:10px;color:var(--txt3)">Fatura PDF do Nubank — App → Cartão → Ver fatura → Exportar PDF</div>
+    <!-- TAB FATURA -->
+    <div id="imp-tab-fatura">
+      <div class="card" style="margin-bottom:10px">
+        <div class="card-label">Mês de referência</div>
+        <select id="imp-mes-fat" style="width:100%;margin-top:6px"></select>
+      </div>
+      <div class="card" style="margin-bottom:10px">
+        <div class="card-label" style="margin-bottom:10px">Fatura PDF — Nubank Cartão</div>
+        <div class="upload-zone" id="zone-fat" onclick="document.getElementById('inp-fat').click()">
+          <input type="file" id="inp-fat" accept=".pdf" style="display:none">
+          <div style="font-size:20px;margin-bottom:8px;opacity:.3">📄</div>
+          <div style="font-size:12px;color:var(--txt2);margin-bottom:4px" id="lbl-fat">Arraste o PDF da fatura ou clique</div>
+          <div style="font-size:10px;color:var(--txt3)">App Nubank → Cartão → Ver fatura → Exportar PDF</div>
+        </div>
+      </div>
+      <div style="display:flex;justify-content:flex-end;gap:8px;margin-bottom:14px">
+        <button class="btn-ghost" onclick="goTo('dash')">Cancelar</button>
+        <button class="btn" onclick="processarFatura()">Processar com IA →</button>
+      </div>
+      <div id="proc-fat-wrap" style="display:none">
+        <div class="card" style="text-align:center;padding:32px">
+          <div class="spin" style="margin-bottom:14px"></div>
+          <div id="proc-fat-msg" style="font-size:11px;color:var(--txt2)"></div>
+          <div id="proc-fat-err" style="color:var(--red);font-size:11px;display:none;margin-top:10px;line-height:1.6;max-width:400px;margin-left:auto;margin-right:auto"></div>
+          <button class="btn-ghost" id="btn-fat-voltar" style="display:none;margin-top:12px" onclick="resetFatura()">← Voltar</button>
+        </div>
+      </div>
+      <div id="rev-fat-wrap" style="display:none">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+          <div>
+            <div style="font-size:13px;font-weight:600;color:var(--white)" id="rev-fat-title"></div>
+            <div style="font-size:10px;color:var(--txt3);margin-top:2px" id="rev-fat-sub"></div>
+          </div>
+          <div style="display:flex;gap:7px">
+            <button class="btn-ghost btn-sm" onclick="resetFatura()">Cancelar</button>
+            <button class="btn btn-sm" onclick="salvarFatura()">Salvar →</button>
+          </div>
+        </div>
+        <div class="card" style="padding:0;overflow:hidden">
+          <div style="max-height:400px;overflow-y:auto">
+            <table>
+              <thead><tr><th>Dt. Compet.</th><th>Descrição</th><th>Subcategoria</th><th>Categoria</th><th>Parcela</th><th style="text-align:right">Valor</th></tr></thead>
+              <tbody id="rev-fat-tbody"></tbody>
+            </table>
+          </div>
+          <div style="padding:8px 14px;border-top:1px solid var(--border);background:var(--bg);display:flex;justify-content:flex-end;font-size:10px;color:var(--txt3);font-family:var(--mono)">
+            Total: <strong id="rev-fat-total" style="color:var(--red);margin-left:8px"></strong>
+          </div>
+        </div>
       </div>
     </div>
 
-    <div style="display:flex;justify-content:flex-end;gap:8px;margin-bottom:14px">
-      <button class="btn-ghost" onclick="goTo('dash')">Cancelar</button>
-      <button class="btn" id="btn-processar" onclick="processar()">Processar com IA →</button>
-    </div>
-
-    <!-- Processando -->
-    <div id="proc-wrap" style="display:none">
-      <div class="card" style="text-align:center;padding:32px">
-        <div class="spin" style="margin-bottom:14px"></div>
-        <div id="proc-msg" style="font-size:11px;color:var(--txt2)"></div>
-        <div id="proc-err" style="color:var(--red);font-size:11px;display:none;margin-top:10px;line-height:1.6;max-width:400px;margin-left:auto;margin-right:auto"></div>
-        <button class="btn-ghost" id="btn-voltar" style="display:none;margin-top:12px" onclick="resetImport()">← Voltar</button>
+    <!-- TAB EXTRATO -->
+    <div id="imp-tab-extrato" style="display:none">
+      <div class="card" style="margin-bottom:10px">
+        <div class="card-label">Mês de referência</div>
+        <select id="imp-mes-ext" style="width:100%;margin-top:6px"></select>
       </div>
-    </div>
-
-    <!-- Revisão -->
-    <div id="rev-wrap" style="display:none">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
-        <div>
-          <div style="font-size:13px;font-weight:600;color:var(--white)" id="rev-title"></div>
-          <div style="font-size:10px;color:var(--txt3);margin-top:2px" id="rev-sub"></div>
-        </div>
-        <div style="display:flex;gap:7px">
-          <button class="btn-ghost btn-sm" onclick="resetImport()">Cancelar</button>
-          <button class="btn btn-sm" onclick="salvarMes()">Salvar →</button>
+      <div class="card" style="margin-bottom:10px">
+        <div class="card-label" style="margin-bottom:10px">Extrato CSV — Nubank Conta</div>
+        <div class="upload-zone" id="zone-ext" onclick="document.getElementById('inp-ext').click()">
+          <input type="file" id="inp-ext" accept=".csv" style="display:none">
+          <div style="font-size:20px;margin-bottom:8px;opacity:.3">📊</div>
+          <div style="font-size:12px;color:var(--txt2);margin-bottom:4px" id="lbl-ext">Arraste o CSV do extrato ou clique</div>
+          <div style="font-size:10px;color:var(--txt3)">App Nubank → Perfil → Extratos → Exportar</div>
         </div>
       </div>
-      <div class="card" style="padding:0;overflow:hidden">
-        <div class="table-wrap" style="max-height:420px">
-          <table>
-            <thead>
-              <tr>
-                <th>Dt. Compet.</th>
-                <th>Descrição</th>
-                <th>Subcategoria</th>
-                <th>Categoria</th>
-                <th>Parcela</th>
-                <th style="text-align:right">Valor</th>
-              </tr>
-            </thead>
-            <tbody id="rev-tbody"></tbody>
-          </table>
+      <div style="display:flex;justify-content:flex-end;gap:8px;margin-bottom:14px">
+        <button class="btn-ghost" onclick="goTo('dash')">Cancelar</button>
+        <button class="btn" onclick="processarExtrato()">Processar com IA →</button>
+      </div>
+      <div id="proc-ext-wrap" style="display:none">
+        <div class="card" style="text-align:center;padding:32px">
+          <div class="spin" style="margin-bottom:14px"></div>
+          <div id="proc-ext-msg" style="font-size:11px;color:var(--txt2)"></div>
+          <div id="proc-ext-err" style="color:var(--red);font-size:11px;display:none;margin-top:10px;line-height:1.6;max-width:400px;margin-left:auto;margin-right:auto"></div>
+          <button class="btn-ghost" id="btn-ext-voltar" style="display:none;margin-top:12px" onclick="resetExtrato()">← Voltar</button>
         </div>
-        <div style="padding:8px 14px;border-top:1px solid var(--border);background:var(--bg);display:flex;justify-content:flex-end;font-size:10px;color:var(--txt3);font-family:var(--mono)">
-          Total da fatura: <strong id="rev-total" style="color:var(--red);margin-left:8px"></strong>
+      </div>
+      <div id="rev-ext-wrap" style="display:none">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+          <div>
+            <div style="font-size:13px;font-weight:600;color:var(--white)" id="rev-ext-title"></div>
+            <div style="font-size:10px;color:var(--txt3);margin-top:2px" id="rev-ext-sub"></div>
+          </div>
+          <div style="display:flex;gap:7px">
+            <button class="btn-ghost btn-sm" onclick="resetExtrato()">Cancelar</button>
+            <button class="btn btn-sm" onclick="salvarExtrato()">Salvar →</button>
+          </div>
+        </div>
+        <div class="card" style="padding:0;overflow:hidden">
+          <div style="max-height:420px;overflow-y:auto">
+            <table>
+              <thead><tr><th>Data</th><th>Descrição</th><th>Origem/Destino</th><th>Subcategoria</th><th>Categoria</th><th style="text-align:right">Valor</th></tr></thead>
+              <tbody id="rev-ext-tbody"></tbody>
+            </table>
+          </div>
+          <div style="padding:8px 14px;border-top:1px solid var(--border);background:var(--bg);display:flex;justify-content:space-between;font-size:10px;color:var(--txt3);font-family:var(--mono)">
+            <span id="rev-ext-count"></span>
+            <div style="display:flex;gap:14px">
+              <span>Entradas: <strong id="rev-ext-in" style="color:var(--grn)"></strong></span>
+              <span>Saídas: <strong id="rev-ext-out" style="color:var(--red)"></strong></span>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -370,86 +414,89 @@ select:focus,input:focus{border-color:#333}
 <script>
 pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 
-// ─── CONSTANTES ────────────────────────────────────────────────────────────────
 const MESES = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
-const BRL = v => 'R$ ' + Math.abs(v).toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2});
-const MK = (y,m) => y + '-' + String(m).padStart(2,'0');
+const BRL = v => 'R$ ' + Math.abs(v).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
+const MK = (y,m) => y+'-'+String(m).padStart(2,'0');
 
+// ─── CATEGORIAS ────────────────────────────────────────────────────────────────
 const CATS = {
-  DESPESA: {
-    cor: '#c04040',
-    grupos: {
-      'Moradia': ['Aluguel/Prestação','Condomínio','Luz','Água','Gás','Internet','Outros Moradia'],
-      'Alimentação': ['Supermercado','Padaria','Restaurantes','Sorveteria','Outros Alimentação'],
-      'Transporte': ['Ônibus','Uber','Gasolina','Manutenção Veículo','Seguro Veículo','Prestação Veículo','Outros Transporte'],
-      'Saúde': ['Plano de Saúde','Consultas/Exames','Dentista','Farmácia','Outros Saúde'],
-      'Educação': ['Outros Educação'],
-      'Pessoal': ['Luta','Loteria','TIM','Academia','Barbearia','Outros Pessoal'],
-      'Lazer': ['Cinema','Streaming','Futebol','Viagem','Outros Lazer'],
-      'Igreja': ['Dízimo','Ofertório','Outros Igreja'],
-      'Tributos': ['INSS','IRRF','IPTU','IPVA','Outros Tributos'],
-    }
-  },
-  INVESTIMENTO_PESSOAL: {cor:'#2050a0', grupos:{'Investimento Pessoal':['Faculdade','Padre Paulo Ricardo','Guilherme Freire','Livros','Cursos','Outros Inv. Pessoal']}},
-  INVESTIMENTO_FINANCEIRO: {cor:'#107060', grupos:{'Investimento Financeiro':['RDB/CDB','Ações','Derivativos','Cripto','Outros Financeiros']}},
-  PLANOS_PESSOAIS: {cor:'#906010', grupos:{'Planos Pessoais':['Casamento','Carro','Casa','Outros Planos']}},
-  PREVIDENCIA: {cor:'#107060', grupos:{'Previdência':['CXSE3','CMIG4','Renda Fixa','Cripto Prev.','Outros Previdência']}},
-  TRANSFERENCIA: {cor:'#252525', grupos:{'Transferência':['Pagamento Fatura','Outros']}},
+  RECEITA_LIQUIDA:   {cor:'#2a7a50', label:'Receita',          grupos:{'Receita':['Salário','Almoço da Edi','Vale Alimentação','Bônus/PLR','Rendimentos Financeiros','Dividendos','Outras Receitas']}},
+  DESPESA:           {cor:'#c04040', label:'Despesa',           grupos:{
+    'Moradia':       ['Aluguel/Prestação','Condomínio','Luz','Água','Gás','Internet','Outros Moradia'],
+    'Alimentação':   ['Supermercado','Padaria','Restaurantes','Sorveteria','Outros Alimentação'],
+    'Transporte':    ['Ônibus','Uber','Gasolina','Manutenção Veículo','Seguro Veículo','Prestação Veículo','Outros Transporte'],
+    'Saúde':         ['Plano de Saúde','Consultas/Exames','Dentista','Farmácia','Outros Saúde'],
+    'Educação':      ['Outros Educação'],
+    'Pessoal':       ['Luta','Loteria','TIM','Academia','Barbearia','Outros Pessoal'],
+    'Lazer':         ['Cinema','Streaming','Futebol','Viagem','Outros Lazer'],
+    'Igreja':        ['Dízimo','Ofertório','Outros Igreja'],
+    'Tributos':      ['INSS','IRRF','IPTU','IPVA','Outros Tributos'],
+  }},
+  INVESTIMENTO_PESSOAL:    {cor:'#2050a0', label:'Inv. Pessoal',   grupos:{'Investimento Pessoal':['Faculdade','Padre Paulo Ricardo','Guilherme Freire','Livros','Cursos','Outros Inv. Pessoal']}},
+  INVESTIMENTO_FINANCEIRO: {cor:'#107060', label:'Inv. Financeiro', grupos:{'Investimento Financeiro':['RDB/CDB','Ações','Derivativos','Cripto','Outros Financeiros']}},
+  PLANOS_PESSOAIS:  {cor:'#906010', label:'Planos Pessoais',  grupos:{'Planos Pessoais':['Casamento','Carro','Casa','Outros Planos']}},
+  PREVIDENCIA:      {cor:'#107060', label:'Previdência',       grupos:{'Previdência':['CXSE3','CMIG4','PETR4','JHSF3','Renda Fixa','Outros Previdência']}},
+  TRANSFERENCIA:    {cor:'#2a2a2a', label:'Transferência',     grupos:{'Transferência':['Pagamento Fatura','Resgate RDB','Aplicação RDB','Transferência entre contas','NuInvest','Outros']}},
 };
 
-const METAS_DEFAULT = {despesas:50, invPessoal:10, invFin:10, planos:10, prev:10};
+const METAS_DEFAULT = {despesas:50,invPessoal:10,invFin:10,planos:10,prev:10};
 
-// ─── MAPEAMENTO DE CATEGORIZAÇÃO ───────────────────────────────────────────────
-// Claude usará isso no prompt para categorizar automaticamente
 function buildDictString() {
   let out = '';
-  for (const [cat, data] of Object.entries(CATS)) {
-    for (const [grp, subs] of Object.entries(data.grupos)) {
+  for (const [cat,data] of Object.entries(CATS))
+    for (const [grp,subs] of Object.entries(data.grupos))
       subs.forEach(s => { out += `"${s}" → cat:${cat}, grupo:${grp}\n`; });
-    }
-  }
   return out;
 }
 
 // ─── STORAGE ───────────────────────────────────────────────────────────────────
-const getData = () => JSON.parse(localStorage.getItem('fc2_data') || '{}');
-const setData = d => localStorage.setItem('fc2_data', JSON.stringify(d));
-const getTxns = mes => (getData()[mes] || []);
-const getMetas = () => JSON.parse(localStorage.getItem('fc2_metas') || JSON.stringify(METAS_DEFAULT));
-const setMetas = d => localStorage.setItem('fc2_metas', JSON.stringify(d));
-const getReceita = mes => parseFloat(localStorage.getItem('fc2_rec_' + mes) || '0');
-const setReceita = (mes, v) => localStorage.setItem('fc2_rec_' + mes, v);
+const getFaturas  = () => JSON.parse(localStorage.getItem('fc2_fatura')  || '{}');
+const setFaturas  = d  => localStorage.setItem('fc2_fatura', JSON.stringify(d));
+const getExtratos = () => JSON.parse(localStorage.getItem('fc2_extrato') || '{}');
+const setExtratos = d  => localStorage.setItem('fc2_extrato', JSON.stringify(d));
+const getMetas    = () => JSON.parse(localStorage.getItem('fc2_metas')   || JSON.stringify(METAS_DEFAULT));
+const setMetas    = d  => localStorage.setItem('fc2_metas', JSON.stringify(d));
+const getReceita  = mes => parseFloat(localStorage.getItem('fc2_rec_'+mes) || '0');
+const setReceitaLS= (mes,v) => localStorage.setItem('fc2_rec_'+mes, v);
+
+const getTxnsFatura  = mes => (getFaturas()[mes]  || []);
+const getTxnsExtrato = mes => (getExtratos()[mes] || []);
+const getMesesFatura  = () => Object.keys(getFaturas()).sort().reverse();
+const getMesesExtrato = () => Object.keys(getExtratos()).sort().reverse();
+const getMesesAll = () => [...new Set([...getMesesFatura(),...getMesesExtrato()])].sort().reverse();
 
 // ─── STATE ─────────────────────────────────────────────────────────────────────
 let curMes = null;
-let pendingTxns = [];
-let pdfFile = null;
+let pendingFatura  = [];
+let pendingExtrato = [];
+let pdfFile = null, csvFile = null;
 let charts = {};
+let importTab = 'fatura';
 
-function getMeses() { return Object.keys(getData()).sort().reverse(); }
-function initMes() {
-  const keys = getMeses();
-  if (keys.length) curMes = keys[0];
-  else { const n = new Date(); curMes = MK(n.getFullYear(), n.getMonth()+1); }
+function initCurMes() {
+  const all = getMesesAll();
+  curMes = all.length ? all[0] : MK(new Date().getFullYear(), new Date().getMonth()+1);
 }
-initMes();
+initCurMes();
 
 // ─── NAV ───────────────────────────────────────────────────────────────────────
 function goTo(p) {
   document.querySelectorAll('.page').forEach(x => x.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(x => x.classList.remove('active'));
   document.getElementById('pg-'+p).classList.add('active');
-  const btn = document.querySelector(`[onclick="goTo('${p}')"]`);
-  if (btn) btn.classList.add('active');
-  if (p === 'dash') renderDash();
-  if (p === 'lancamentos') renderLancamentos();
-  if (p === 'dre') renderDRE();
-  if (p === 'import') initImport();
-  if (p === 'config') initConfig();
+  const b = document.querySelector(`[onclick="goTo('${p}')"]`); if (b) b.classList.add('active');
+  ({dash:renderDash, fatura:renderFatura, extrato:renderExtrato, dre:renderDRE, import:initImport, config:initConfig}[p]||(() => {}))();
+}
+
+function setImportTab(tab) {
+  importTab = tab;
+  document.getElementById('imp-tab-fatura').style.display  = tab === 'fatura'  ? 'block' : 'none';
+  document.getElementById('imp-tab-extrato').style.display = tab === 'extrato' ? 'block' : 'none';
+  document.querySelectorAll('#import-tabs .tab').forEach((t,i) => t.classList.toggle('active', (i===0&&tab==='fatura')||(i===1&&tab==='extrato')));
 }
 
 function renderPills(elId, cb) {
-  const meses = getMeses();
+  const meses = getMesesAll();
   const el = document.getElementById(elId); if (!el) return;
   el.innerHTML = meses.slice(0,8).map(k => {
     const [y,m] = k.split('-');
@@ -458,206 +505,249 @@ function renderPills(elId, cb) {
 }
 
 function catCor(cat) { return (CATS[cat]||{cor:'#444'}).cor; }
-function catLabel(cat) {
-  const m = {DESPESA:'Despesa',INVESTIMENTO_PESSOAL:'Inv. Pessoal',INVESTIMENTO_FINANCEIRO:'Inv. Financeiro',PLANOS_PESSOAIS:'Planos',PREVIDENCIA:'Previdência',TRANSFERENCIA:'Transferência'};
-  return m[cat] || cat;
-}
-
+function catLabel(cat) { return (CATS[cat]||{label:cat}).label; }
 function catBadge(cat) {
   const cor = catCor(cat);
   return `<span class="badge" style="background:${cor}18;color:${cor}">${catLabel(cat)}</span>`;
 }
 
-// ─── CALCULAR TOTAIS ───────────────────────────────────────────────────────────
+function getAllSubs() {
+  const subs = [];
+  for (const d of Object.values(CATS)) for (const s of Object.values(d.grupos)) subs.push(...s);
+  return subs;
+}
+
+function subToCat(sub) {
+  for (const [cat,data] of Object.entries(CATS))
+    for (const [grp,subs] of Object.entries(data.grupos))
+      if (subs.includes(sub)) return {cat,grp};
+  return {cat:'DESPESA',grp:'Pessoal'};
+}
+
+// ─── CÁLCULOS ──────────────────────────────────────────────────────────────────
 function calcTotais(mes) {
-  const txns = getTxns(mes);
-  const r = { despesas:{}, invPessoal:0, invFin:0, planos:0, prev:0, transf:0, total:0 };
-  txns.forEach(t => {
-    if (t.cat === 'DESPESA') {
-      r.despesas[t.grupo] = (r.despesas[t.grupo] || 0) + t.valor;
-      r.total += t.valor;
-    }
-    if (t.cat === 'INVESTIMENTO_PESSOAL') { r.invPessoal += t.valor; r.total += t.valor; }
-    if (t.cat === 'INVESTIMENTO_FINANCEIRO') { r.invFin += t.valor; r.total += t.valor; }
-    if (t.cat === 'PLANOS_PESSOAIS') { r.planos += t.valor; r.total += t.valor; }
-    if (t.cat === 'PREVIDENCIA') { r.prev += t.valor; r.total += t.valor; }
-    if (t.cat === 'TRANSFERENCIA') r.transf += t.valor;
+  const fat = getTxnsFatura(mes);
+  const ext = getTxnsExtrato(mes);
+  const all = [...fat, ...ext];
+  const r = {despGrupos:{}, despTotal:0, invPessoal:0, invFin:0, planos:0, prev:0, receita:0};
+  all.forEach(t => {
+    if (t.cat === 'RECEITA_LIQUIDA') r.receita += t.valor > 0 ? t.valor : 0;
+    if (t.cat === 'DESPESA')               { r.despGrupos[t.grupo] = (r.despGrupos[t.grupo]||0) + Math.abs(t.valor); r.despTotal += Math.abs(t.valor); }
+    if (t.cat === 'INVESTIMENTO_PESSOAL')    r.invPessoal += Math.abs(t.valor);
+    if (t.cat === 'INVESTIMENTO_FINANCEIRO') r.invFin     += Math.abs(t.valor);
+    if (t.cat === 'PLANOS_PESSOAIS')         r.planos     += Math.abs(t.valor);
+    if (t.cat === 'PREVIDENCIA')             r.prev       += Math.abs(t.valor);
   });
-  r.despTotal = Object.values(r.despesas).reduce((s,v) => s+v, 0);
+  r.invTotal = r.invPessoal + r.invFin + r.planos + r.prev;
   return r;
 }
 
 // ─── DASHBOARD ─────────────────────────────────────────────────────────────────
 function renderDash() {
-  const meses = getMeses();
+  const meses = getMesesAll();
   if (!meses.length) { document.getElementById('dash-empty').style.display='block'; document.getElementById('dash-content').style.display='none'; return; }
-  if (!getTxns(curMes).length && meses.length) curMes = meses[0];
+  if (!meses.includes(curMes)) curMes = meses[0];
   document.getElementById('dash-empty').style.display='none';
   document.getElementById('dash-content').style.display='block';
   renderPills('dash-pills','renderDash');
 
   const tot = calcTotais(curMes);
-  const rec = getReceita(curMes);
-  const txns = getTxns(curMes);
+  const rec = getReceita(curMes) || tot.receita;
   const metas = getMetas();
+  const saldo = rec - tot.despTotal - tot.invTotal;
 
-  // KPIs
-  const invTotal = tot.invPessoal + tot.invFin + tot.planos + tot.prev;
-  const saldo = rec - tot.despTotal - invTotal;
   document.getElementById('dash-kpis').innerHTML = [
-    {l:'Receita', v: rec > 0 ? BRL(rec) : '—', s:'receita informada', c:'var(--grn)'},
-    {l:'Despesas', v: BRL(tot.despTotal), s: rec>0 ? ((tot.despTotal/rec*100).toFixed(1)+'% da receita') : '—', c:'var(--red)'},
-    {l:'Investido', v: BRL(invTotal), s: rec>0 ? ((invTotal/rec*100).toFixed(1)+'% da receita') : '—', c:'#1060a0'},
-    {l:'Saldo', v: rec > 0 ? BRL(Math.abs(saldo)) : '—', s: saldo >= 0 ? '✓ positivo' : '⚠ negativo', c: saldo >= 0 ? 'var(--grn)' : 'var(--red)'},
-    {l:'Lançamentos', v: txns.filter(t=>t.cat!=='TRANSFERENCIA').length, s:'transações do mês', c:'var(--txt)'},
+    {l:'Receita', v: rec>0?BRL(rec):'—', s:'receita do mês', c:'var(--grn)'},
+    {l:'Despesas', v:BRL(tot.despTotal), s: rec>0?(tot.despTotal/rec*100).toFixed(1)+'% da receita':'—', c:'var(--red)'},
+    {l:'Investido', v:BRL(tot.invTotal), s: rec>0?(tot.invTotal/rec*100).toFixed(1)+'% da receita':'—', c:'#1060a0'},
+    {l:'Saldo', v: rec>0?BRL(Math.abs(saldo)):'—', s: saldo>=0?'✓ positivo':'⚠ negativo', c: saldo>=0?'var(--grn)':'var(--red)'},
+    {l:'Poupança', v: rec>0?((tot.invTotal/rec*100).toFixed(0)+'%'):'—', s:'do faturamento investido', c:'var(--purple)||#5a40a0'},
   ].map(k => `<div class="card" style="margin:0"><div class="card-label">${k.l}</div><div class="kv" style="color:${k.c}">${k.v}</div><div class="ks">${k.s}</div></div>`).join('');
 
   // Charts
-  const grpData = Object.entries(tot.despesas).sort((a,b)=>b[1]-a[1]).slice(0,6);
-
+  const grpData = Object.entries(tot.despGrupos).sort((a,b)=>b[1]-a[1]).slice(0,6);
   if (charts.bar) charts.bar.destroy();
   charts.bar = new Chart(document.getElementById('ch-bar'), {
     type:'bar',
-    data: {
-      labels: ['Receita','Despesas','Investido'],
-      datasets: [{data:[rec,tot.despTotal,invTotal], backgroundColor:['#2a7a5044','#c0404088','#1060a044'], borderRadius:4, borderSkipped:false}]
-    },
+    data:{labels:['Receita','Despesas','Investido'],datasets:[{data:[rec,tot.despTotal,tot.invTotal],backgroundColor:['#2a7a5044','#c0404088','#1060a044'],borderRadius:4,borderSkipped:false}]},
     options:{responsive:true,plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>BRL(ctx.raw)}}},scales:{x:{ticks:{color:'#333',font:{size:9}},grid:{display:false},border:{display:false}},y:{ticks:{color:'#252525',font:{size:9},callback:v=>BRL(v)},grid:{color:'#0f0f0f'},border:{display:false}}}}
   });
-
   if (charts.pie) charts.pie.destroy();
-  const pieColors = ['#c04040','#905010','#703080','#304070','#2a7a50','#804030'];
-  charts.pie = new Chart(document.getElementById('ch-pie'), {
-    type:'doughnut',
-    data:{labels:grpData.map(([g])=>g),datasets:[{data:grpData.map(([,v])=>v),backgroundColor:pieColors,borderWidth:0}]},
-    options:{responsive:true,cutout:'55%',plugins:{legend:{position:'right',labels:{color:'#444',font:{size:10},boxWidth:7,padding:6}},tooltip:{callbacks:{label:ctx=>`${ctx.label}: ${BRL(ctx.raw)}`}}}}
-  });
+  if (grpData.length) {
+    const pieColors = ['#c04040','#905010','#703080','#304070','#2a7a50','#804030'];
+    charts.pie = new Chart(document.getElementById('ch-pie'), {
+      type:'doughnut',
+      data:{labels:grpData.map(([g])=>g),datasets:[{data:grpData.map(([,v])=>v),backgroundColor:pieColors,borderWidth:0}]},
+      options:{responsive:true,cutout:'55%',plugins:{legend:{position:'right',labels:{color:'#444',font:{size:10},boxWidth:7,padding:6}},tooltip:{callbacks:{label:ctx=>`${ctx.label}: ${BRL(ctx.raw)}`}}}}
+    });
+  }
 
-  // Top estabelecimentos
+  // Top fatura
+  const fat = getTxnsFatura(curMes);
   const vm = {};
-  txns.filter(t=>t.cat==='DESPESA').forEach(t => {
-    const k = t.descricao.trim().split(/\s+/).slice(0,4).join(' ');
-    vm[k] = (vm[k]||0) + t.valor;
-  });
-  document.getElementById('dash-top').innerHTML = Object.entries(vm).sort((a,b)=>b[1]-a[1]).slice(0,8).map(([n,v],i) =>
-    `<tr><td><div style="display:flex;align-items:center;gap:8px"><span class="td-mono" style="color:var(--txt3);font-size:9px;min-width:14px">${String(i+1).padStart(2,'0')}</span><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:200px">${n}</span></div></td><td class="td-mono td-red" style="text-align:right">${BRL(v)}</td></tr>`
-  ).join('');
+  fat.filter(t=>t.cat==='DESPESA').forEach(t => { const k=t.descricao.trim().split(/\s+/).slice(0,4).join(' '); vm[k]=(vm[k]||0)+Math.abs(t.valor); });
+  document.getElementById('dash-top-fatura').innerHTML = Object.entries(vm).sort((a,b)=>b[1]-a[1]).slice(0,6)
+    .map(([n,v],i) => `<tr><td><span class="td-mono" style="color:var(--txt3);font-size:9px;margin-right:7px">${String(i+1).padStart(2,'0')}</span><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:160px;display:inline-block;vertical-align:middle">${n}</span></td><td class="td-mono td-red" style="text-align:right">${BRL(v)}</td></tr>`).join('')
+    || '<tr><td colspan="2" style="text-align:center;color:var(--txt3);padding:16px">Sem fatura importada</td></tr>';
+
+  // Top extrato (movimentações relevantes = despesas e receitas, excluindo transferências)
+  const ext = getTxnsExtrato(curMes).filter(t => t.cat !== 'TRANSFERENCIA');
+  document.getElementById('dash-top-extrato').innerHTML = ext.slice(0,6)
+    .map(t => `<tr><td style="max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${t.descricao_limpa||t.descricao}</td><td class="td-mono" style="text-align:right;color:${t.valor>0?'var(--grn)':'var(--red)'}">${t.valor>0?'+':''}${BRL(t.valor)}</td></tr>`).join('')
+    || '<tr><td colspan="2" style="text-align:center;color:var(--txt3);padding:16px">Sem extrato importado</td></tr>';
 
   // Alertas
   const als = [];
   if (rec > 0) {
-    const pct = tot.despTotal / rec * 100;
-    if (pct > metas.despesas) als.push({t:'warn', m:`⚠ Despesas em ${pct.toFixed(0)}% da receita — meta é ${metas.despesas}%`});
-    else als.push({t:'ok', m:`✓ Despesas em ${pct.toFixed(0)}% da receita — dentro da meta de ${metas.despesas}%`});
+    const pct = tot.despTotal/rec*100;
+    const meta = metas.despesas;
+    if (pct > meta) als.push({t:'warn', m:`⚠ Despesas em ${pct.toFixed(0)}% da receita — meta é ${meta}%`});
+    else als.push({t:'ok', m:`✓ Despesas em ${pct.toFixed(0)}% — dentro da meta de ${meta}%`});
+    if (saldo < 0) als.push({t:'warn', m:`⚠ Mês no vermelho: ${BRL(Math.abs(saldo))} acima da receita`});
+    if (tot.invTotal/rec*100 < 20) als.push({t:'info', m:`💡 Taxa de poupança: ${(tot.invTotal/rec*100).toFixed(1)}% — meta recomendada é 20%+`});
   }
-  if (saldo < 0 && rec > 0) als.push({t:'warn', m:`⚠ Mês no vermelho: ${BRL(Math.abs(saldo))} acima da receita`});
-  document.getElementById('dash-alerts').innerHTML = als.map(a => `<div class="alert alert-${a.t==='warn'?'warn':'ok'}">${a.m}</div>`).join('');
+  document.getElementById('dash-alerts').innerHTML = als.map(a=>`<div class="alert alert-${a.t==='warn'?'warn':a.t==='info'?'info':'ok'}">${a.m}</div>`).join('');
 }
 
-// ─── LANÇAMENTOS ───────────────────────────────────────────────────────────────
-function renderLancamentos() {
-  const meses = getMeses();
-  const sel = document.getElementById('f-mes');
-  sel.innerHTML = meses.map(k => { const[y,m]=k.split('-'); return `<option value="${k}"${k===curMes?' selected':''}>${MESES[parseInt(m)-1]} ${y}</option>`; }).join('') || '<option>—</option>';
+// ─── FATURA ────────────────────────────────────────────────────────────────────
+function renderFatura() {
+  const meses = getMesesFatura();
+  const sel = document.getElementById('fat-mes');
+  sel.innerHTML = meses.map(k=>{const[y,m]=k.split('-');return`<option value="${k}"${k===curMes?' selected':''}>${MESES[parseInt(m)-1]} ${y}</option>`;}).join('') || '<option>—</option>';
   const mes = sel.value || curMes;
 
-  // Montar filtro de categorias
-  const catSel = document.getElementById('f-cat');
+  const catSel = document.getElementById('fat-cat');
   const catV = catSel.value;
-  catSel.innerHTML = '<option value="">Todas categorias</option>' + Object.keys(CATS).map(c => `<option value="${c}"${c===catV?' selected':''}>${catLabel(c)}</option>`).join('');
+  catSel.innerHTML = '<option value="">Todas as categorias</option>' + Object.keys(CATS).map(c=>`<option value="${c}"${c===catV?' selected':''}>${catLabel(c)}</option>`).join('');
 
-  const busca = document.getElementById('f-busca').value.toLowerCase();
-  const tipo = document.getElementById('f-tipo').value;
-  const cat = document.getElementById('f-cat').value;
+  const busca = document.getElementById('fat-busca').value.toLowerCase();
+  const cat = catSel.value;
+  let txns = getTxnsFatura(mes).filter(t => (!cat||t.cat===cat) && (!busca||t.descricao.toLowerCase().includes(busca)||(t.subcategoria||'').toLowerCase().includes(busca)));
 
-  let txns = getTxns(mes);
-  txns = txns.filter(t => {
-    if (cat && t.cat !== cat) return false;
-    if (tipo === 'despesa' && t.cat !== 'DESPESA') return false;
-    if (tipo === 'investimento' && !['INVESTIMENTO_PESSOAL','INVESTIMENTO_FINANCEIRO','PLANOS_PESSOAIS','PREVIDENCIA'].includes(t.cat)) return false;
-    if (tipo === 'transferencia' && t.cat !== 'TRANSFERENCIA') return false;
-    if (busca && !t.descricao.toLowerCase().includes(busca) && !(t.subcategoria||'').toLowerCase().includes(busca)) return false;
-    return true;
-  });
-
-  const wrap = document.getElementById('lanc-wrap');
-  const empty = document.getElementById('lanc-empty');
+  const empty = document.getElementById('fat-empty'), wrap = document.getElementById('fat-wrap');
   if (!txns.length) { empty.style.display='block'; wrap.style.display='none'; return; }
   empty.style.display='none'; wrap.style.display='block';
 
-  const allSubs = [];
-  for (const [cat, data] of Object.entries(CATS)) for (const subs of Object.values(data.grupos)) allSubs.push(...subs);
+  const allSubs = getAllSubs();
+  document.getElementById('fat-tbody').innerHTML = txns.map(t => `<tr>
+    <td class="td-mono" style="font-size:10px;color:var(--txt3)">${t.data_pagamento||'—'}</td>
+    <td class="td-mono" style="font-size:10px;color:var(--txt3)">${t.data_competencia||'—'}</td>
+    <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${t.descricao}">${t.descricao}</td>
+    <td><select style="font-size:10px;padding:2px 6px;border-color:${catCor(t.cat)}33" onchange="editTxnFatura('${mes}',${t.id},this.value)">${allSubs.map(s=>`<option${s===t.subcategoria?' selected':''}>${s}</option>`).join('')}</select></td>
+    <td>${catBadge(t.cat)}</td>
+    <td class="td-mono" style="font-size:10px;color:var(--txt3)">${t.parcela||'—'}</td>
+    <td class="td-mono td-red" style="text-align:right;font-weight:500">${BRL(t.valor)}</td>
+  </tr>`).join('');
 
-  document.getElementById('lanc-tbody').innerHTML = txns.map(t => `
-    <tr>
-      <td class="td-mono" style="font-size:10px;color:var(--txt3)">${t.data_pagamento||'—'}</td>
-      <td class="td-mono" style="font-size:10px;color:var(--txt3)">${t.data_competencia||'—'}</td>
-      <td style="max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${t.descricao}">${t.descricao}</td>
-      <td>
-        <select style="font-size:10px;padding:2px 6px;border-color:${catCor(t.cat)}33" onchange="editSub('${mes}',${t.id},this.value)">
-          ${allSubs.map(s => `<option${s===t.subcategoria?' selected':''}>${s}</option>`).join('')}
-        </select>
-      </td>
-      <td>${catBadge(t.cat)}</td>
-      <td class="td-mono" style="font-size:10px;color:var(--txt3)">${t.parcela||'—'}</td>
-      <td class="td-mono td-red" style="text-align:right;font-size:11px;font-weight:500">${BRL(t.valor)}</td>
-    </tr>`).join('');
-
-  const total = txns.filter(t=>t.cat!=='TRANSFERENCIA').reduce((s,t)=>s+t.valor,0);
-  document.getElementById('lanc-count').textContent = txns.length + ' lançamentos';
-  document.getElementById('lanc-total').textContent = BRL(total);
+  const total = txns.filter(t=>t.cat!=='TRANSFERENCIA').reduce((s,t)=>s+Math.abs(t.valor),0);
+  document.getElementById('fat-count').textContent = txns.length + ' lançamentos';
+  document.getElementById('fat-total').textContent = BRL(total);
 }
 
-function editSub(mes, id, sub) {
-  const d = getData();
-  if (!d[mes]) return;
-  const t = d[mes].find(t => t.id === id);
-  if (!t) return;
-  // Find cat/grupo from sub
-  for (const [cat, data] of Object.entries(CATS)) {
-    for (const [grp, subs] of Object.entries(data.grupos)) {
-      if (subs.includes(sub)) { t.subcategoria = sub; t.cat = cat; t.grupo = grp; break; }
-    }
-  }
-  setData(d);
+function editTxnFatura(mes, id, sub) {
+  const d = getFaturas(); if (!d[mes]) return;
+  const t = d[mes].find(t=>t.id===id); if (!t) return;
+  const {cat,grp} = subToCat(sub); t.subcategoria=sub; t.cat=cat; t.grupo=grp;
+  setFaturas(d);
+}
+
+// ─── EXTRATO ───────────────────────────────────────────────────────────────────
+function renderExtrato() {
+  const meses = getMesesExtrato();
+  const sel = document.getElementById('ext-mes');
+  sel.innerHTML = meses.map(k=>{const[y,m]=k.split('-');return`<option value="${k}"${k===curMes?' selected':''}>${MESES[parseInt(m)-1]} ${y}</option>`;}).join('') || '<option>—</option>';
+  const mes = sel.value || (meses[0]||curMes);
+
+  const catSel = document.getElementById('ext-cat');
+  const catV = catSel.value;
+  catSel.innerHTML = '<option value="">Todas categorias</option>' + Object.keys(CATS).map(c=>`<option value="${c}"${c===catV?' selected':''}>${catLabel(c)}</option>`).join('');
+
+  const tipo = document.getElementById('ext-tipo').value;
+  const cat = catSel.value;
+  const busca = document.getElementById('ext-busca').value.toLowerCase();
+
+  let txns = getTxnsExtrato(mes).filter(t => {
+    if (tipo === 'entrada' && t.valor <= 0) return false;
+    if (tipo === 'saida'   && t.valor >= 0) return false;
+    if (cat && t.cat !== cat) return false;
+    if (busca && !(t.descricao_limpa||t.descricao).toLowerCase().includes(busca) && !(t.subcategoria||'').toLowerCase().includes(busca)) return false;
+    return true;
+  });
+
+  const empty = document.getElementById('ext-empty'), wrap = document.getElementById('ext-wrap');
+  if (!meses.length) { empty.style.display='block'; wrap.style.display='none'; return; }
+  if (!txns.length)  { empty.style.display='block'; wrap.style.display='none'; return; }
+  empty.style.display='none'; wrap.style.display='block';
+
+  const allSubs = getAllSubs();
+  document.getElementById('ext-tbody').innerHTML = txns.map(t => `<tr>
+    <td class="td-mono" style="font-size:10px;color:var(--txt3)">${t.data}</td>
+    <td style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${t.descricao}">${t.descricao_limpa||t.descricao}</td>
+    <td style="max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--txt3);font-size:11px" title="${t.origem||''}">${t.origem||'—'}</td>
+    <td><select style="font-size:10px;padding:2px 6px;border-color:${catCor(t.cat)}33" onchange="editTxnExtrato('${mes}',${t.id},this.value)">${allSubs.map(s=>`<option${s===t.subcategoria?' selected':''}>${s}</option>`).join('')}</select></td>
+    <td>${catBadge(t.cat)}</td>
+    <td class="td-mono" style="text-align:right;font-weight:500;color:${t.valor>0?'var(--grn)':'var(--red)'}">${t.valor>0?'+':''}${BRL(t.valor)}</td>
+  </tr>`).join('');
+
+  const entrada = txns.filter(t=>t.valor>0).reduce((s,t)=>s+t.valor,0);
+  const saida   = txns.filter(t=>t.valor<0).reduce((s,t)=>s+Math.abs(t.valor),0);
+  const saldo   = entrada - saida;
+  document.getElementById('ext-count').textContent = txns.length + ' lançamentos';
+  document.getElementById('ext-in').textContent    = BRL(entrada);
+  document.getElementById('ext-out').textContent   = BRL(saida);
+  document.getElementById('ext-saldo').textContent = BRL(saldo);
+  document.getElementById('ext-saldo').style.color = saldo >= 0 ? 'var(--grn)' : 'var(--red)';
+}
+
+function editTxnExtrato(mes, id, sub) {
+  const d = getExtratos(); if (!d[mes]) return;
+  const t = d[mes].find(t=>t.id===id); if (!t) return;
+  const {cat,grp} = subToCat(sub); t.subcategoria=sub; t.cat=cat; t.grupo=grp;
+  setExtratos(d);
 }
 
 // ─── DRE ───────────────────────────────────────────────────────────────────────
 function saveReceita() {
   const v = parseFloat(document.getElementById('receita-input').value) || 0;
-  setReceita(curMes, v);
+  setReceitaLS(curMes, v);
 }
 
 function renderDRE() {
-  const meses = getMeses();
+  const meses = getMesesAll();
   if (!meses.length) { document.getElementById('dre-empty').style.display='block'; document.getElementById('dre-content').innerHTML=''; return; }
-  if (!getTxns(curMes).length && meses.length) curMes = meses[0];
+  if (!meses.includes(curMes)) curMes = meses[0];
   document.getElementById('dre-empty').style.display='none';
   renderPills('dre-pills','renderDRE');
 
-  const rec = getReceita(curMes);
+  const tot = calcTotais(curMes);
+  // Auto-preenche receita do extrato se existir
+  const recAutoExtrato = tot.receita;
+  const recManual = getReceita(curMes);
+  const rec = recManual > 0 ? recManual : recAutoExtrato;
+
   const inp = document.getElementById('receita-input');
   if (inp && !inp.value && rec > 0) inp.value = rec;
+  const hint = document.getElementById('dre-rec-hint');
+  if (hint) hint.textContent = recAutoExtrato > 0 ? `✓ Salário detectado no extrato: ${BRL(recAutoExtrato)} — você pode ajustar` : 'Informe a receita líquida para calcular os percentuais';
 
   const [y,m] = curMes.split('-');
-  document.getElementById('receita-ref').textContent = MESES[parseInt(m)-1] + ' ' + y;
+  document.getElementById('receita-ref').textContent = MESES[parseInt(m)-1]+' '+y;
 
-  const txns = getTxns(curMes);
   const metas = getMetas();
-  const tot = calcTotais(curMes);
-  const invTotal = tot.invPessoal + tot.invFin + tot.planos + tot.prev;
-
-  function pct(v) { return rec > 0 ? (v/rec*100).toFixed(1) + '%' : '—'; }
+  function pct(v) { return rec>0 ? (v/rec*100).toFixed(1)+'%' : '—'; }
   function metaBar(v, metaPct) {
-    const metaV = rec > 0 ? rec * metaPct / 100 : 0;
-    const ratio = metaV > 0 ? Math.min(v / metaV, 1.5) : 0;
-    const over = v > metaV && metaV > 0;
-    const cor = over ? 'var(--red)' : 'var(--grn)';
+    const metaV = rec>0 ? rec*metaPct/100 : 0;
+    const ratio = metaV>0 ? Math.min(v/metaV,1.5) : 0;
+    const over  = v > metaV && metaV > 0;
+    const cor   = over ? 'var(--red)' : 'var(--grn)';
     return `<div style="display:flex;align-items:center;gap:8px">
       <div class="progress"><div class="progress-fill" style="width:${Math.min(ratio*100,100)}%;background:${cor}"></div></div>
-      <span class="dre-meta">${pct(v)} ${metaPct > 0 ? `/ meta ${metaPct}%` : ''}</span>
+      <span class="dre-meta">${pct(v)} ${metaPct>0?`/ meta ${metaPct}%`:''}</span>
     </div>`;
   }
+
+  const fat = getTxnsFatura(curMes);
+  const ext = getTxnsExtrato(curMes);
 
   let html = `<div style="font-family:var(--mono);font-size:9px;color:var(--txt3);letter-spacing:1px;text-transform:uppercase;margin-bottom:10px">DRE — ${MESES[parseInt(m)-1]} ${y}</div>`;
 
@@ -665,13 +755,13 @@ function renderDRE() {
   html += `<div class="card" style="padding:0;overflow:hidden;margin-bottom:8px">
     <div class="dre-row">
       <span class="dre-label bold" style="color:var(--grn)">(+) RECEITA LÍQUIDA</span>
-      <span class="dre-val bold" style="color:var(--grn)">${rec > 0 ? BRL(rec) : 'Informe acima'}</span>
+      <span class="dre-val bold" style="color:var(--grn)">${rec>0?BRL(rec):'Informe acima'}</span>
     </div>
   </div>`;
 
-  // DESPESAS — por grupo
+  // DESPESAS por grupo (fatura + extrato juntos)
   const despGrupos = {};
-  txns.filter(t=>t.cat==='DESPESA').forEach(t => {
+  [...fat,...ext].filter(t=>t.cat==='DESPESA').forEach(t => {
     if (!despGrupos[t.grupo]) despGrupos[t.grupo] = [];
     despGrupos[t.grupo].push(t);
   });
@@ -680,21 +770,18 @@ function renderDRE() {
     html += `<div class="card" style="padding:0;overflow:hidden;margin-bottom:8px">
       <div class="dre-row header">
         <span class="dre-label bold" style="color:var(--red)">(-) DESPESAS TOTAIS</span>
-        <div class="dre-meta-wrap">
-          ${metaBar(tot.despTotal, metas.despesas)}
-          <span class="dre-val bold" style="color:var(--red)">${BRL(tot.despTotal)}</span>
-        </div>
+        <div class="dre-meta-wrap">${metaBar(tot.despTotal,metas.despesas)}<span class="dre-val bold" style="color:var(--red)">${BRL(tot.despTotal)}</span></div>
       </div>`;
-    Object.entries(despGrupos).forEach(([grp, items]) => {
-      const gTotal = items.reduce((s,t)=>s+t.valor,0);
+    Object.entries(despGrupos).forEach(([grp,items]) => {
+      const gTotal = items.reduce((s,t)=>s+Math.abs(t.valor),0);
       const subTotais = {};
-      items.forEach(t => { subTotais[t.subcategoria] = (subTotais[t.subcategoria]||0)+t.valor; });
+      items.forEach(t => { subTotais[t.subcategoria]=(subTotais[t.subcategoria]||0)+Math.abs(t.valor); });
       html += `<div class="dre-row" style="cursor:pointer" onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display==='none'?'block':'none'">
-        <span class="dre-label" style="display:flex;align-items:center;gap:7px"><span style="width:5px;height:5px;border-radius:50%;background:var(--red);display:inline-block;flex-shrink:0"></span>${grp} <span style="font-size:10px;color:var(--txt3)">▸</span></span>
+        <span class="dre-label" style="display:flex;align-items:center;gap:7px"><span style="width:5px;height:5px;border-radius:50%;background:var(--red);display:inline-block;flex-shrink:0"></span>${grp}<span style="font-size:10px;color:var(--txt3)">▸</span></span>
         <span class="dre-val">${BRL(gTotal)}</span>
       </div>
       <div style="display:none;background:#090909">
-        ${Object.entries(subTotais).map(([sub,v]) => `<div class="dre-row sub"><span class="dre-label" style="color:var(--txt3)">${sub}</span><span class="dre-val" style="color:var(--txt3)">${BRL(v)}</span></div>`).join('')}
+        ${Object.entries(subTotais).map(([sub,v])=>`<div class="dre-row sub"><span class="dre-label" style="color:var(--txt3)">${sub}</span><span class="dre-val" style="color:var(--txt3)">${BRL(v)}</span></div>`).join('')}
       </div>`;
     });
     html += `</div>`;
@@ -707,33 +794,29 @@ function renderDRE() {
     <span class="td-mono" style="font-size:12px;color:${resAntes>=0?'var(--grn)':'var(--red)'};font-weight:600">${rec>0?BRL(Math.abs(resAntes)):'—'}</span>
   </div>`;
 
-  // Blocos de investimento
+  // BLOCOS DE INVESTIMENTO
   const invBlocks = [
-    {label:'INVESTIMENTO PESSOAL', cat:'INVESTIMENTO_PESSOAL', total:tot.invPessoal, meta:metas.invPessoal, cor:'#2050a0'},
-    {label:'INVESTIMENTO FINANCEIRO', cat:'INVESTIMENTO_FINANCEIRO', total:tot.invFin, meta:metas.invFin, cor:'#107060'},
-    {label:'PLANOS PESSOAIS', cat:'PLANOS_PESSOAIS', total:tot.planos, meta:metas.planos, cor:'#906010'},
-    {label:'PREVIDÊNCIA', cat:'PREVIDENCIA', total:tot.prev, meta:metas.prev, cor:'#107060'},
+    {label:'INVESTIMENTO PESSOAL',    cat:'INVESTIMENTO_PESSOAL',    total:tot.invPessoal, meta:metas.invPessoal, cor:'#2050a0'},
+    {label:'INVESTIMENTO FINANCEIRO', cat:'INVESTIMENTO_FINANCEIRO',  total:tot.invFin,     meta:metas.invFin,     cor:'#107060'},
+    {label:'PLANOS PESSOAIS',         cat:'PLANOS_PESSOAIS',          total:tot.planos,     meta:metas.planos,     cor:'#906010'},
+    {label:'PREVIDÊNCIA',             cat:'PREVIDENCIA',              total:tot.prev,       meta:metas.prev,       cor:'#107060'},
   ];
-
   invBlocks.forEach(b => {
     if (b.total <= 0) return;
-    const items = txns.filter(t=>t.cat===b.cat);
+    const items = [...fat,...ext].filter(t=>t.cat===b.cat);
     const subTotais = {};
-    items.forEach(t => { subTotais[t.subcategoria] = (subTotais[t.subcategoria]||0)+t.valor; });
+    items.forEach(t => { subTotais[t.subcategoria]=(subTotais[t.subcategoria]||0)+Math.abs(t.valor); });
     html += `<div class="card" style="padding:0;overflow:hidden;margin-bottom:8px">
       <div class="dre-row header">
         <span class="dre-label bold" style="color:${b.cor}">(-) ${b.label}</span>
-        <div class="dre-meta-wrap">
-          ${metaBar(b.total, b.meta)}
-          <span class="dre-val bold" style="color:${b.cor}">${BRL(b.total)}</span>
-        </div>
+        <div class="dre-meta-wrap">${metaBar(b.total,b.meta)}<span class="dre-val bold" style="color:${b.cor}">${BRL(b.total)}</span></div>
       </div>
-      ${Object.entries(subTotais).map(([sub,v]) => `<div class="dre-row sub"><span class="dre-label" style="color:var(--txt3)">${sub}</span><span class="dre-val" style="color:var(--txt3)">${BRL(v)}</span></div>`).join('')}
+      ${Object.entries(subTotais).map(([sub,v])=>`<div class="dre-row sub"><span class="dre-label" style="color:var(--txt3)">${sub}</span><span class="dre-val" style="color:var(--txt3)">${BRL(v)}</span></div>`).join('')}
     </div>`;
   });
 
-  // Resultado final
-  const resFinal = rec - tot.despTotal - invTotal;
+  // RESULTADO FINAL
+  const resFinal = rec - tot.despTotal - tot.invTotal;
   html += `<div class="card" style="padding:0;overflow:hidden;margin-top:4px">
     <div class="dre-row result">
       <span class="dre-label bold" style="font-size:13px;letter-spacing:.5px">= RESULTADO LÍQUIDO</span>
@@ -744,258 +827,362 @@ function renderDRE() {
   document.getElementById('dre-content').innerHTML = html;
 }
 
-// ─── IMPORTAR ──────────────────────────────────────────────────────────────────
+// ─── IMPORTAR — FATURA (PDF) ───────────────────────────────────────────────────
 function initImport() {
-  const sel = document.getElementById('imp-mes');
   const now = new Date();
-  sel.innerHTML = '';
-  for (let i = 0; i < 12; i++) {
-    const d = new Date(now.getFullYear(), now.getMonth()-i, 1);
-    const k = MK(d.getFullYear(), d.getMonth()+1);
-    sel.innerHTML += `<option value="${k}">${MESES[d.getMonth()]} ${d.getFullYear()}</option>`;
+  ['fat','ext'].forEach(k => {
+    const sel = document.getElementById('imp-mes-'+k); sel.innerHTML = '';
+    for (let i=0;i<12;i++) {
+      const d = new Date(now.getFullYear(),now.getMonth()-i,1);
+      const key = MK(d.getFullYear(),d.getMonth()+1);
+      sel.innerHTML += `<option value="${key}">${MESES[d.getMonth()]} ${d.getFullYear()}</option>`;
+    }
+  });
+  // Fatura PDF
+  const inpFat = document.getElementById('inp-fat');
+  if (!inpFat._init) {
+    inpFat._init = true;
+    inpFat.addEventListener('change', () => { if (inpFat.files[0]) setPDF(inpFat.files[0]); });
+    const zf = document.getElementById('zone-fat');
+    zf.addEventListener('dragover', e => { e.preventDefault(); zf.classList.add('drag'); });
+    zf.addEventListener('dragleave', () => zf.classList.remove('drag'));
+    zf.addEventListener('drop', e => { e.preventDefault(); zf.classList.remove('drag'); if (e.dataTransfer.files[0]) setPDF(e.dataTransfer.files[0]); });
   }
-
-  const zone = document.getElementById('upload-zone');
-  const inp = document.getElementById('pdf-input');
-  if (!inp._init) {
-    inp._init = true;
-    inp.addEventListener('change', () => { if (inp.files[0]) setPDF(inp.files[0]); });
-    zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('drag'); });
-    zone.addEventListener('dragleave', () => zone.classList.remove('drag'));
-    zone.addEventListener('drop', e => { e.preventDefault(); zone.classList.remove('drag'); if (e.dataTransfer.files[0]) setPDF(e.dataTransfer.files[0]); });
+  // Extrato CSV
+  const inpExt = document.getElementById('inp-ext');
+  if (!inpExt._init) {
+    inpExt._init = true;
+    inpExt.addEventListener('change', () => { if (inpExt.files[0]) setCSV(inpExt.files[0]); });
+    const ze = document.getElementById('zone-ext');
+    ze.addEventListener('dragover', e => { e.preventDefault(); ze.classList.add('drag'); });
+    ze.addEventListener('dragleave', () => ze.classList.remove('drag'));
+    ze.addEventListener('drop', e => { e.preventDefault(); ze.classList.remove('drag'); if (e.dataTransfer.files[0]) setCSV(e.dataTransfer.files[0]); });
   }
 }
 
 function setPDF(f) {
   pdfFile = f;
-  document.getElementById('upload-label').textContent = '✓ ' + f.name;
-  document.getElementById('upload-label').style.color = 'var(--grn)';
-  document.getElementById('upload-zone').classList.add('loaded');
+  document.getElementById('lbl-fat').textContent = '✓ ' + f.name;
+  document.getElementById('lbl-fat').style.color = 'var(--grn)';
+  document.getElementById('zone-fat').classList.add('loaded');
+}
+
+function setCSV(f) {
+  csvFile = f;
+  document.getElementById('lbl-ext').textContent = '✓ ' + f.name;
+  document.getElementById('lbl-ext').style.color = 'var(--grn)';
+  document.getElementById('zone-ext').classList.add('loaded');
 }
 
 async function extractPDFText(f) {
   const ab = await f.arrayBuffer();
-  const pdf = await pdfjsLib.getDocument({data: ab}).promise;
+  const pdf = await pdfjsLib.getDocument({data:ab}).promise;
   let text = '';
-  for (let i = 1; i <= pdf.numPages; i++) {
+  for (let i=1; i<=pdf.numPages; i++) {
     const pg = await pdf.getPage(i);
     const ct = await pg.getTextContent();
-    text += ct.items.map(x => x.str).join(' ') + '\n';
+    text += ct.items.map(x=>x.str).join(' ') + '\n';
   }
   return text;
 }
 
-async function processar() {
-  if (!pdfFile) { alert('Selecione o PDF da fatura Nubank.'); return; }
-  document.getElementById('proc-wrap').style.display = 'block';
-  document.getElementById('rev-wrap').style.display = 'none';
-  document.getElementById('proc-err').style.display = 'none';
-  document.getElementById('btn-voltar').style.display = 'none';
-
+async function processarFatura() {
+  if (!pdfFile) { alert('Selecione o PDF da fatura.'); return; }
+  document.getElementById('proc-fat-wrap').style.display = 'block';
+  document.getElementById('rev-fat-wrap').style.display  = 'none';
+  document.getElementById('proc-fat-err').style.display  = 'none';
+  document.getElementById('btn-fat-voltar').style.display = 'none';
   try {
-    document.getElementById('proc-msg').textContent = 'Extraindo texto do PDF...';
+    document.getElementById('proc-fat-msg').textContent = 'Extraindo texto do PDF...';
     const pdfText = await extractPDFText(pdfFile);
+    document.getElementById('proc-fat-msg').textContent = 'Claude categorizando...';
 
-    document.getElementById('proc-msg').textContent = 'Claude categorizando transações...';
+    const mesRef = document.getElementById('imp-mes-fat').value;
+    const [y,m] = mesRef.split('-');
+    const vencimento = `19/${String(m).padStart(2,'0')}/${y}`;
 
-    const dictStr = buildDictString();
-    const mesRef = document.getElementById('imp-mes').value;
-    const [y, m] = mesRef.split('-');
-    const vencimento = `19/${String(m).padStart(2,'0')}/${y}`; // data de pagamento padrão = vencimento
-
-    const prompt = `Você é especialista em finanças pessoais brasileiras. Analise esta fatura de cartão Nubank e extraia TODAS as transações de compra.
+    const prompt = `Analise esta fatura Nubank e extraia TODAS as transações de compra.
 
 REGRAS:
-- Ignore "Pagamento em [data]" (pagamentos recebidos) e "Saldo restante da fatura anterior"
-- Para parcelamentos, extraia o valor da parcela (não o total)
-- data_competencia = data em que a compra aparece na fatura (ex: "10 DEZ" → "10/12/2025")
-- data_pagamento = data de vencimento da fatura (use: ${vencimento})
-- Para "Parcela X/Y", extraia o campo parcela como "X/Y"
+- Ignore "Pagamento em [data]" e "Saldo restante da fatura anterior"
+- data_competencia = data da compra na fatura (ex: "10 DEZ" → "10/12/2025", ano é ${parseInt(y)})
+- data_pagamento = ${vencimento} (vencimento)
+- parcela: se tiver "Parcela X/Y" → campo "X/Y"
 
-MAPEAMENTOS ESPECÍFICOS:
-- Mp *Giovaniburgue → subcategoria:"Restaurantes", cat:DESPESA, grupo:Alimentação
-- Cafe Campos Altos → subcategoria:"Restaurantes", cat:DESPESA, grupo:Alimentação
-- Padaria la Panetteria → subcategoria:"Padaria", cat:DESPESA, grupo:Alimentação
-- Supermercado e Padaria → subcategoria:"Supermercado", cat:DESPESA, grupo:Alimentação
-- Distribuidora da India → subcategoria:"Restaurantes", cat:DESPESA, grupo:Alimentação
-- Mp *Emporiolucian → subcategoria:"Restaurantes", cat:DESPESA, grupo:Alimentação
-- Mp *Keyllany → subcategoria:"Restaurantes", cat:DESPESA, grupo:Alimentação
-- Valori *Walmor Grill → subcategoria:"Restaurantes", cat:DESPESA, grupo:Alimentação
-- Deltaexpresso → subcategoria:"Ônibus", cat:DESPESA, grupo:Transporte
-- Tim* / TIM* → subcategoria:"TIM", cat:DESPESA, grupo:Pessoal
-- AZUL LINHAS AEREAS → subcategoria:"Viagem", cat:DESPESA, grupo:Lazer
-- Insider Come*Insiderst → subcategoria:"Cursos", cat:INVESTIMENTO_PESSOAL, grupo:Investimento Pessoal
-- Ec *Truepaleo → subcategoria:"Outros Pessoal", cat:DESPESA, grupo:Pessoal
-- Netflix/Spotify/Disney/YouTube/ChatGPT/OpenAI → subcategoria:"Streaming", cat:DESPESA, grupo:Lazer
-- iFood/IFD*/Uber Eats/Rappi → subcategoria:"Outros Alimentação", cat:DESPESA, grupo:Alimentação
-- UBER/Uber* → subcategoria:"Uber", cat:DESPESA, grupo:Transporte
-- Gympass/Wellhub → subcategoria:"Academia", cat:DESPESA, grupo:Pessoal
-- Barbearia → subcategoria:"Barbearia", cat:DESPESA, grupo:Pessoal
-- Caixa Instantânea → subcategoria:"Loteria", cat:DESPESA, grupo:Pessoal
-- PADRE PAULO RICARDO → subcategoria:"Padre Paulo Ricardo", cat:INVESTIMENTO_PESSOAL, grupo:Investimento Pessoal
-- GUILHERME FREIRE → subcategoria:"Guilherme Freire", cat:INVESTIMENTO_PESSOAL, grupo:Investimento Pessoal
-- FUMEC/Faculdade/Universidade → subcategoria:"Faculdade", cat:INVESTIMENTO_PESSOAL, grupo:Investimento Pessoal
+MAPEAMENTOS:
+- Mp *Giovaniburgue / Cafe Campos Altos / Distribuidora da India / Mp *Emporiolucian / Mp *Keyllany / Valori *Walmor Grill → sub:"Restaurantes", cat:DESPESA, grupo:Alimentação
+- Padaria la Panetteria → sub:"Padaria", cat:DESPESA, grupo:Alimentação
+- Supermercado e Padaria → sub:"Supermercado", cat:DESPESA, grupo:Alimentação
+- Deltaexpresso / BH Bus / Recarga BH Bus → sub:"Ônibus", cat:DESPESA, grupo:Transporte
+- Tim* / TIM* → sub:"TIM", cat:DESPESA, grupo:Pessoal
+- AZUL LINHAS AEREAS → sub:"Viagem", cat:DESPESA, grupo:Lazer
+- Insider Come*Insiderst → sub:"Cursos", cat:INVESTIMENTO_PESSOAL, grupo:Investimento Pessoal
+- Ec *Truepaleo → sub:"Outros Pessoal", cat:DESPESA, grupo:Pessoal
+- Netflix/Spotify/Disney/YouTube/ChatGPT/OpenAI/AmazonPrime → sub:"Streaming", cat:DESPESA, grupo:Lazer
+- iFood/IFD*/Uber Eats/Rappi → sub:"Outros Alimentação", cat:DESPESA, grupo:Alimentação
+- UBER/Uber* → sub:"Uber", cat:DESPESA, grupo:Transporte
+- Gympass/Wellhub → sub:"Academia", cat:INVESTIMENTO_PESSOAL, grupo:Investimento Pessoal
+- Barbearia → sub:"Barbearia", cat:DESPESA, grupo:Pessoal
+- Caixa Instantânea → sub:"Loteria", cat:DESPESA, grupo:Pessoal
+- PADRE PAULO RICARDO → sub:"Padre Paulo Ricardo", cat:INVESTIMENTO_PESSOAL, grupo:Investimento Pessoal
+- GUILHERME FREIRE → sub:"Guilherme Freire", cat:INVESTIMENTO_PESSOAL, grupo:Investimento Pessoal
+- FUMEC / Faculdade / Universidade → sub:"Faculdade", cat:INVESTIMENTO_PESSOAL, grupo:Investimento Pessoal
 
-DICIONÁRIO COMPLETO (para tudo que não está acima):
-${dictStr}
+DICIONÁRIO:
+${buildDictString()}
 
 FATURA:
-${pdfText.substring(0, 18000)}
+${pdfText.substring(0,16000)}
 
-RETORNE APENAS JSON VÁLIDO, sem texto antes ou depois:
-{
-  "vencimento": "DD/MM/AAAA",
-  "total": 000.00,
-  "transacoes": [
-    {
-      "data_competencia": "DD/MM/AAAA",
-      "data_pagamento": "DD/MM/AAAA",
-      "descricao": "nome do estabelecimento",
-      "subcategoria": "exatamente como no dicionário",
-      "cat": "DESPESA",
-      "grupo": "Alimentação",
-      "valor": 13.00,
-      "parcela": "2/3"
-    }
-  ]
-}`;
+RETORNE APENAS JSON:
+{"vencimento":"DD/MM/AAAA","total":0.00,"transacoes":[{"data_competencia":"DD/MM/AAAA","data_pagamento":"DD/MM/AAAA","descricao":"nome","subcategoria":"sub","cat":"DESPESA","grupo":"Alimentação","valor":0.00,"parcela":""}]}`;
 
-    const res = await fetch('/api/claude', {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 8000,
-        messages: [{role: 'user', content: prompt}]
-      })
-    });
-
-    if (!res.ok) { const e = await res.text(); throw new Error('API ' + res.status + ': ' + e); }
+    const res = await fetch('/api/claude',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:8000,messages:[{role:'user',content:prompt}]})});
+    if (!res.ok) throw new Error('API ' + res.status + ': ' + await res.text());
     const data = await res.json();
-    if (data.error) throw new Error(data.error.message || JSON.stringify(data.error));
-    const txt = data.content.map(b => b.text || '').join('');
+    if (data.error) throw new Error(data.error.message||JSON.stringify(data.error));
+    const txt = data.content.map(b=>b.text||'').join('');
     const json = JSON.parse(txt.replace(/```json|```/g,'').trim());
 
-    // Montar transações
-    pendingTxns = json.transacoes.map((t, i) => ({
-      id: i,
-      data_competencia: t.data_competencia || '',
-      data_pagamento: t.data_pagamento || json.vencimento || vencimento,
-      descricao: t.descricao || '',
-      subcategoria: t.subcategoria || 'Outros Pessoal',
-      cat: t.cat || 'DESPESA',
-      grupo: t.grupo || 'Pessoal',
-      valor: parseFloat(t.valor) || 0,
-      parcela: t.parcela || '',
-    })).filter(t => t.valor > 0 && t.descricao);
+    pendingFatura = json.transacoes.map((t,i)=>({
+      id:i, data_competencia:t.data_competencia||'', data_pagamento:t.data_pagamento||vencimento,
+      descricao:t.descricao||'', subcategoria:t.subcategoria||'Outros Pessoal',
+      cat:t.cat||'DESPESA', grupo:t.grupo||'Pessoal', valor:parseFloat(t.valor)||0, parcela:t.parcela||'',
+    })).filter(t=>t.valor>0&&t.descricao);
 
-    document.getElementById('proc-wrap').style.display = 'none';
-    showReview(json.vencimento || vencimento);
-
+    document.getElementById('proc-fat-wrap').style.display = 'none';
+    showRevFatura(json.vencimento||vencimento);
   } catch(e) {
-    document.getElementById('proc-msg').textContent = '';
-    document.getElementById('proc-err').textContent = 'Erro: ' + e.message;
-    document.getElementById('proc-err').style.display = 'block';
-    document.getElementById('btn-voltar').style.display = 'inline-block';
+    document.getElementById('proc-fat-msg').textContent = '';
+    document.getElementById('proc-fat-err').textContent = 'Erro: '+e.message;
+    document.getElementById('proc-fat-err').style.display = 'block';
+    document.getElementById('btn-fat-voltar').style.display = 'inline-block';
   }
 }
 
-function showReview(venc) {
-  const [y,m] = document.getElementById('imp-mes').value.split('-');
-  document.getElementById('rev-title').textContent = 'Revisar — ' + MESES[parseInt(m)-1] + ' ' + y;
-  document.getElementById('rev-sub').textContent = pendingTxns.length + ' transações extraídas • Vencimento: ' + venc;
+function showRevFatura(venc) {
+  const [y,m] = document.getElementById('imp-mes-fat').value.split('-');
+  document.getElementById('rev-fat-title').textContent = 'Revisar — '+MESES[parseInt(m)-1]+' '+y;
+  document.getElementById('rev-fat-sub').textContent   = pendingFatura.length+' transações • Vencimento: '+venc;
+  document.getElementById('rev-fat-total').textContent = BRL(pendingFatura.reduce((s,t)=>s+t.valor,0));
 
-  const total = pendingTxns.reduce((s,t) => s+t.valor, 0);
-  document.getElementById('rev-total').textContent = BRL(total);
-
-  const allSubs = [];
-  for (const [cat, data] of Object.entries(CATS)) for (const subs of Object.values(data.grupos)) allSubs.push(...subs);
-
-  document.getElementById('rev-tbody').innerHTML = pendingTxns.map(t => `
-    <tr>
-      <td class="td-mono" style="font-size:10px;color:var(--txt3)">${t.data_competencia}</td>
-      <td style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${t.descricao}">${t.descricao}</td>
-      <td>
-        <select style="font-size:10px;padding:2px 6px;border-color:${catCor(t.cat)}33" onchange="editPending(${t.id},this.value)">
-          ${allSubs.map(s => `<option${s===t.subcategoria?' selected':''}>${s}</option>`).join('')}
-        </select>
-      </td>
-      <td>${catBadge(t.cat)}</td>
-      <td class="td-mono" style="font-size:10px;color:var(--txt3)">${t.parcela||'—'}</td>
-      <td class="td-mono td-red" style="text-align:right;font-size:11px">${BRL(t.valor)}</td>
-    </tr>`).join('');
-
-  document.getElementById('rev-wrap').style.display = 'block';
+  const allSubs = getAllSubs();
+  document.getElementById('rev-fat-tbody').innerHTML = pendingFatura.map(t=>`<tr>
+    <td class="td-mono" style="font-size:10px;color:var(--txt3)">${t.data_competencia}</td>
+    <td style="max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${t.descricao}">${t.descricao}</td>
+    <td><select style="font-size:10px;padding:2px 6px;border-color:${catCor(t.cat)}33" onchange="editPendFat(${t.id},this.value)">${allSubs.map(s=>`<option${s===t.subcategoria?' selected':''}>${s}</option>`).join('')}</select></td>
+    <td>${catBadge(t.cat)}</td>
+    <td class="td-mono" style="font-size:10px;color:var(--txt3)">${t.parcela||'—'}</td>
+    <td class="td-mono td-red" style="text-align:right">${BRL(t.valor)}</td>
+  </tr>`).join('');
+  document.getElementById('rev-fat-wrap').style.display = 'block';
 }
 
-function editPending(id, sub) {
-  const t = pendingTxns.find(t => t.id === id); if (!t) return;
-  for (const [cat, data] of Object.entries(CATS)) {
-    for (const [grp, subs] of Object.entries(data.grupos)) {
-      if (subs.includes(sub)) { t.subcategoria = sub; t.cat = cat; t.grupo = grp; return; }
-    }
+function editPendFat(id, sub) {
+  const t = pendingFatura.find(t=>t.id===id); if(!t) return;
+  const {cat,grp} = subToCat(sub); t.subcategoria=sub; t.cat=cat; t.grupo=grp;
+}
+
+function salvarFatura() {
+  const key = document.getElementById('imp-mes-fat').value;
+  const d = getFaturas(); d[key] = pendingFatura; setFaturas(d);
+  curMes = key; resetFatura(); goTo('fatura');
+}
+
+function resetFatura() {
+  pdfFile = null; pendingFatura = [];
+  document.getElementById('lbl-fat').textContent = 'Arraste o PDF da fatura ou clique';
+  document.getElementById('lbl-fat').style.color = '';
+  document.getElementById('zone-fat').classList.remove('loaded');
+  document.getElementById('inp-fat').value = ''; document.getElementById('inp-fat')._init = false;
+  document.getElementById('proc-fat-wrap').style.display = 'none';
+  document.getElementById('rev-fat-wrap').style.display  = 'none';
+}
+
+// ─── IMPORTAR — EXTRATO (CSV) ──────────────────────────────────────────────────
+async function processarExtrato() {
+  if (!csvFile) { alert('Selecione o CSV do extrato.'); return; }
+  document.getElementById('proc-ext-wrap').style.display = 'block';
+  document.getElementById('rev-ext-wrap').style.display  = 'none';
+  document.getElementById('proc-ext-err').style.display  = 'none';
+  document.getElementById('btn-ext-voltar').style.display = 'none';
+  try {
+    document.getElementById('proc-ext-msg').textContent = 'Lendo CSV...';
+    const rows = await parseCSV(csvFile);
+
+    document.getElementById('proc-ext-msg').textContent = 'Claude categorizando extrato...';
+
+    const prompt = `Analise este extrato bancário Nubank e categorize cada transação.
+
+MAPEAMENTOS ESPECÍFICOS (use exatamente):
+- "Resgate RDB" → sub:"Resgate RDB", cat:TRANSFERENCIA, grupo:Transferência, descricao_limpa:"Resgate RDB", origem:""
+- "Aplicação RDB" → sub:"Aplicação RDB", cat:TRANSFERENCIA, grupo:Transferência, descricao_limpa:"Aplicação RDB", origem:""
+- "Transferência de saldo NuInvest" → sub:"NuInvest", cat:TRANSFERENCIA, grupo:Transferência, descricao_limpa:"NuInvest", origem:""
+- "Pagamento de fatura" → sub:"Pagamento Fatura", cat:TRANSFERENCIA, grupo:Transferência, descricao_limpa:"Pagamento Fatura", origem:""
+- "Compra de Ações - CMIG4" → sub:"CMIG4", cat:PREVIDENCIA, grupo:Previdência, descricao_limpa:"Compra CMIG4", origem:"NuInvest"
+- "Compra de Ações - PETR4" → sub:"PETR4", cat:PREVIDENCIA, grupo:Previdência, descricao_limpa:"Compra PETR4", origem:"NuInvest"
+- "Compra de Ações - JHSF3" → sub:"JHSF3", cat:PREVIDENCIA, grupo:Previdência, descricao_limpa:"Compra JHSF3", origem:"NuInvest"
+- "UNIVERSIDADE FUMEC" → sub:"Faculdade", cat:INVESTIMENTO_PESSOAL, grupo:Investimento Pessoal, descricao_limpa:"FUMEC — Faculdade", origem:"FUMEC"
+- "BARBEARIA DO RAPHA" → sub:"Barbearia", cat:DESPESA, grupo:Pessoal, descricao_limpa:"Barbearia do Rapha", origem:"Barbearia do Rapha"
+- "Giovani de Medici" → sub:"Restaurantes", cat:DESPESA, grupo:Alimentação, descricao_limpa:"Giovaniburgue", origem:"Giovani de Medici"
+- "CAIXA INSTANTANEA" → sub:"Loteria", cat:DESPESA, grupo:Pessoal, descricao_limpa:"Loteria (Caixa Instantânea)", origem:"Caixa Instantânea"
+- "TRANSMED CLINICA" → sub:"Outros Transporte", cat:DESPESA, grupo:Transporte, descricao_limpa:"Exame CNH — Transmed", origem:"Transmed"
+- "CENTRO DE FORMACAO DE CONDUTORES TRAFEGAR" → sub:"Outros Transporte", cat:DESPESA, grupo:Transporte, descricao_limpa:"CNH Moto — Trafegar", origem:"Trafegar"
+- "PAGAR.ME" ou "Pagar Me" ou "STONE" → sub:"Ônibus", cat:DESPESA, grupo:Transporte, descricao_limpa:"Crédito Ônibus", origem:"BH Bus"
+- "Igor Alexandre Barbosa" → sub:"Outros Saúde", cat:DESPESA, grupo:Saúde, descricao_limpa:"Óculos (parcelado)", origem:"Igor Alexandre"
+- "GABRIEL ESTEVAO CAMILO" → sub:"Futebol", cat:DESPESA, grupo:Lazer, descricao_limpa:"Pelada (futebol)", origem:"Gabriel Estevão"
+- "VITOR BIZZOTTO ALONGI" → sub:"Outros Lazer", cat:DESPESA, grupo:Lazer, descricao_limpa:"Outros Lazer", origem:"Vitor Bizzotto"
+- "FANTEC TECNOLOGIA" → sub:"Outros Pessoal", cat:DESPESA, grupo:Pessoal, descricao_limpa:"Fantec Tecnologia", origem:"Fantec"
+- "62.146.966 VICTOR BESSA" (conta PJ) → sub:"Salário", cat:RECEITA_LIQUIDA, grupo:Receita, descricao_limpa:"Salário (PJ)", origem:"Conta PJ"
+- Transferência recebida de "VICTOR BESSA" via Santander/Sicoob → sub:"Transferência entre contas", cat:TRANSFERENCIA, grupo:Transferência, descricao_limpa:"Transferência própria", origem:"Conta Santander"
+- Transferência enviada para "Victor Bessa" via Santander → sub:"Transferência entre contas", cat:TRANSFERENCIA, grupo:Transferência, descricao_limpa:"Transferência própria", origem:"Conta Santander"
+- "Paulo Eduardo" / "Henrique Faria" (valores pequenos recebidos) → sub:"Outros", cat:TRANSFERENCIA, grupo:Transferência, descricao_limpa:"Recebido de terceiro", origem:"nome da pessoa"
+
+DICIONÁRIO COMPLETO:
+${buildDictString()}
+
+TRANSAÇÕES:
+${JSON.stringify(rows.map(r=>({data:r.data,valor:r.valor,desc:r.descricao})))}
+
+RETORNE APENAS JSON:
+{"transacoes":[{"id":0,"data":"DD/MM/AAAA","valor":0.00,"descricao_limpa":"nome amigável","origem":"banco/pessoa","subcategoria":"sub","cat":"DESPESA","grupo":"Alimentação"}]}`;
+
+    const res = await fetch('/api/claude',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:8000,messages:[{role:'user',content:prompt}]})});
+    if (!res.ok) throw new Error('API '+res.status+': '+await res.text());
+    const data = await res.json();
+    if (data.error) throw new Error(data.error.message||JSON.stringify(data.error));
+    const txt = data.content.map(b=>b.text||'').join('');
+    const json = JSON.parse(txt.replace(/```json|```/g,'').trim());
+
+    // Combinar dados originais com categorização
+    pendingExtrato = json.transacoes.map((t,i)=>{
+      const orig = rows[t.id] || rows[i] || {};
+      return {
+        id: i,
+        data: t.data || orig.data || '',
+        descricao: orig.descricao || '',
+        descricao_limpa: t.descricao_limpa || orig.descricao || '',
+        origem: t.origem || '',
+        subcategoria: t.subcategoria || 'Outros',
+        cat: t.cat || 'TRANSFERENCIA',
+        grupo: t.grupo || 'Transferência',
+        valor: parseFloat(t.valor !== undefined ? t.valor : orig.valor) || 0,
+      };
+    }).filter(t => t.descricao);
+
+    document.getElementById('proc-ext-wrap').style.display = 'none';
+    showRevExtrato();
+  } catch(e) {
+    document.getElementById('proc-ext-msg').textContent = '';
+    document.getElementById('proc-ext-err').textContent = 'Erro: '+e.message;
+    document.getElementById('proc-ext-err').style.display = 'block';
+    document.getElementById('btn-ext-voltar').style.display = 'inline-block';
   }
 }
 
-function salvarMes() {
-  const key = document.getElementById('imp-mes').value;
-  const d = getData(); d[key] = pendingTxns; setData(d);
-  curMes = key;
-  resetImport();
-  goTo('lancamentos');
+function parseCSV(f) {
+  return new Promise((res,rej) => {
+    Papa.parse(f, {
+      header:true, skipEmptyLines:true,
+      complete: r => {
+        const rows = r.data.map((row,i) => ({
+          id: i,
+          data: row['Data'] || '',
+          valor: parseFloat(String(row['Valor']||'0').replace(',','.')),
+          identificador: row['Identificador'] || '',
+          descricao: row['Descrição'] || row['Descricao'] || '',
+        }));
+        res(rows);
+      },
+      error: rej
+    });
+  });
 }
 
-function resetImport() {
-  pdfFile = null;
-  pendingTxns = [];
-  document.getElementById('upload-label').textContent = 'Arraste o PDF da fatura ou clique para selecionar';
-  document.getElementById('upload-label').style.color = '';
-  document.getElementById('upload-zone').classList.remove('loaded');
-  document.getElementById('pdf-input').value = '';
-  document.getElementById('pdf-input')._init = false;
-  document.getElementById('proc-wrap').style.display = 'none';
-  document.getElementById('rev-wrap').style.display = 'none';
+function showRevExtrato() {
+  const [y,m] = document.getElementById('imp-mes-ext').value.split('-');
+  document.getElementById('rev-ext-title').textContent = 'Revisar — '+MESES[parseInt(m)-1]+' '+y;
+
+  const entrada = pendingExtrato.filter(t=>t.valor>0).reduce((s,t)=>s+t.valor,0);
+  const saida   = pendingExtrato.filter(t=>t.valor<0).reduce((s,t)=>s+Math.abs(t.valor),0);
+  document.getElementById('rev-ext-sub').textContent = pendingExtrato.length+' lançamentos';
+  document.getElementById('rev-ext-count').textContent = pendingExtrato.length+' lançamentos';
+  document.getElementById('rev-ext-in').textContent  = BRL(entrada);
+  document.getElementById('rev-ext-out').textContent = BRL(saida);
+
+  const allSubs = getAllSubs();
+  document.getElementById('rev-ext-tbody').innerHTML = pendingExtrato.map(t=>`<tr>
+    <td class="td-mono" style="font-size:10px;color:var(--txt3)">${t.data}</td>
+    <td style="max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${t.descricao}">${t.descricao_limpa||t.descricao}</td>
+    <td style="max-width:100px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:11px;color:var(--txt3)">${t.origem||'—'}</td>
+    <td><select style="font-size:10px;padding:2px 6px;border-color:${catCor(t.cat)}33" onchange="editPendExt(${t.id},this.value)">${allSubs.map(s=>`<option${s===t.subcategoria?' selected':''}>${s}</option>`).join('')}</select></td>
+    <td>${catBadge(t.cat)}</td>
+    <td class="td-mono" style="text-align:right;font-weight:500;color:${t.valor>0?'var(--grn)':'var(--red)'}">${t.valor>0?'+':''}${BRL(t.valor)}</td>
+  </tr>`).join('');
+  document.getElementById('rev-ext-wrap').style.display = 'block';
+}
+
+function editPendExt(id, sub) {
+  const t = pendingExtrato.find(t=>t.id===id); if(!t) return;
+  const {cat,grp} = subToCat(sub); t.subcategoria=sub; t.cat=cat; t.grupo=grp;
+}
+
+function salvarExtrato() {
+  const key = document.getElementById('imp-mes-ext').value;
+  const d = getExtratos(); d[key] = pendingExtrato; setExtratos(d);
+  // Auto-detectar salário e salvar como receita
+  const salario = pendingExtrato.filter(t=>t.cat==='RECEITA_LIQUIDA').reduce((s,t)=>s+(t.valor>0?t.valor:0),0);
+  if (salario > 0) setReceitaLS(key, salario);
+  curMes = key; resetExtrato(); goTo('extrato');
+}
+
+function resetExtrato() {
+  csvFile = null; pendingExtrato = [];
+  document.getElementById('lbl-ext').textContent = 'Arraste o CSV do extrato ou clique';
+  document.getElementById('lbl-ext').style.color = '';
+  document.getElementById('zone-ext').classList.remove('loaded');
+  document.getElementById('inp-ext').value = ''; document.getElementById('inp-ext')._init = false;
+  document.getElementById('proc-ext-wrap').style.display = 'none';
+  document.getElementById('rev-ext-wrap').style.display  = 'none';
 }
 
 // ─── CONFIG ────────────────────────────────────────────────────────────────────
 function initConfig() {
   const metas = getMetas();
   document.getElementById('metas-form').innerHTML = [
-    {k:'despesas', l:'Despesas totais'},
+    {k:'despesas',   l:'Despesas totais'},
     {k:'invPessoal', l:'Investimento Pessoal'},
-    {k:'invFin', l:'Investimento Financeiro'},
-    {k:'planos', l:'Planos Pessoais'},
-    {k:'prev', l:'Previdência'},
-  ].map(r => `
-    <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
-      <label style="font-size:11px;color:var(--txt2);width:200px;flex-shrink:0">${r.l}</label>
-      <input type="number" id="meta-${r.k}" value="${metas[r.k]}" min="0" max="100" style="width:70px">
-      <span style="font-size:10px;color:var(--txt3)">% da receita</span>
-    </div>`).join('');
+    {k:'invFin',     l:'Investimento Financeiro'},
+    {k:'planos',     l:'Planos Pessoais'},
+    {k:'prev',       l:'Previdência'},
+  ].map(r=>`<div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+    <label style="font-size:11px;color:var(--txt2);width:200px;flex-shrink:0">${r.l}</label>
+    <input type="number" id="meta-${r.k}" value="${metas[r.k]}" min="0" max="100" style="width:70px">
+    <span style="font-size:10px;color:var(--txt3)">% da receita</span>
+  </div>`).join('');
 
-  const mesesSalvos = getMeses();
-  document.getElementById('cfg-dados').textContent = mesesSalvos.length
-    ? mesesSalvos.length + ' meses salvos: ' + mesesSalvos.map(k=>{const[y,m]=k.split('-');return MESES[parseInt(m)-1].slice(0,3)+'/'+y.slice(2);}).join(', ')
-    : 'Nenhum dado salvo.';
+  const mf = getMesesFatura(), me = getMesesExtrato();
+  document.getElementById('cfg-dados').innerHTML =
+    `Faturas: ${mf.length ? mf.map(k=>{const[y,m]=k.split('-');return MESES[parseInt(m)-1].slice(0,3)+'/'+y.slice(2);}).join(', ') : 'nenhuma'}<br>
+     Extratos: ${me.length ? me.map(k=>{const[y,m]=k.split('-');return MESES[parseInt(m)-1].slice(0,3)+'/'+y.slice(2);}).join(', ') : 'nenhum'}`;
 }
 
 function salvarMetas() {
   setMetas({
-    despesas: +document.getElementById('meta-despesas').value || 50,
+    despesas:   +document.getElementById('meta-despesas').value   || 50,
     invPessoal: +document.getElementById('meta-invPessoal').value || 10,
-    invFin: +document.getElementById('meta-invFin').value || 10,
-    planos: +document.getElementById('meta-planos').value || 10,
-    prev: +document.getElementById('meta-prev').value || 10,
+    invFin:     +document.getElementById('meta-invFin').value     || 10,
+    planos:     +document.getElementById('meta-planos').value     || 10,
+    prev:       +document.getElementById('meta-prev').value       || 10,
   });
   alert('Metas salvas!');
 }
 
 function limparDados() {
   if (confirm('Apagar todos os dados?')) {
-    ['fc2_data','fc2_metas'].forEach(k => localStorage.removeItem(k));
-    getMeses().forEach(m => localStorage.removeItem('fc2_rec_'+m));
-    initMes();
-    goTo('dash');
+    ['fc2_fatura','fc2_extrato','fc2_metas'].forEach(k=>localStorage.removeItem(k));
+    getMesesAll().forEach(m=>localStorage.removeItem('fc2_rec_'+m));
+    initCurMes(); goTo('dash');
   }
 }
 
