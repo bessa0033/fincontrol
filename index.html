@@ -14,6 +14,7 @@
   --bg:#080808;--bg2:#0d0d0d;--border:#1c1c1c;--border2:#222;
   --txt:#c8c5be;--txt2:#555;--txt3:#2a2a2a;--white:#e8e5de;
   --red:#c04040;--grn:#2a7a50;--amber:#906010;
+  --nu:#6a50c0;--st:#c07010;
   --mono:'IBM Plex Mono',monospace;--sans:'IBM Plex Sans',sans-serif;
 }
 html,body{height:100%;background:var(--bg);color:var(--txt);font-family:var(--sans);font-size:13px}
@@ -21,22 +22,24 @@ html,body{height:100%;background:var(--bg);color:var(--txt);font-family:var(--sa
 @keyframes spin{to{transform:rotate(360deg)}}
 @keyframes fadeUp{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
 .app{display:flex;height:100vh;overflow:hidden}
-.sidebar{width:204px;flex-shrink:0;background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column}
+.sidebar{width:210px;flex-shrink:0;background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column}
 .main{flex:1;overflow-y:auto;min-width:0}
 .logo{padding:18px 16px 13px;border-bottom:1px solid var(--border)}
 .logo-n{font-family:var(--mono);font-size:13px;font-weight:600;color:var(--white);letter-spacing:.5px}
 .logo-s{font-size:9px;color:var(--txt3);letter-spacing:2px;text-transform:uppercase;margin-top:2px}
 .nav{flex:1;padding:8px;overflow-y:auto}
 .ns{font-family:var(--mono);font-size:8px;letter-spacing:1.5px;text-transform:uppercase;color:var(--txt3);padding:10px 10px 3px;margin-top:2px}
+.ns.nu{color:#6a50c044}
+.ns.st{color:#c0701044}
 .ni{display:flex;align-items:center;gap:9px;padding:7px 10px;border-radius:4px;cursor:pointer;color:var(--txt3);font-size:11px;font-weight:500;margin-bottom:1px;border:none;background:none;width:100%;text-align:left;transition:all .15s}
 .ni:hover{color:var(--txt2);background:#111}
 .ni.active{color:var(--white);background:#161616}
 .ni svg{width:13px;height:13px;flex-shrink:0;opacity:.5}
-.ni.active svg,.ni:hover svg{opacity:.8}
+.ni.active svg{opacity:1}
 .nav-bot{padding:8px;border-top:1px solid var(--border)}
 .topbar{display:flex;align-items:center;padding:11px 20px;border-bottom:1px solid var(--border);background:var(--bg);position:sticky;top:0;z-index:10;gap:10px;min-height:44px}
-.tb-title{font-family:var(--mono);font-size:12px;font-weight:600;color:var(--white)}
-.tb-sub{font-size:10px;color:var(--txt3);margin-left:6px}
+.tb-t{font-family:var(--mono);font-size:12px;font-weight:600;color:var(--white)}
+.tb-s{font-size:10px;color:var(--txt3);margin-left:6px}
 .tb-r{margin-left:auto;display:flex;gap:6px;align-items:center;flex-wrap:wrap}
 .page{display:none;animation:fadeUp .18s ease}
 .page.active{display:block}
@@ -75,7 +78,6 @@ select:focus,input:focus{border-color:#333}
 .aok{background:#0a140a;border:1px solid #102a10;color:#2a7a50}
 .ai{background:#0a0a14;border:1px solid #10102a;color:#4060b0}
 .empty{text-align:center;padding:44px 20px;color:var(--txt3);font-size:12px}
-/* DRE */
 .drow{display:flex;justify-content:space-between;align-items:center;padding:8px 14px;border-bottom:1px solid #0e0e0e}
 .drow:hover{background:#0a0a0a}
 .drow.hdr{background:#0a0a0a;border-bottom:1px solid var(--border);padding:10px 14px}
@@ -88,10 +90,6 @@ select:focus,input:focus{border-color:#333}
 .dmeta{font-size:10px;color:var(--txt3);font-family:var(--mono)}
 .prog{height:3px;background:#141414;border-radius:2px;width:70px;overflow:hidden;flex-shrink:0}
 .prog-f{height:100%;border-radius:2px;transition:width .4s}
-/* source tag */
-.src-nu{background:#6a50c018;color:#6a50c0}
-.src-st{background:#90601018;color:#906010}
-.src-cf{background:#38383818;color:#555}
 </style>
 </head>
 <body>
@@ -101,32 +99,29 @@ select:focus,input:focus{border-color:#333}
 <div class="sidebar">
   <div class="logo"><div class="logo-n">FinControl</div><div class="logo-s">Personal ERP</div></div>
   <nav class="nav">
-    <button class="ni active" onclick="goTo('dash')">
-      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="1" width="6" height="6" rx="1"/><rect x="9" y="1" width="6" height="6" rx="1"/><rect x="1" y="9" width="6" height="6" rx="1"/><rect x="9" y="9" width="6" height="6" rx="1"/></svg>Dashboard</button>
+    <button class="ni active" onclick="goTo('dash')"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="1" width="6" height="6" rx="1"/><rect x="9" y="1" width="6" height="6" rx="1"/><rect x="1" y="9" width="6" height="6" rx="1"/><rect x="9" y="9" width="6" height="6" rx="1"/></svg>Dashboard</button>
 
-    <div class="ns">Nubank</div>
-    <button class="ni" onclick="goTo('nu-cartao')">
-      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="4" width="14" height="9" rx="1"/><path d="M1 7h14"/></svg>Cartão</button>
-    <button class="ni" onclick="goTo('nu-extrato')">
-      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 4h12M2 8h12M2 12h8"/></svg>Extrato Conta</button>
-    <button class="ni" onclick="goTo('nu-fluxo')">
-      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 12L5 8l3 3 3-5 3 2"/></svg>Fluxo de Caixa</button>
-    <button class="ni" onclick="goTo('nu-dre')">
-      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 2h12v12H2zM2 6h12M2 10h12M6 2v12"/></svg>DRE Nubank</button>
+    <div class="ns nu">Nubank</div>
+    <button class="ni" onclick="goTo('nu-cartao')"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="4" width="14" height="9" rx="1"/><path d="M1 7h14"/></svg>Cartão</button>
+    <button class="ni" onclick="goTo('nu-extrato')"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 4h12M2 8h12M2 12h8"/></svg>Extrato Conta</button>
+    <button class="ni" onclick="goTo('nu-fluxo')"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 12L5 8l3 3 3-5 3 2"/></svg>Fluxo de Caixa</button>
+    <button class="ni" onclick="goTo('nu-dre')"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 2h12v12H2zM2 6h12M2 10h12M6 2v12"/></svg>DRE Nubank</button>
+
+    <div class="ns st">Santander</div>
+    <button class="ni" onclick="goTo('st-cartao')"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="4" width="14" height="9" rx="1"/><path d="M1 7h14"/></svg>Cartão</button>
+    <button class="ni" onclick="goTo('st-extrato')"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 4h12M2 8h12M2 12h8"/></svg>Extrato Conta</button>
+    <button class="ni" onclick="goTo('st-fluxo')"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 12L5 8l3 3 3-5 3 2"/></svg>Fluxo de Caixa</button>
+    <button class="ni" onclick="goTo('st-dre')"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 2h12v12H2zM2 6h12M2 10h12M6 2v12"/></svg>DRE Santander</button>
 
     <div class="ns">Análise</div>
-    <button class="ni" onclick="goTo('an-dre')">
-      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M1 13L5 7l3 4 3-7 4 6"/></svg>DRE Consolidado</button>
-    <button class="ni" onclick="goTo('an-fluxo')">
-      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="4" cy="8" r="2"/><circle cx="12" cy="8" r="2"/><path d="M6 8h4M2 4l2 4-2 4M14 4l-2 4 2 4"/></svg>Fluxo Consolidado</button>
+    <button class="ni" onclick="goTo('an-dre')"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M1 13L5 7l3 4 3-7 4 6"/></svg>DRE Consolidado</button>
+    <button class="ni" onclick="goTo('an-fluxo')"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="4" cy="8" r="2"/><circle cx="12" cy="8" r="2"/><path d="M6 8h4M2 4l2 4-2 4M14 4l-2 4 2 4"/></svg>Fluxo Consolidado</button>
 
     <div class="ns">Sistema</div>
-    <button class="ni" onclick="goTo('import')">
-      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 2v9M5 8l3 3 3-3M2 13h12"/></svg>Importar</button>
+    <button class="ni" onclick="goTo('import')"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 2v9M5 8l3 3 3-3M2 13h12"/></svg>Importar</button>
   </nav>
   <div class="nav-bot">
-    <button class="ni" onclick="goTo('config')" style="margin:0">
-      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="2.5"/><path d="M8 1v2M8 13v2M1 8h2M13 8h2M3.05 3.05l1.41 1.41M11.54 11.54l1.41 1.41M3.05 12.95l1.41-1.41M11.54 4.46l1.41-1.41"/></svg>Configurações</button>
+    <button class="ni" onclick="goTo('config')" style="margin:0"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="2.5"/><path d="M8 1v2M8 13v2M1 8h2M13 8h2M3.05 3.05l1.41 1.41M11.54 11.54l1.41 1.41M3.05 12.95l1.41-1.41M11.54 4.46l1.41-1.41"/></svg>Configurações</button>
   </div>
 </div>
 
@@ -134,7 +129,7 @@ select:focus,input:focus{border-color:#333}
 
 <!-- DASHBOARD -->
 <div id="pg-dash" class="page active">
-  <div class="topbar"><div class="tb-title">Dashboard</div><div class="tb-r"><div id="dash-pills" style="display:flex;gap:4px"></div><button class="btn-g btn-sm" onclick="goTo('import')">+ Importar</button></div></div>
+  <div class="topbar"><div class="tb-t">Dashboard</div><div class="tb-r"><div id="dash-pills" style="display:flex;gap:4px"></div><button class="btn-g btn-sm" onclick="goTo('import')">+ Importar</button></div></div>
   <div class="pb">
     <div id="dash-empty" class="empty" style="display:none"><div style="font-size:22px;opacity:.1;margin-bottom:10px">📊</div>Nenhum dado. <span style="cursor:pointer;color:var(--txt2);text-decoration:underline" onclick="goTo('import')">Importar →</span></div>
     <div id="dash-content">
@@ -145,8 +140,8 @@ select:focus,input:focus{border-color:#333}
         <div class="card"><div class="clbl" style="margin-bottom:8px">Distribuição dos gastos</div><canvas id="ch-pie" height="180"></canvas></div>
       </div>
       <div class="g2">
-        <div class="card" style="padding:0;overflow:hidden"><div style="padding:9px 14px;border-bottom:1px solid var(--border)"><div class="clbl">Top estabelecimentos — cartão</div></div><table><tbody id="dash-top-fat"></tbody></table></div>
-        <div class="card" style="padding:0;overflow:hidden"><div style="padding:9px 14px;border-bottom:1px solid var(--border)"><div class="clbl">Movimentações — conta</div></div><table><tbody id="dash-top-ext"></tbody></table></div>
+        <div class="card" style="padding:0;overflow:hidden"><div style="padding:9px 14px;border-bottom:1px solid var(--border)"><div class="clbl">Top — Nubank Cartão</div></div><table><tbody id="dash-top-nu"></tbody></table></div>
+        <div class="card" style="padding:0;overflow:hidden"><div style="padding:9px 14px;border-bottom:1px solid var(--border)"><div class="clbl">Top — Santander Cartão</div></div><table><tbody id="dash-top-st"></tbody></table></div>
       </div>
     </div>
   </div>
@@ -154,163 +149,143 @@ select:focus,input:focus{border-color:#333}
 
 <!-- NUBANK: CARTÃO -->
 <div id="pg-nu-cartao" class="page">
-  <div class="topbar"><div class="tb-title">Cartão</div><div class="tb-sub">Nubank</div><div class="tb-r"><select id="fat-mes" onchange="renderCartao()"></select><select id="fat-cat" onchange="renderCartao()"><option value="">Todas categorias</option></select><input type="text" id="fat-busca" placeholder="Buscar..." style="width:120px" oninput="renderCartao()"></div></div>
-  <div class="page" style="display:block;padding:0">
-    <div id="fat-empty" class="empty" style="display:none"><div style="font-size:20px;opacity:.1;margin-bottom:8px">💳</div>Nenhuma fatura importada.</div>
-    <div id="fat-wrap"><div style="max-height:calc(100vh - 110px);overflow-y:auto"><table><thead><tr><th>Dt. Pgto</th><th>Dt. Compet.</th><th>Descrição</th><th>Subcategoria</th><th>Categoria</th><th>Parcela</th><th style="text-align:right">Valor</th></tr></thead><tbody id="fat-tbody"></tbody></table></div>
-    <div style="padding:7px 14px;border-top:1px solid var(--border);background:var(--bg);display:flex;justify-content:space-between;font-size:10px;color:var(--txt3);font-family:var(--mono)"><span id="fat-count"></span><span>Total: <strong id="fat-total" class="red"></strong></span></div></div>
+  <div class="topbar"><div class="tb-t">Cartão</div><div class="tb-s" style="color:var(--nu)">Nubank</div><div class="tb-r"><select id="nu-fat-mes" onchange="renderCartao('nu')"></select><select id="nu-fat-cat" onchange="renderCartao('nu')"><option value="">Todas categorias</option></select><input type="text" id="nu-fat-busca" placeholder="Buscar..." style="width:120px" oninput="renderCartao('nu')"></div></div>
+  <div style="padding:0"><div id="nu-fat-empty" class="empty" style="display:none"><div style="font-size:20px;opacity:.1;margin-bottom:8px">💳</div>Nenhuma fatura Nubank importada.</div>
+    <div id="nu-fat-wrap"><div style="max-height:calc(100vh - 110px);overflow-y:auto"><table><thead><tr><th>Dt. Pgto</th><th>Dt. Compet.</th><th>Descrição</th><th>Subcategoria</th><th>Categoria</th><th>Parcela</th><th style="text-align:right">Valor</th></tr></thead><tbody id="nu-fat-tbody"></tbody></table></div>
+    <div style="padding:7px 14px;border-top:1px solid var(--border);background:var(--bg);display:flex;justify-content:space-between;font-size:10px;color:var(--txt3);font-family:var(--mono)"><span id="nu-fat-count"></span><span>Total: <strong id="nu-fat-total" class="red"></strong></span></div></div>
   </div>
 </div>
 
 <!-- NUBANK: EXTRATO -->
 <div id="pg-nu-extrato" class="page">
-  <div class="topbar"><div class="tb-title">Extrato Conta</div><div class="tb-sub">Nubank</div><div class="tb-r"><select id="ext-mes" onchange="renderExtrato()"></select><select id="ext-tipo" onchange="renderExtrato()"><option value="">Todos</option><option value="e">Entradas</option><option value="s">Saídas</option></select><select id="ext-cat" onchange="renderExtrato()"><option value="">Todas categorias</option></select><input type="text" id="ext-busca" placeholder="Buscar..." style="width:120px" oninput="renderExtrato()"></div></div>
-  <div style="padding:0">
-    <div id="ext-empty" class="empty" style="display:none"><div style="font-size:20px;opacity:.1;margin-bottom:8px">🏦</div>Nenhum extrato importado.</div>
-    <div id="ext-wrap"><div style="max-height:calc(100vh - 110px);overflow-y:auto"><table><thead><tr><th>Data</th><th>Descrição</th><th>Origem/Destino</th><th>Subcategoria</th><th>Categoria</th><th style="text-align:right">Valor</th></tr></thead><tbody id="ext-tbody"></tbody></table></div>
-    <div style="padding:7px 14px;border-top:1px solid var(--border);background:var(--bg);display:flex;justify-content:space-between;font-size:10px;color:var(--txt3);font-family:var(--mono)"><span id="ext-count"></span><div style="display:flex;gap:12px"><span>Ent: <strong id="ext-in" class="grn"></strong></span><span>Saí: <strong id="ext-out" class="red"></strong></span><span>Saldo: <strong id="ext-saldo"></strong></span></div></div></div>
+  <div class="topbar"><div class="tb-t">Extrato Conta</div><div class="tb-s" style="color:var(--nu)">Nubank</div><div class="tb-r"><select id="nu-ext-mes" onchange="renderExtrato('nu')"></select><select id="nu-ext-tipo" onchange="renderExtrato('nu')"><option value="">Todos</option><option value="e">Entradas</option><option value="s">Saídas</option></select><select id="nu-ext-cat" onchange="renderExtrato('nu')"><option value="">Todas categorias</option></select><input type="text" id="nu-ext-busca" placeholder="Buscar..." style="width:120px" oninput="renderExtrato('nu')"></div></div>
+  <div style="padding:0"><div id="nu-ext-empty" class="empty" style="display:none"><div style="font-size:20px;opacity:.1;margin-bottom:8px">🏦</div>Nenhum extrato Nubank importado.</div>
+    <div id="nu-ext-wrap"><div style="max-height:calc(100vh - 110px);overflow-y:auto"><table><thead><tr><th>Data</th><th>Descrição</th><th>Origem/Destino</th><th>Subcategoria</th><th>Categoria</th><th style="text-align:right">Valor</th></tr></thead><tbody id="nu-ext-tbody"></tbody></table></div>
+    <div style="padding:7px 14px;border-top:1px solid var(--border);background:var(--bg);display:flex;justify-content:space-between;font-size:10px;color:var(--txt3);font-family:var(--mono)"><span id="nu-ext-count"></span><div style="display:flex;gap:12px"><span>Ent: <strong id="nu-ext-in" class="grn"></strong></span><span>Saí: <strong id="nu-ext-out" class="red"></strong></span><span>Saldo: <strong id="nu-ext-saldo"></strong></span></div></div></div>
   </div>
 </div>
 
-<!-- NUBANK: FLUXO DE CAIXA -->
+<!-- NUBANK: FLUXO -->
 <div id="pg-nu-fluxo" class="page">
-  <div class="topbar"><div class="tb-title">Fluxo de Caixa</div><div class="tb-sub">Nubank</div><div class="tb-r"><div id="nu-cf-pills" style="display:flex;gap:4px"></div></div></div>
+  <div class="topbar"><div class="tb-t">Fluxo de Caixa</div><div class="tb-s" style="color:var(--nu)">Nubank</div><div class="tb-r"><div id="nu-cf-pills" style="display:flex;gap:4px"></div></div></div>
   <div class="pb">
-    <div id="nu-cf-empty" class="empty" style="display:none"><div style="font-size:20px;opacity:.1;margin-bottom:8px">💰</div>Importe dados para ver o fluxo.</div>
+    <div id="nu-cf-empty" class="empty" style="display:none"><div style="font-size:20px;opacity:.1;margin-bottom:8px">💰</div>Importe dados Nubank.</div>
     <div id="nu-cf-content">
-      <div class="tabs" id="nu-cf-tabs">
-        <div class="tab active" onclick="setCFTab('nu','consolidado')">Consolidado Nubank</div>
-        <div class="tab" onclick="setCFTab('nu','extrato')">Conta</div>
-        <div class="tab" onclick="setCFTab('nu','cartao')">Cartão</div>
-      </div>
+      <div class="tabs" id="nu-cf-tabs"><div class="tab active" onclick="setCFTab('nu','consolidado')">Consolidado</div><div class="tab" onclick="setCFTab('nu','extrato')">Conta</div><div class="tab" onclick="setCFTab('nu','cartao')">Cartão</div></div>
       <div class="g4" id="nu-cf-kpis" style="margin-bottom:12px"></div>
-      <div class="g2" style="margin-bottom:12px">
-        <div class="card"><div class="clbl" style="margin-bottom:8px">Entradas vs Saídas</div><canvas id="ch-nu-cf-bar" height="160"></canvas></div>
-        <div class="card"><div class="clbl" style="margin-bottom:8px">Saldo acumulado</div><canvas id="ch-nu-cf-line" height="160"></canvas></div>
-      </div>
-      <div class="card" style="padding:0;overflow:hidden"><div style="padding:9px 14px;border-bottom:1px solid var(--border)"><div class="clbl">Movimentações</div></div>
-        <div style="max-height:380px;overflow-y:auto"><table><thead><tr><th>Data</th><th>Descrição</th><th>Fonte</th><th>Categoria</th><th style="text-align:right">Entrada</th><th style="text-align:right">Saída</th><th style="text-align:right">Saldo Acum.</th></tr></thead><tbody id="nu-cf-tbody"></tbody></table></div>
-      </div>
+      <div class="g2" style="margin-bottom:12px"><div class="card"><div class="clbl" style="margin-bottom:8px">Entradas vs Saídas</div><canvas id="ch-nu-cf-bar" height="160"></canvas></div><div class="card"><div class="clbl" style="margin-bottom:8px">Saldo acumulado</div><canvas id="ch-nu-cf-line" height="160"></canvas></div></div>
+      <div class="card" style="padding:0;overflow:hidden"><div style="padding:9px 14px;border-bottom:1px solid var(--border)"><div class="clbl">Movimentações</div></div><div style="max-height:380px;overflow-y:auto"><table><thead><tr><th>Data</th><th>Descrição</th><th>Fonte</th><th>Categoria</th><th style="text-align:right">Entrada</th><th style="text-align:right">Saída</th><th style="text-align:right">Saldo Acum.</th></tr></thead><tbody id="nu-cf-tbody"></tbody></table></div></div>
     </div>
   </div>
 </div>
 
 <!-- NUBANK: DRE -->
 <div id="pg-nu-dre" class="page">
-  <div class="topbar"><div class="tb-title">DRE</div><div class="tb-sub">Nubank</div><div class="tb-r"><div id="nu-dre-pills" style="display:flex;gap:4px"></div><button class="btn-g btn-sm" onclick="goTo('config')">⚙ Metas</button></div></div>
+  <div class="topbar"><div class="tb-t">DRE</div><div class="tb-s" style="color:var(--nu)">Nubank</div><div class="tb-r"><div id="nu-dre-pills" style="display:flex;gap:4px"></div><button class="btn-g btn-sm" onclick="goTo('config')">⚙ Metas</button></div></div>
   <div class="pb" style="max-width:860px">
     <div id="nu-dre-empty" class="empty" style="display:none"><div style="font-size:20px;opacity:.1;margin-bottom:8px">📋</div>Nenhum dado Nubank.</div>
-    <div class="card" style="margin-bottom:10px">
-      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px">
-        <div><div class="clbl">Receita do mês</div><div style="font-size:10px;color:var(--txt3);margin-top:2px" id="nu-dre-hint">Informe a receita líquida</div></div>
-        <div style="display:flex;align-items:center;gap:8px">
-          <span style="font-size:11px;color:var(--txt3)">R$</span>
-          <input type="number" id="nu-rec-inp" placeholder="0,00" style="width:140px;font-family:var(--mono);font-size:14px;font-weight:600;color:var(--white);background:#111;border-color:#222;padding:7px 10px" oninput="saveRec('nu');renderNuDRE()">
-          <span style="font-size:10px;color:var(--txt3)" id="nu-rec-ref"></span>
-        </div>
-      </div>
-    </div>
+    <div class="card" style="margin-bottom:10px"><div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px"><div><div class="clbl">Receita do mês</div><div style="font-size:10px;color:var(--txt3);margin-top:2px" id="nu-dre-hint">Informe a receita</div></div><div style="display:flex;align-items:center;gap:8px"><span style="font-size:11px;color:var(--txt3)">R$</span><input type="number" id="nu-rec-inp" placeholder="0,00" style="width:140px;font-family:var(--mono);font-size:14px;font-weight:600;color:var(--white);background:#111;border-color:#222;padding:7px 10px" oninput="saveRec('nu');renderDRE('nu')"><span style="font-size:10px;color:var(--txt3)" id="nu-rec-ref"></span></div></div></div>
     <div id="nu-dre-content"></div>
+  </div>
+</div>
+
+<!-- SANTANDER: CARTÃO -->
+<div id="pg-st-cartao" class="page">
+  <div class="topbar"><div class="tb-t">Cartão</div><div class="tb-s" style="color:var(--st)">Santander</div><div class="tb-r"><select id="st-fat-mes" onchange="renderCartao('st')"></select><select id="st-fat-cat" onchange="renderCartao('st')"><option value="">Todas categorias</option></select><input type="text" id="st-fat-busca" placeholder="Buscar..." style="width:120px" oninput="renderCartao('st')"></div></div>
+  <div style="padding:0"><div id="st-fat-empty" class="empty" style="display:none"><div style="font-size:20px;opacity:.1;margin-bottom:8px">💳</div>Nenhuma fatura Santander importada.</div>
+    <div id="st-fat-wrap"><div style="max-height:calc(100vh - 110px);overflow-y:auto"><table><thead><tr><th>Dt. Pgto</th><th>Dt. Compet.</th><th>Descrição</th><th>Subcategoria</th><th>Categoria</th><th>Parcela</th><th style="text-align:right">Valor</th></tr></thead><tbody id="st-fat-tbody"></tbody></table></div>
+    <div style="padding:7px 14px;border-top:1px solid var(--border);background:var(--bg);display:flex;justify-content:space-between;font-size:10px;color:var(--txt3);font-family:var(--mono)"><span id="st-fat-count"></span><span>Total: <strong id="st-fat-total" class="red"></strong></span></div></div>
+  </div>
+</div>
+
+<!-- SANTANDER: EXTRATO -->
+<div id="pg-st-extrato" class="page">
+  <div class="topbar"><div class="tb-t">Extrato Conta</div><div class="tb-s" style="color:var(--st)">Santander</div><div class="tb-r"><select id="st-ext-mes" onchange="renderExtrato('st')"></select><select id="st-ext-tipo" onchange="renderExtrato('st')"><option value="">Todos</option><option value="e">Entradas</option><option value="s">Saídas</option></select><select id="st-ext-cat" onchange="renderExtrato('st')"><option value="">Todas categorias</option></select><input type="text" id="st-ext-busca" placeholder="Buscar..." style="width:120px" oninput="renderExtrato('st')"></div></div>
+  <div style="padding:0"><div id="st-ext-empty" class="empty" style="display:none"><div style="font-size:20px;opacity:.1;margin-bottom:8px">🏦</div>Nenhum extrato Santander importado.</div>
+    <div id="st-ext-wrap"><div style="max-height:calc(100vh - 110px);overflow-y:auto"><table><thead><tr><th>Data</th><th>Descrição</th><th>Origem/Destino</th><th>Subcategoria</th><th>Categoria</th><th style="text-align:right">Valor</th></tr></thead><tbody id="st-ext-tbody"></tbody></table></div>
+    <div style="padding:7px 14px;border-top:1px solid var(--border);background:var(--bg);display:flex;justify-content:space-between;font-size:10px;color:var(--txt3);font-family:var(--mono)"><span id="st-ext-count"></span><div style="display:flex;gap:12px"><span>Ent: <strong id="st-ext-in" class="grn"></strong></span><span>Saí: <strong id="st-ext-out" class="red"></strong></span><span>Saldo: <strong id="st-ext-saldo"></strong></span></div></div></div>
+  </div>
+</div>
+
+<!-- SANTANDER: FLUXO -->
+<div id="pg-st-fluxo" class="page">
+  <div class="topbar"><div class="tb-t">Fluxo de Caixa</div><div class="tb-s" style="color:var(--st)">Santander</div><div class="tb-r"><div id="st-cf-pills" style="display:flex;gap:4px"></div></div></div>
+  <div class="pb">
+    <div id="st-cf-empty" class="empty" style="display:none"><div style="font-size:20px;opacity:.1;margin-bottom:8px">💰</div>Importe dados Santander.</div>
+    <div id="st-cf-content">
+      <div class="tabs" id="st-cf-tabs"><div class="tab active" onclick="setCFTab('st','consolidado')">Consolidado</div><div class="tab" onclick="setCFTab('st','extrato')">Conta</div><div class="tab" onclick="setCFTab('st','cartao')">Cartão</div></div>
+      <div class="g4" id="st-cf-kpis" style="margin-bottom:12px"></div>
+      <div class="g2" style="margin-bottom:12px"><div class="card"><div class="clbl" style="margin-bottom:8px">Entradas vs Saídas</div><canvas id="ch-st-cf-bar" height="160"></canvas></div><div class="card"><div class="clbl" style="margin-bottom:8px">Saldo acumulado</div><canvas id="ch-st-cf-line" height="160"></canvas></div></div>
+      <div class="card" style="padding:0;overflow:hidden"><div style="padding:9px 14px;border-bottom:1px solid var(--border)"><div class="clbl">Movimentações</div></div><div style="max-height:380px;overflow-y:auto"><table><thead><tr><th>Data</th><th>Descrição</th><th>Fonte</th><th>Categoria</th><th style="text-align:right">Entrada</th><th style="text-align:right">Saída</th><th style="text-align:right">Saldo Acum.</th></tr></thead><tbody id="st-cf-tbody"></tbody></table></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- SANTANDER: DRE -->
+<div id="pg-st-dre" class="page">
+  <div class="topbar"><div class="tb-t">DRE</div><div class="tb-s" style="color:var(--st)">Santander</div><div class="tb-r"><div id="st-dre-pills" style="display:flex;gap:4px"></div><button class="btn-g btn-sm" onclick="goTo('config')">⚙ Metas</button></div></div>
+  <div class="pb" style="max-width:860px">
+    <div id="st-dre-empty" class="empty" style="display:none"><div style="font-size:20px;opacity:.1;margin-bottom:8px">📋</div>Nenhum dado Santander.</div>
+    <div class="card" style="margin-bottom:10px"><div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px"><div><div class="clbl">Receita do mês</div><div style="font-size:10px;color:var(--txt3);margin-top:2px" id="st-dre-hint">Receita detectada no extrato Santander</div></div><div style="display:flex;align-items:center;gap:8px"><span style="font-size:11px;color:var(--txt3)">R$</span><input type="number" id="st-rec-inp" placeholder="0,00" style="width:140px;font-family:var(--mono);font-size:14px;font-weight:600;color:var(--white);background:#111;border-color:#222;padding:7px 10px" oninput="saveRec('st');renderDRE('st')"><span style="font-size:10px;color:var(--txt3)" id="st-rec-ref"></span></div></div></div>
+    <div id="st-dre-content"></div>
   </div>
 </div>
 
 <!-- ANÁLISE: DRE CONSOLIDADO -->
 <div id="pg-an-dre" class="page">
-  <div class="topbar"><div class="tb-title">DRE Consolidado</div><div class="tb-sub">Todas as fontes</div><div class="tb-r"><div id="an-dre-pills" style="display:flex;gap:4px"></div><button class="btn-g btn-sm" onclick="goTo('config')">⚙ Metas</button></div></div>
+  <div class="topbar"><div class="tb-t">DRE Consolidado</div><div class="tb-s">Nubank + Santander</div><div class="tb-r"><div id="an-dre-pills" style="display:flex;gap:4px"></div><button class="btn-g btn-sm" onclick="goTo('config')">⚙ Metas</button></div></div>
   <div class="pb" style="max-width:860px">
     <div id="an-dre-empty" class="empty" style="display:none"><div style="font-size:20px;opacity:.1;margin-bottom:8px">📊</div>Nenhum dado importado.</div>
-    <div class="card" style="margin-bottom:10px">
-      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px">
-        <div><div class="clbl">Receita do mês</div><div style="font-size:10px;color:var(--txt3);margin-top:2px" id="an-dre-hint">Receita consolidada de todas as fontes</div></div>
-        <div style="display:flex;align-items:center;gap:8px">
-          <span style="font-size:11px;color:var(--txt3)">R$</span>
-          <input type="number" id="an-rec-inp" placeholder="0,00" style="width:140px;font-family:var(--mono);font-size:14px;font-weight:600;color:var(--white);background:#111;border-color:#222;padding:7px 10px" oninput="saveRec('an');renderAnDRE()">
-          <span style="font-size:10px;color:var(--txt3)" id="an-rec-ref"></span>
-        </div>
-      </div>
-    </div>
+    <div class="card" style="margin-bottom:10px"><div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px"><div><div class="clbl">Receita do mês</div><div style="font-size:10px;color:var(--txt3);margin-top:2px" id="an-dre-hint">Receita consolidada de todas as fontes</div></div><div style="display:flex;align-items:center;gap:8px"><span style="font-size:11px;color:var(--txt3)">R$</span><input type="number" id="an-rec-inp" placeholder="0,00" style="width:140px;font-family:var(--mono);font-size:14px;font-weight:600;color:var(--white);background:#111;border-color:#222;padding:7px 10px" oninput="saveRec('an');renderDRE('an')"><span style="font-size:10px;color:var(--txt3)" id="an-rec-ref"></span></div></div></div>
     <div id="an-dre-content"></div>
   </div>
 </div>
 
 <!-- ANÁLISE: FLUXO CONSOLIDADO -->
 <div id="pg-an-fluxo" class="page">
-  <div class="topbar"><div class="tb-title">Fluxo Consolidado</div><div class="tb-sub">Todas as fontes</div><div class="tb-r"><div id="an-cf-pills" style="display:flex;gap:4px"></div></div></div>
+  <div class="topbar"><div class="tb-t">Fluxo Consolidado</div><div class="tb-s">Nubank + Santander</div><div class="tb-r"><div id="an-cf-pills" style="display:flex;gap:4px"></div></div></div>
   <div class="pb">
-    <div id="an-cf-empty" class="empty" style="display:none"><div style="font-size:20px;opacity:.1;margin-bottom:8px">💰</div>Importe dados para ver o fluxo.</div>
+    <div id="an-cf-empty" class="empty" style="display:none"><div style="font-size:20px;opacity:.1;margin-bottom:8px">💰</div>Importe dados para ver o fluxo consolidado.</div>
     <div id="an-cf-content">
-      <div class="tabs" id="an-cf-tabs">
-        <div class="tab active" onclick="setCFTab('an','consolidado')">Todos</div>
-        <div class="tab" onclick="setCFTab('an','nubank')">Nubank</div>
-        <!-- Santander virá aqui -->
-      </div>
+      <div class="tabs" id="an-cf-tabs"><div class="tab active" onclick="setCFTab('an','todos')">Todos</div><div class="tab" onclick="setCFTab('an','nubank')">Nubank</div><div class="tab" onclick="setCFTab('an','santander')">Santander</div></div>
       <div class="g4" id="an-cf-kpis" style="margin-bottom:12px"></div>
-      <div class="g2" style="margin-bottom:12px">
-        <div class="card"><div class="clbl" style="margin-bottom:8px">Entradas vs Saídas</div><canvas id="ch-an-cf-bar" height="160"></canvas></div>
-        <div class="card"><div class="clbl" style="margin-bottom:8px">Saldo acumulado</div><canvas id="ch-an-cf-line" height="160"></canvas></div>
-      </div>
-      <div class="card" style="padding:0;overflow:hidden"><div style="padding:9px 14px;border-bottom:1px solid var(--border)"><div class="clbl">Movimentações consolidadas</div></div>
-        <div style="max-height:380px;overflow-y:auto"><table><thead><tr><th>Data</th><th>Descrição</th><th>Banco</th><th>Fonte</th><th>Categoria</th><th style="text-align:right">Entrada</th><th style="text-align:right">Saída</th><th style="text-align:right">Saldo Acum.</th></tr></thead><tbody id="an-cf-tbody"></tbody></table></div>
-      </div>
+      <div class="g2" style="margin-bottom:12px"><div class="card"><div class="clbl" style="margin-bottom:8px">Entradas vs Saídas</div><canvas id="ch-an-cf-bar" height="160"></canvas></div><div class="card"><div class="clbl" style="margin-bottom:8px">Saldo acumulado</div><canvas id="ch-an-cf-line" height="160"></canvas></div></div>
+      <div class="card" style="padding:0;overflow:hidden"><div style="padding:9px 14px;border-bottom:1px solid var(--border)"><div class="clbl">Movimentações consolidadas</div></div><div style="max-height:380px;overflow-y:auto"><table><thead><tr><th>Data</th><th>Descrição</th><th>Banco</th><th>Fonte</th><th>Categoria</th><th style="text-align:right">Entrada</th><th style="text-align:right">Saída</th><th style="text-align:right">Saldo Acum.</th></tr></thead><tbody id="an-cf-tbody"></tbody></table></div></div>
     </div>
   </div>
 </div>
 
 <!-- IMPORTAR -->
 <div id="pg-import" class="page">
-  <div class="topbar"><div class="tb-title">Importar Dados</div></div>
-  <div class="pb" style="max-width:680px">
+  <div class="topbar"><div class="tb-t">Importar Dados</div></div>
+  <div class="pb" style="max-width:700px">
     <div class="tabs" id="imp-tabs">
-      <div class="tab active" onclick="setImpTab('fatura')">💳 Fatura Cartão Nubank (PDF)</div>
-      <div class="tab" onclick="setImpTab('extrato')">🏦 Extrato Conta Nubank (CSV)</div>
+      <div class="tab active" onclick="setImpTab('nu-fat')">💜 Nubank Cartão (PDF)</div>
+      <div class="tab" onclick="setImpTab('nu-ext')">💜 Nubank Conta (CSV)</div>
+      <div class="tab" onclick="setImpTab('st-fat')">🟠 Santander Cartão (PDF)</div>
+      <div class="tab" onclick="setImpTab('st-ext')">🟠 Santander Conta (PDF)</div>
     </div>
-    <!-- FATURA -->
-    <div id="imp-tab-fat">
-      <div class="card" style="margin-bottom:10px"><div class="clbl">Mês de referência</div><select id="imp-mes-fat" style="width:100%;margin-top:6px"></select></div>
-      <div class="card" style="margin-bottom:10px"><div class="clbl" style="margin-bottom:10px">Fatura PDF — Nubank Cartão</div>
-        <div class="zone" id="zone-fat" onclick="document.getElementById('inp-fat').click()"><input type="file" id="inp-fat" accept=".pdf" style="display:none"><div style="font-size:18px;margin-bottom:6px;opacity:.3">📄</div><div style="font-size:12px;color:var(--txt2);margin-bottom:3px" id="lbl-fat">Arraste o PDF ou clique</div><div style="font-size:10px;color:var(--txt3)">App Nubank → Cartão → Ver fatura → Exportar PDF</div></div>
-      </div>
-      <div style="display:flex;justify-content:flex-end;gap:8px;margin-bottom:12px"><button class="btn-g" onclick="goTo('dash')">Cancelar</button><button class="btn" onclick="processarFatura()">Processar com IA →</button></div>
-      <div id="proc-fat" style="display:none"><div class="card" style="text-align:center;padding:26px"><div class="spin" style="margin-bottom:12px"></div><div id="proc-fat-msg" style="font-size:11px;color:var(--txt2)"></div><div id="proc-fat-err" style="color:var(--red);font-size:11px;display:none;margin-top:8px;line-height:1.6;max-width:400px;margin:8px auto 0"></div><button class="btn-g" id="btn-fat-v" style="display:none;margin-top:10px" onclick="resetFatura()">← Voltar</button></div></div>
-      <div id="rev-fat" style="display:none">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px"><div><div style="font-size:13px;font-weight:600;color:var(--white)" id="rev-fat-title"></div><div style="font-size:10px;color:var(--txt3);margin-top:2px" id="rev-fat-sub"></div></div><div style="display:flex;gap:7px"><button class="btn-g btn-sm" onclick="resetFatura()">Cancelar</button><button class="btn btn-sm" onclick="salvarFatura()">Salvar →</button></div></div>
-        <div class="card" style="padding:0;overflow:hidden"><div style="max-height:400px;overflow-y:auto"><table><thead><tr><th>Dt. Compet.</th><th>Descrição</th><th>Subcategoria</th><th>Categoria</th><th>Parcela</th><th style="text-align:right">Valor</th></tr></thead><tbody id="rev-fat-tbody"></tbody></table></div><div style="padding:7px 14px;border-top:1px solid var(--border);background:var(--bg);display:flex;justify-content:flex-end;font-size:10px;color:var(--txt3);font-family:var(--mono)">Total: <strong id="rev-fat-total" class="red" style="margin-left:8px"></strong></div></div>
-      </div>
-    </div>
-    <!-- EXTRATO -->
-    <div id="imp-tab-ext" style="display:none">
-      <div class="card" style="margin-bottom:10px"><div class="clbl">Mês de referência</div><select id="imp-mes-ext" style="width:100%;margin-top:6px"></select></div>
-      <div class="card" style="margin-bottom:10px"><div class="clbl" style="margin-bottom:10px">Extrato CSV — Nubank Conta</div>
-        <div class="zone" id="zone-ext" onclick="document.getElementById('inp-ext').click()"><input type="file" id="inp-ext" accept=".csv" style="display:none"><div style="font-size:18px;margin-bottom:6px;opacity:.3">📊</div><div style="font-size:12px;color:var(--txt2);margin-bottom:3px" id="lbl-ext">Arraste o CSV ou clique</div><div style="font-size:10px;color:var(--txt3)">App Nubank → Perfil → Extratos → Exportar</div></div>
-      </div>
-      <div style="display:flex;justify-content:flex-end;gap:8px;margin-bottom:12px"><button class="btn-g" onclick="goTo('dash')">Cancelar</button><button class="btn" onclick="processarExtrato()">Processar com IA →</button></div>
-      <div id="proc-ext" style="display:none"><div class="card" style="text-align:center;padding:26px"><div class="spin" style="margin-bottom:12px"></div><div id="proc-ext-msg" style="font-size:11px;color:var(--txt2)"></div><div id="proc-ext-err" style="color:var(--red);font-size:11px;display:none;margin-top:8px;line-height:1.6;max-width:400px;margin:8px auto 0"></div><button class="btn-g" id="btn-ext-v" style="display:none;margin-top:10px" onclick="resetExtrato()">← Voltar</button></div></div>
-      <div id="rev-ext" style="display:none">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px"><div><div style="font-size:13px;font-weight:600;color:var(--white)" id="rev-ext-title"></div><div style="font-size:10px;color:var(--txt3);margin-top:2px" id="rev-ext-sub"></div></div><div style="display:flex;gap:7px"><button class="btn-g btn-sm" onclick="resetExtrato()">Cancelar</button><button class="btn btn-sm" onclick="salvarExtrato()">Salvar →</button></div></div>
-        <div class="card" style="padding:0;overflow:hidden"><div style="max-height:400px;overflow-y:auto"><table><thead><tr><th>Data</th><th>Descrição</th><th>Origem/Destino</th><th>Subcategoria</th><th>Categoria</th><th style="text-align:right">Valor</th></tr></thead><tbody id="rev-ext-tbody"></tbody></table></div><div style="padding:7px 14px;border-top:1px solid var(--border);background:var(--bg);display:flex;justify-content:space-between;font-size:10px;color:var(--txt3);font-family:var(--mono)"><span id="rev-ext-count"></span><div style="display:flex;gap:12px"><span>Ent: <strong id="rev-ext-in" class="grn"></strong></span><span>Saí: <strong id="rev-ext-out" class="red"></strong></span></div></div></div>
-      </div>
-    </div>
+    <div id="imp-body"></div>
   </div>
 </div>
 
 <!-- CONFIG -->
 <div id="pg-config" class="page">
-  <div class="topbar"><div class="tb-title">Configurações</div></div>
+  <div class="topbar"><div class="tb-t">Configurações</div></div>
   <div class="pb" style="max-width:560px">
     <div class="card" style="margin-bottom:10px"><div class="clbl" style="margin-bottom:12px">Metas (% da receita líquida)</div><div id="metas-form"></div><button class="btn btn-sm" style="margin-top:12px" onclick="salvarMetas()">Salvar metas</button></div>
     <div class="card" style="margin-bottom:10px">
       <div class="clbl" style="margin-bottom:4px">Almoço da Edi — Benefício corporativo</div>
-      <div style="font-size:10px;color:var(--txt3);margin-bottom:12px;line-height:1.6">Valor por refeição × dias úteis sem Giovaniburgue na semana = benefício real usado.</div>
+      <div style="font-size:10px;color:var(--txt3);margin-bottom:12px;line-height:1.6">Valor por refeição × dias úteis sem Giovaniburgue na semana = benefício real.</div>
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px"><label style="font-size:11px;color:var(--txt2);width:180px;flex-shrink:0">Valor por refeição (R$)</label><input type="number" id="almoco-valor" placeholder="0.00" min="0" style="width:90px" oninput="salvarAlmoco()"></div>
       <div style="display:flex;align-items:center;gap:10px"><label style="font-size:11px;color:var(--txt2);width:180px;flex-shrink:0">Ativo no DRE</label><select id="almoco-ativo" onchange="salvarAlmoco()"><option value="1">Sim</option><option value="0">Não</option></select></div>
       <div style="margin-top:10px;font-size:10px;color:var(--txt3)" id="almoco-preview"></div>
     </div>
-    <div class="card"><div class="clbl">Dados salvos</div><div id="cfg-dados" style="font-size:11px;color:var(--txt2);margin:8px 0;line-height:1.7"></div><button class="btn-d" onclick="limparDados()">Limpar todos os dados</button></div>
+    <div class="card"><div class="clbl">Dados salvos</div><div id="cfg-dados" style="font-size:11px;color:var(--txt2);margin:8px 0;line-height:1.8"></div><button class="btn-d" onclick="limparDados()">Limpar todos os dados</button></div>
   </div>
 </div>
 
-</div><!-- /main -->
-</div><!-- /app -->
+</div></div>
 
 <script>
 pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
@@ -330,9 +305,9 @@ const CATS={
     'Pessoal':['Luta','Loteria','TIM','Academia','Barbearia','Outros Pessoal'],
     'Lazer':['Cinema','Streaming','Futebol','Viagem','Outros Lazer'],
     'Igreja':['Dízimo','Ofertório','Outros Igreja'],
-    'Tributos':['INSS','IRRF','IPTU','IPVA','Outros Tributos'],
+    'Tributos':['INSS','IRRF','IPTU','IPVA','IOF','Outros Tributos'],
   }},
-  INVESTIMENTO_PESSOAL:{cor:'#2050a0',label:'Inv. Pessoal',grupos:{'Investimento Pessoal':['Faculdade','Padre Paulo Ricardo','Guilherme Freire','Livros','Cursos','Outros Inv. Pessoal']}},
+  INVESTIMENTO_PESSOAL:{cor:'#2050a0',label:'Inv. Pessoal',grupos:{'Investimento Pessoal':['Faculdade','Padre Paulo Ricardo','Guilherme Freire','Li Flos Carmeli','Livros','Cursos','Outros Inv. Pessoal']}},
   INVESTIMENTO_FINANCEIRO:{cor:'#107060',label:'Inv. Financeiro',grupos:{'Investimento Financeiro':['RDB/CDB','Ações','Derivativos','Cripto','Outros Financeiros']}},
   PLANOS_PESSOAIS:{cor:'#906010',label:'Planos Pessoais',grupos:{'Planos Pessoais':['Casamento','Carro','Casa','Outros Planos']}},
   PREVIDENCIA:{cor:'#107060',label:'Previdência',grupos:{'Previdência':['CXSE3','CMIG4','PETR4','JHSF3','Renda Fixa','Outros Previdência']}},
@@ -343,27 +318,45 @@ const METAS_DEF={despesas:50,invPessoal:10,invFin:10,planos:10,prev:10};
 function buildDict(){let o='';for(const[c,d]of Object.entries(CATS))for(const[g,s]of Object.entries(d.grupos))s.forEach(x=>{o+=`"${x}" → cat:${c}, grupo:${g}\n`;});return o;}
 
 // ─── STORAGE ───────────────────────────────────────────────────────────────────
-const gFat=()=>JSON.parse(localStorage.getItem('fc_fat')||'{}');
-const sFat=d=>localStorage.setItem('fc_fat',JSON.stringify(d));
-const gExt=()=>JSON.parse(localStorage.getItem('fc_ext')||'{}');
-const sExt=d=>localStorage.setItem('fc_ext',JSON.stringify(d));
+const gNuFat=()=>JSON.parse(localStorage.getItem('fc_nu_fat')||'{}');
+const sNuFat=d=>localStorage.setItem('fc_nu_fat',JSON.stringify(d));
+const gNuExt=()=>JSON.parse(localStorage.getItem('fc_nu_ext')||'{}');
+const sNuExt=d=>localStorage.setItem('fc_nu_ext',JSON.stringify(d));
+const gStFat=()=>JSON.parse(localStorage.getItem('fc_st_fat')||'{}');
+const sStFat=d=>localStorage.setItem('fc_st_fat',JSON.stringify(d));
+const gStExt=()=>JSON.parse(localStorage.getItem('fc_st_ext')||'{}');
+const sStExt=d=>localStorage.setItem('fc_st_ext',JSON.stringify(d));
 const gMetas=()=>JSON.parse(localStorage.getItem('fc_metas')||JSON.stringify(METAS_DEF));
 const sMetas=d=>localStorage.setItem('fc_metas',JSON.stringify(d));
-const gRec=(scope,mes)=>parseFloat(localStorage.getItem(`fc_rec_${scope}_${mes}`)||'0');
-const sRec=(scope,mes,v)=>localStorage.setItem(`fc_rec_${scope}_${mes}`,v);
+const gRec=(sc,mes)=>parseFloat(localStorage.getItem(`fc_rec_${sc}_${mes}`)||'0');
+const sRec=(sc,mes,v)=>localStorage.setItem(`fc_rec_${sc}_${mes}`,v);
 const gAlmoco=()=>JSON.parse(localStorage.getItem('fc_almoco')||'{"valor":0,"ativo":1}');
 const sAlmocoLS=d=>localStorage.setItem('fc_almoco',JSON.stringify(d));
 
-const txFat=mes=>(gFat()[mes]||[]);
-const txExt=mes=>(gExt()[mes]||[]);
-const mesesFat=()=>Object.keys(gFat()).sort().reverse();
-const mesesExt=()=>Object.keys(gExt()).sort().reverse();
-const mesesAll=()=>[...new Set([...mesesFat(),...mesesExt()])].sort().reverse();
+const txNuFat=mes=>(gNuFat()[mes]||[]);
+const txNuExt=mes=>(gNuExt()[mes]||[]);
+const txStFat=mes=>(gStFat()[mes]||[]);
+const txStExt=mes=>(gStExt()[mes]||[]);
+
+const mesesNuFat=()=>Object.keys(gNuFat()).sort().reverse();
+const mesesNuExt=()=>Object.keys(gNuExt()).sort().reverse();
+const mesesStFat=()=>Object.keys(gStFat()).sort().reverse();
+const mesesStExt=()=>Object.keys(gStExt()).sort().reverse();
+const mesesAll=()=>[...new Set([...mesesNuFat(),...mesesNuExt(),...mesesStFat(),...mesesStExt()])].sort().reverse();
+
+// Compatibilidade com dados antigos
+function migrateOldData(){
+  const oldFat=localStorage.getItem('fc_fat');const oldExt=localStorage.getItem('fc_ext');
+  if(oldFat&&!localStorage.getItem('fc_nu_fat')){localStorage.setItem('fc_nu_fat',oldFat);}
+  if(oldExt&&!localStorage.getItem('fc_nu_ext')){localStorage.setItem('fc_nu_ext',oldExt);}
+}
+migrateOldData();
 
 // ─── STATE ─────────────────────────────────────────────────────────────────────
 let curMes=null;
-let nuCFTab='consolidado', anCFTab='consolidado';
-let pendFat=[],pendExt=[],pdfFile=null,csvFile=null,charts={};
+let cfTabs={nu:'consolidado',st:'consolidado',an:'todos'};
+let pendData={},pdfFiles={},impTab='nu-fat';
+let charts={};
 
 function initMes(){const a=mesesAll();curMes=a.length?a[0]:MK(new Date().getFullYear(),new Date().getMonth()+1);}
 initMes();
@@ -375,22 +368,22 @@ const badge=c=>{const cor=catCor(c);return`<span class="badge" style="background
 const getAllSubs=()=>{const s=[];for(const d of Object.values(CATS))for(const a of Object.values(d.grupos))s.push(...a);return s;};
 const subToCat=sub=>{for(const[cat,d]of Object.entries(CATS))for(const[g,subs]of Object.entries(d.grupos))if(subs.includes(sub))return{cat,g};return{cat:'DESPESA',g:'Pessoal'};};
 
-function renderPills(id,cb,scope){
+function renderPills(id,cb){
   const el=document.getElementById(id);if(!el)return;
   el.innerHTML=mesesAll().slice(0,8).map(k=>{const[y,m]=k.split('-');
     return`<button style="font-size:10px;background:${k===curMes?'#1a1a1a':'#0f0f0f'};border:1px solid ${k===curMes?'#2a2a2a':'#161616'};color:${k===curMes?'#e8e5de':'#333'};padding:3px 10px;border-radius:3px;cursor:pointer;font-family:var(--mono);white-space:nowrap" onclick="curMes='${k}';renderPills('${id}','${cb}');${cb}()">${MESES[parseInt(m)-1].slice(0,3)}/${y.slice(2)}</button>`;
   }).join('');
 }
-
-function popMesSel(id){
-  const now=new Date();const sel=document.getElementById(id);sel.innerHTML='';
-  for(let i=0;i<12;i++){const d=new Date(now.getFullYear(),now.getMonth()-i,1);const k=MK(d.getFullYear(),d.getMonth()+1);sel.innerHTML+=`<option value="${k}"${curMes===k?' selected':''}>${MESES[d.getMonth()]} ${d.getFullYear()}</option>`;}
+function popMesSel(id,meses){
+  const sel=document.getElementById(id);if(!sel)return;sel.innerHTML='';
+  const all=mesesAll();if(!all.length){sel.innerHTML='<option>—</option>';return;}
+  all.forEach(k=>{const[y,m]=k.split('-');sel.innerHTML+=`<option value="${k}"${k===curMes?' selected':''}>${MESES[parseInt(m)-1]} ${y}</option>`;});
 }
 
 // ─── ALMOÇO DA EDI ─────────────────────────────────────────────────────────────
 function workDays(y,m){let n=0;const d=new Date(y,m-1,1);while(d.getMonth()===m-1){if(d.getDay()>=1&&d.getDay()<=5)n++;d.setDate(d.getDate()+1);}return n;}
 function gioDays(mes){
-  return txFat(mes).filter(t=>{
+  return txNuFat(mes).filter(t=>{
     if(!t.descricao.toLowerCase().includes('giovaniburgue'))return false;
     const p=(t.data_competencia||'').split('/');if(p.length<3)return false;
     const w=new Date(+p[2],+p[1]-1,+p[0]).getDay();return w>=1&&w<=5;
@@ -404,11 +397,10 @@ function calcAlmoco(mes){
   return{benefit:diasUsados*cfg.valor,diasUsados,diasPerdidos,diasTotais};
 }
 
-// ─── CALCULAR TOTAIS ───────────────────────────────────────────────────────────
-function calcTot(mes,sources){
-  // sources: array de txns já filtradas
+// ─── CÁLCULO TOTAIS ────────────────────────────────────────────────────────────
+function calcTot(mes,txns){
   const r={despGrupos:{},despTotal:0,invPessoal:0,invFin:0,planos:0,prev:0,receitaExt:0};
-  sources.forEach(t=>{
+  txns.forEach(t=>{
     const v=Math.abs(t.valor);
     if(t.cat==='RECEITA_LIQUIDA'&&t.valor>0)r.receitaExt+=t.valor;
     if(t.cat==='DESPESA'){r.despGrupos[t.grupo]=(r.despGrupos[t.grupo]||0)+v;r.despTotal+=v;}
@@ -422,20 +414,29 @@ function calcTot(mes,sources){
   return r;
 }
 
+function getTxnsByScope(mes,scope){
+  if(scope==='nu')return[...txNuFat(mes),...txNuExt(mes)];
+  if(scope==='st')return[...txStFat(mes),...txStExt(mes)];
+  if(scope==='an')return[...txNuFat(mes),...txNuExt(mes),...txStFat(mes),...txStExt(mes)];
+  return[];
+}
+
 // ─── NAV ───────────────────────────────────────────────────────────────────────
-const PAGE_MAP={
-  dash:renderDash,'nu-cartao':renderCartao,'nu-extrato':renderExtrato,
-  'nu-fluxo':renderNuFluxo,'nu-dre':renderNuDRE,
-  'an-dre':renderAnDRE,'an-fluxo':renderAnFluxo,
+const PAGE_FN={
+  dash:renderDash,
+  'nu-cartao':()=>renderCartao('nu'),'nu-extrato':()=>renderExtrato('nu'),
+  'nu-fluxo':()=>renderFluxo('nu'),'nu-dre':()=>renderDRE('nu'),
+  'st-cartao':()=>renderCartao('st'),'st-extrato':()=>renderExtrato('st'),
+  'st-fluxo':()=>renderFluxo('st'),'st-dre':()=>renderDRE('st'),
+  'an-dre':()=>renderDRE('an'),'an-fluxo':()=>renderFluxo('an'),
   import:initImport,config:initConfig
 };
-
 function goTo(p){
   document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));
   document.querySelectorAll('.ni').forEach(x=>x.classList.remove('active'));
   document.getElementById('pg-'+p).classList.add('active');
   const b=document.querySelector(`[onclick="goTo('${p}')"]`);if(b)b.classList.add('active');
-  (PAGE_MAP[p]||(() => {}))();
+  (PAGE_FN[p]||(() => {}))();
 }
 
 // ─── DASHBOARD ─────────────────────────────────────────────────────────────────
@@ -445,32 +446,32 @@ function renderDash(){
   if(!all.includes(curMes))curMes=all[0];
   document.getElementById('dash-empty').style.display='none';document.getElementById('dash-content').style.display='block';
   renderPills('dash-pills','renderDash');
-
-  const allTx=[...txFat(curMes),...txExt(curMes)];
+  const allTx=getTxnsByScope(curMes,'an');
   const tot=calcTot(curMes,allTx);
-  const recBase=gRec('nu',curMes)||tot.receitaExt;
+  const recBase=gRec('an',curMes)||gRec('nu',curMes)||tot.receitaExt;
   const rec=recBase+tot.almocoBenefit;
   const metas=gMetas();const saldo=rec-tot.despTotal-tot.invTotal;
 
   document.getElementById('dash-kpis').innerHTML=[
-    {l:'Receita',v:rec>0?BRL(rec):'—',s:'receita do mês',c:'var(--grn)'},
-    {l:'Despesas',v:BRL(tot.despTotal),s:rec>0?(tot.despTotal/rec*100).toFixed(1)+'% da receita':'—',c:'var(--red)'},
-    {l:'Investido',v:BRL(tot.invTotal),s:rec>0?(tot.invTotal/rec*100).toFixed(1)+'% da receita':'—',c:'#1060a0'},
+    {l:'Receita Total',v:rec>0?BRL(rec):'—',s:'todas as fontes',c:'var(--grn)'},
+    {l:'Despesas Total',v:BRL(tot.despTotal),s:rec>0?(tot.despTotal/rec*100).toFixed(1)+'% da receita':'—',c:'var(--red)'},
+    {l:'Investido Total',v:BRL(tot.invTotal),s:rec>0?(tot.invTotal/rec*100).toFixed(1)+'% da receita':'—',c:'#1060a0'},
     {l:'Saldo',v:rec>0?BRL(Math.abs(saldo)):'—',s:saldo>=0?'✓ positivo':'⚠ negativo',c:saldo>=0?'var(--grn)':'var(--red)'},
-    {l:'Almoço Edi',v:tot.almocoBenefit>0?BRL(tot.almocoBenefit):'—',s:tot.almocoBenefit>0?`${tot.almocoInfo.diasUsados} dias`:'Configure em ⚙',c:'var(--amber)'},
+    {l:'Almoço Edi',v:tot.almocoBenefit>0?BRL(tot.almocoBenefit):'—',s:tot.almocoBenefit>0?tot.almocoInfo.diasUsados+' dias':'Configure em ⚙',c:'var(--amber)'},
   ].map(k=>`<div class="card" style="margin:0"><div class="clbl">${k.l}</div><div class="kv" style="color:${k.c}">${k.v}</div><div class="ks">${k.s}</div></div>`).join('');
 
   const grpD=Object.entries(tot.despGrupos).sort((a,b)=>b[1]-a[1]).slice(0,6);
   if(charts.bar)charts.bar.destroy();
   charts.bar=new Chart(document.getElementById('ch-bar'),{type:'bar',data:{labels:['Receita','Despesas','Investido'],datasets:[{data:[rec,tot.despTotal,tot.invTotal],backgroundColor:['#2a7a5044','#c0404088','#1060a044'],borderRadius:4,borderSkipped:false}]},options:{responsive:true,plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>BRL(ctx.raw)}}},scales:{x:{ticks:{color:'#333',font:{size:9}},grid:{display:false},border:{display:false}},y:{ticks:{color:'#252525',font:{size:9},callback:v=>BRL(v)},grid:{color:'#0f0f0f'},border:{display:false}}}}});
   if(charts.pie)charts.pie.destroy();
-  if(grpD.length){const pc=['#c04040','#905010','#703080','#304070','#2a7a50','#804030'];
-    charts.pie=new Chart(document.getElementById('ch-pie'),{type:'doughnut',data:{labels:grpD.map(([g])=>g),datasets:[{data:grpD.map(([,v])=>v),backgroundColor:pc,borderWidth:0}]},options:{responsive:true,cutout:'55%',plugins:{legend:{position:'right',labels:{color:'#444',font:{size:10},boxWidth:7,padding:6}},tooltip:{callbacks:{label:ctx=>`${ctx.label}: ${BRL(ctx.raw)}`}}}}});}
+  if(grpD.length){charts.pie=new Chart(document.getElementById('ch-pie'),{type:'doughnut',data:{labels:grpD.map(([g])=>g),datasets:[{data:grpD.map(([,v])=>v),backgroundColor:['#c04040','#905010','#703080','#304070','#2a7a50','#804030'],borderWidth:0}]},options:{responsive:true,cutout:'55%',plugins:{legend:{position:'right',labels:{color:'#444',font:{size:10},boxWidth:7,padding:6}},tooltip:{callbacks:{label:ctx=>`${ctx.label}: ${BRL(ctx.raw)}`}}}}});}
 
-  const vm={};txFat(curMes).filter(t=>t.cat==='DESPESA').forEach(t=>{const k=t.descricao.trim().split(/\s+/).slice(0,4).join(' ');vm[k]=(vm[k]||0)+Math.abs(t.valor);});
-  document.getElementById('dash-top-fat').innerHTML=Object.entries(vm).sort((a,b)=>b[1]-a[1]).slice(0,6).map(([n,v],i)=>`<tr><td><span class="tm mut" style="font-size:9px;margin-right:6px">${String(i+1).padStart(2,'0')}</span>${n}</td><td class="tm red" style="text-align:right">${BRL(v)}</td></tr>`).join('')||'<tr><td colspan="2" style="text-align:center;color:var(--txt3);padding:14px">Sem fatura importada</td></tr>';
-  const extRel=txExt(curMes).filter(t=>t.cat!=='TRANSFERENCIA');
-  document.getElementById('dash-top-ext').innerHTML=extRel.slice(0,6).map(t=>`<tr><td style="max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${t.descricao_limpa||t.descricao}</td><td class="tm" style="text-align:right;color:${t.valor>0?'var(--grn)':'var(--red)'}">${t.valor>0?'+':''}${BRL(t.valor)}</td></tr>`).join('')||'<tr><td colspan="2" style="text-align:center;color:var(--txt3);padding:14px">Sem extrato importado</td></tr>';
+  function topTable(txns,id){
+    const vm={};txns.filter(t=>t.cat==='DESPESA').forEach(t=>{const k=t.descricao.trim().split(/\s+/).slice(0,4).join(' ');vm[k]=(vm[k]||0)+Math.abs(t.valor);});
+    document.getElementById(id).innerHTML=Object.entries(vm).sort((a,b)=>b[1]-a[1]).slice(0,6).map(([n,v],i)=>`<tr><td><span class="tm mut" style="font-size:9px;margin-right:6px">${String(i+1).padStart(2,'0')}</span><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:150px;display:inline-block;vertical-align:middle">${n}</span></td><td class="tm red" style="text-align:right">${BRL(v)}</td></tr>`).join('')||'<tr><td colspan="2" style="text-align:center;color:var(--txt3);padding:14px">Sem dados</td></tr>';
+  }
+  topTable(txNuFat(curMes),'dash-top-nu');
+  topTable(txStFat(curMes),'dash-top-st');
 
   const als=[];
   if(rec>0){
@@ -478,96 +479,126 @@ function renderDash(){
     als.push(p>meta?{t:'w',m:`⚠ Despesas em ${p.toFixed(0)}% da receita — meta é ${meta}%`}:{t:'ok',m:`✓ Despesas em ${p.toFixed(0)}% — dentro da meta de ${meta}%`});
     if(saldo<0)als.push({t:'w',m:`⚠ Mês no vermelho: ${BRL(Math.abs(saldo))} acima da receita`});
     if(tot.almocoInfo&&tot.almocoInfo.diasPerdidos>0)als.push({t:'i',m:`🍽 Giovaniburgue em ${tot.almocoInfo.diasPerdidos} dia(s) útil(eis) — possível substituto do almoço da Edi`});
+    // Uber alert
+    const uberTotal=allTx.filter(t=>t.subcategoria==='Uber').reduce((s,t)=>s+Math.abs(t.valor),0);
+    if(uberTotal>0&&uberTotal/tot.despTotal>0.15)als.push({t:'w',m:`🚗 Uber: ${BRL(uberTotal)} — ${(uberTotal/tot.despTotal*100).toFixed(0)}% das despesas totais`});
   }
   document.getElementById('dash-alerts').innerHTML=als.map(a=>`<div class="alert ${a.t==='w'?'aw':a.t==='i'?'ai':'aok'}">${a.m}</div>`).join('');
 }
 
-// ─── CARTÃO ────────────────────────────────────────────────────────────────────
-function renderCartao(){
-  const meses=mesesFat();
-  const sel=document.getElementById('fat-mes');
+// ─── CARTÃO (genérico) ─────────────────────────────────────────────────────────
+function renderCartao(banco){
+  const isNu=banco==='nu';
+  const gF=isNu?gNuFat:gStFat;const sF=isNu?sNuFat:sStFat;
+  const meses=Object.keys(gF()).sort().reverse();
+  const sel=document.getElementById(banco+'-fat-mes');
   sel.innerHTML=meses.map(k=>{const[y,m]=k.split('-');return`<option value="${k}"${k===curMes?' selected':''}>${MESES[parseInt(m)-1]} ${y}</option>`;}).join('')||'<option>—</option>';
   const mes=sel.value||curMes;
-  const catSel=document.getElementById('fat-cat');const catV=catSel.value;
+  const catSel=document.getElementById(banco+'-fat-cat');const catV=catSel.value;
   catSel.innerHTML='<option value="">Todas categorias</option>'+Object.keys(CATS).map(c=>`<option value="${c}"${c===catV?' selected':''}>${catLbl(c)}</option>`).join('');
-  const busca=document.getElementById('fat-busca').value.toLowerCase(),cat=catSel.value;
-  let txns=txFat(mes).filter(t=>(!cat||t.cat===cat)&&(!busca||t.descricao.toLowerCase().includes(busca)||(t.subcategoria||'').toLowerCase().includes(busca)));
-  const emp=document.getElementById('fat-empty'),wr=document.getElementById('fat-wrap');
+  const busca=document.getElementById(banco+'-fat-busca').value.toLowerCase(),cat=catSel.value;
+  let txns=(gF()[mes]||[]).filter(t=>(!cat||t.cat===cat)&&(!busca||t.descricao.toLowerCase().includes(busca)||(t.subcategoria||'').toLowerCase().includes(busca)));
+  const emp=document.getElementById(banco+'-fat-empty'),wr=document.getElementById(banco+'-fat-wrap');
   if(!txns.length){emp.style.display='block';wr.style.display='none';return;}
   emp.style.display='none';wr.style.display='block';
   const allSubs=getAllSubs();
-  document.getElementById('fat-tbody').innerHTML=txns.map(t=>`<tr>
+  document.getElementById(banco+'-fat-tbody').innerHTML=txns.map(t=>`<tr>
     <td class="tm mut" style="font-size:10px">${t.data_pagamento||'—'}</td>
     <td class="tm mut" style="font-size:10px">${t.data_competencia||'—'}</td>
-    <td style="max-width:190px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${t.descricao}">${t.descricao}</td>
-    <td><select style="font-size:10px;padding:2px 6px;border-color:${catCor(t.cat)}33" onchange="editFat('${mes}',${t.id},this.value)">${allSubs.map(s=>`<option${s===t.subcategoria?' selected':''}>${s}</option>`).join('')}</select></td>
+    <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${t.descricao}">${t.descricao}</td>
+    <td><select style="font-size:10px;padding:2px 6px;border-color:${catCor(t.cat)}33" onchange="editTxn('${banco}-fat','${mes}',${t.id},this.value)">${allSubs.map(s=>`<option${s===t.subcategoria?' selected':''}>${s}</option>`).join('')}</select></td>
     <td>${badge(t.cat)}</td>
     <td class="tm mut" style="font-size:10px">${t.parcela||'—'}</td>
     <td class="tm red" style="text-align:right;font-weight:500">${BRL(t.valor)}</td>
   </tr>`).join('');
   const total=txns.filter(t=>t.cat!=='TRANSFERENCIA').reduce((s,t)=>s+Math.abs(t.valor),0);
-  document.getElementById('fat-count').textContent=txns.length+' lançamentos';
-  document.getElementById('fat-total').textContent=BRL(total);
+  document.getElementById(banco+'-fat-count').textContent=txns.length+' lançamentos';
+  document.getElementById(banco+'-fat-total').textContent=BRL(total);
 }
-function editFat(mes,id,sub){const d=gFat();if(!d[mes])return;const t=d[mes].find(t=>t.id===id);if(!t)return;const{cat,g}=subToCat(sub);t.subcategoria=sub;t.cat=cat;t.grupo=g;sFat(d);}
 
-// ─── EXTRATO ───────────────────────────────────────────────────────────────────
-function renderExtrato(){
-  const meses=mesesExt();
-  const sel=document.getElementById('ext-mes');
+// ─── EXTRATO (genérico) ────────────────────────────────────────────────────────
+function renderExtrato(banco){
+  const isNu=banco==='nu';const gE=isNu?gNuExt:gStExt;
+  const meses=Object.keys(gE()).sort().reverse();
+  const sel=document.getElementById(banco+'-ext-mes');
   sel.innerHTML=meses.map(k=>{const[y,m]=k.split('-');return`<option value="${k}"${k===curMes?' selected':''}>${MESES[parseInt(m)-1]} ${y}</option>`;}).join('')||'<option>—</option>';
   const mes=sel.value||(meses[0]||curMes);
-  const catSel=document.getElementById('ext-cat');const catV=catSel.value;
+  const catSel=document.getElementById(banco+'-ext-cat');const catV=catSel.value;
   catSel.innerHTML='<option value="">Todas categorias</option>'+Object.keys(CATS).map(c=>`<option value="${c}"${c===catV?' selected':''}>${catLbl(c)}</option>`).join('');
-  const tipo=document.getElementById('ext-tipo').value,cat=catSel.value,busca=document.getElementById('ext-busca').value.toLowerCase();
-  let txns=txExt(mes).filter(t=>{
+  const tipo=document.getElementById(banco+'-ext-tipo').value,cat=catSel.value,busca=document.getElementById(banco+'-ext-busca').value.toLowerCase();
+  let txns=(gE()[mes]||[]).filter(t=>{
     if(tipo==='e'&&t.valor<=0)return false;if(tipo==='s'&&t.valor>=0)return false;
     if(cat&&t.cat!==cat)return false;
-    if(busca&&!(t.descricao_limpa||t.descricao).toLowerCase().includes(busca)&&!(t.subcategoria||'').toLowerCase().includes(busca))return false;
+    if(busca&&!(t.descricao_limpa||t.descricao).toLowerCase().includes(busca))return false;
     return true;
   });
-  const emp=document.getElementById('ext-empty'),wr=document.getElementById('ext-wrap');
+  const emp=document.getElementById(banco+'-ext-empty'),wr=document.getElementById(banco+'-ext-wrap');
   if(!meses.length||!txns.length){emp.style.display='block';wr.style.display='none';return;}
   emp.style.display='none';wr.style.display='block';
   const allSubs=getAllSubs();
-  document.getElementById('ext-tbody').innerHTML=txns.map(t=>`<tr>
+  document.getElementById(banco+'-ext-tbody').innerHTML=txns.map(t=>`<tr>
     <td class="tm mut" style="font-size:10px">${t.data}</td>
     <td style="max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${t.descricao_limpa||t.descricao}</td>
-    <td style="max-width:100px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--txt3);font-size:11px">${t.origem||'—'}</td>
-    <td><select style="font-size:10px;padding:2px 6px;border-color:${catCor(t.cat)}33" onchange="editExt('${mes}',${t.id},this.value)">${allSubs.map(s=>`<option${s===t.subcategoria?' selected':''}>${s}</option>`).join('')}</select></td>
+    <td style="max-width:110px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--txt3);font-size:11px">${t.origem||'—'}</td>
+    <td><select style="font-size:10px;padding:2px 6px;border-color:${catCor(t.cat)}33" onchange="editTxn('${banco}-ext','${mes}',${t.id},this.value)">${allSubs.map(s=>`<option${s===t.subcategoria?' selected':''}>${s}</option>`).join('')}</select></td>
     <td>${badge(t.cat)}</td>
     <td class="tm" style="text-align:right;font-weight:500;color:${t.valor>0?'var(--grn)':'var(--red)'}">${t.valor>0?'+':''}${BRL(t.valor)}</td>
   </tr>`).join('');
   const e=txns.filter(t=>t.valor>0).reduce((s,t)=>s+t.valor,0),sa=txns.filter(t=>t.valor<0).reduce((s,t)=>s+Math.abs(t.valor),0),sl=e-sa;
-  document.getElementById('ext-count').textContent=txns.length+' lançamentos';
-  document.getElementById('ext-in').textContent=BRL(e);document.getElementById('ext-out').textContent=BRL(sa);
-  document.getElementById('ext-saldo').textContent=BRL(sl);document.getElementById('ext-saldo').style.color=sl>=0?'var(--grn)':'var(--red)';
+  document.getElementById(banco+'-ext-count').textContent=txns.length+' lançamentos';
+  document.getElementById(banco+'-ext-in').textContent=BRL(e);document.getElementById(banco+'-ext-out').textContent=BRL(sa);
+  document.getElementById(banco+'-ext-saldo').textContent=BRL(sl);document.getElementById(banco+'-ext-saldo').style.color=sl>=0?'var(--grn)':'var(--red)';
 }
-function editExt(mes,id,sub){const d=gExt();if(!d[mes])return;const t=d[mes].find(t=>t.id===id);if(!t)return;const{cat,g}=subToCat(sub);t.subcategoria=sub;t.cat=cat;t.grupo=g;sExt(d);}
 
-// ─── FLUXO DE CAIXA (genérico) ─────────────────────────────────────────────────
+function editTxn(type,mes,id,sub){
+  const[banco,kind]=type.split('-');
+  const isNu=banco==='nu';const g=kind==='fat'?(isNu?gNuFat:gStFat):(isNu?gNuExt:gStExt);const s=kind==='fat'?(isNu?sNuFat:sStFat):(isNu?sNuExt:sStExt);
+  const d=g();if(!d[mes])return;const t=d[mes].find(t=>t.id===id);if(!t)return;
+  const{cat,g:grp}=subToCat(sub);t.subcategoria=sub;t.cat=cat;t.grupo=grp;s(d);
+}
+
+// ─── FLUXO (genérico) ──────────────────────────────────────────────────────────
 function setCFTab(scope,tab){
-  if(scope==='nu'){nuCFTab=tab;document.querySelectorAll('#nu-cf-tabs .tab').forEach((t,i)=>t.classList.toggle('active',['consolidado','extrato','cartao'][i]===tab));renderNuFluxo();}
-  else{anCFTab=tab;document.querySelectorAll('#an-cf-tabs .tab').forEach((t,i)=>t.classList.toggle('active',['consolidado','nubank'][i]===tab));renderAnFluxo();}
+  cfTabs[scope]=tab;
+  const tabs=document.querySelectorAll(`#${scope}-cf-tabs .tab`);
+  const labels={nu:['consolidado','extrato','cartao'],st:['consolidado','extrato','cartao'],an:['todos','nubank','santander']};
+  tabs.forEach((t,i)=>t.classList.toggle('active',labels[scope][i]===tab));
+  renderFluxo(scope);
 }
 
-function buildCFTxns(mes,tab,banco){
+function buildCFTxns(mes,scope,tab){
   let txns=[];
-  if(tab==='consolidado'||tab==='extrato'||tab==='nubank'||tab==='todos'){
-    txExt(mes).forEach(t=>txns.push({...t,banco:banco||'Nubank',fonte:'Conta',dl:t.descricao_limpa||t.descricao,entrada:t.valor>0?t.valor:0,saida:t.valor<0?Math.abs(t.valor):0,data:t.data}));
+  const addFat=(fat,banco)=>fat.forEach(t=>txns.push({...t,banco,fonte:'Cartão',dl:t.descricao,data:t.data_competencia||t.data_pagamento,entrada:0,saida:Math.abs(t.valor)}));
+  const addExt=(ext,banco)=>ext.forEach(t=>txns.push({...t,banco,fonte:'Conta',dl:t.descricao_limpa||t.descricao,entrada:t.valor>0?t.valor:0,saida:t.valor<0?Math.abs(t.valor):0}));
+
+  if(scope==='nu'){
+    if(tab==='consolidado'||tab==='extrato')addExt(txNuExt(mes),'Nubank');
+    if(tab==='consolidado'||tab==='cartao')addFat(txNuFat(mes),'Nubank');
+  } else if(scope==='st'){
+    if(tab==='consolidado'||tab==='extrato')addExt(txStExt(mes),'Santander');
+    if(tab==='consolidado'||tab==='cartao')addFat(txStFat(mes),'Santander');
+  } else if(scope==='an'){
+    if(tab==='todos'||tab==='nubank'){addExt(txNuExt(mes),'Nubank');addFat(txNuFat(mes),'Nubank');}
+    if(tab==='todos'||tab==='santander'){addExt(txStExt(mes),'Santander');addFat(txStFat(mes),'Santander');}
   }
-  if(tab==='consolidado'||tab==='cartao'||tab==='nubank'||tab==='todos'){
-    txFat(mes).forEach(t=>txns.push({...t,banco:banco||'Nubank',fonte:'Cartão',dl:t.descricao,entrada:0,saida:Math.abs(t.valor),data:t.data_competencia||t.data_pagamento}));
-  }
-  // Filtrar transferências no consolidado
-  if(tab==='consolidado'||tab==='nubank'||tab==='todos')txns=txns.filter(t=>t.cat!=='TRANSFERENCIA');
+
+  if(tab==='consolidado'||tab==='todos')txns=txns.filter(t=>t.cat!=='TRANSFERENCIA');
   txns.sort((a,b)=>(a.data||'').split('/').reverse().join('').localeCompare((b.data||'').split('/').reverse().join('')));
   let saldo=0;return txns.map(t=>{saldo+=t.entrada-t.saida;return{...t,saldoAcum:saldo};});
 }
 
-function renderFluxoGeneric(mes,txns,kpisId,barId,lineId,tbodyId,chartKeys){
+function renderFluxo(scope){
+  const all=mesesAll();
+  const emptyId=scope+'-cf-empty',contentId=scope+'-cf-content';
+  if(!all.length){document.getElementById(emptyId).style.display='block';document.getElementById(contentId).style.display='none';return;}
+  if(!all.includes(curMes))curMes=all[0];
+  document.getElementById(emptyId).style.display='none';document.getElementById(contentId).style.display='block';
+  renderPills(scope+'-cf-pills','()=>renderFluxo("'+scope+'")');
+  const tab=cfTabs[scope];
+  const txns=buildCFTxns(curMes,scope,tab);
   const te=txns.reduce((s,t)=>s+t.entrada,0),ts=txns.reduce((s,t)=>s+t.saida,0),sf=te-ts;
-  document.getElementById(kpisId).innerHTML=[
+
+  document.getElementById(scope+'-cf-kpis').innerHTML=[
     {l:'Total entradas',v:BRL(te),c:'var(--grn)'},{l:'Total saídas',v:BRL(ts),c:'var(--red)'},
     {l:'Saldo do período',v:BRL(Math.abs(sf)),s:sf>=0?'positivo':'negativo',c:sf>=0?'var(--grn)':'var(--red)'},
     {l:'Lançamentos',v:txns.length,s:'movimentações',c:'var(--txt)'},
@@ -577,18 +608,19 @@ function renderFluxoGeneric(mes,txns,kpisId,barId,lineId,tbodyId,chartKeys){
   const dates=Object.keys(byDate).sort((a,b)=>a.split('/').reverse().join('').localeCompare(b.split('/').reverse().join('')));
   let cum=0;const cumData=dates.map(d=>{cum+=byDate[d].e-byDate[d].s;return cum;});
 
-  if(charts[chartKeys[0]])charts[chartKeys[0]].destroy();
-  charts[chartKeys[0]]=new Chart(document.getElementById(barId),{type:'bar',data:{labels:dates,datasets:[{label:'Entradas',data:dates.map(d=>byDate[d].e),backgroundColor:'#2a7a5044',borderRadius:2},{label:'Saídas',data:dates.map(d=>byDate[d].s),backgroundColor:'#c0404088',borderRadius:2}]},options:{responsive:true,plugins:{legend:{labels:{color:'#383838',font:{size:10},boxWidth:7}}},scales:{x:{ticks:{color:'#252525',font:{size:9},maxTicksLimit:12},grid:{display:false},border:{display:false}},y:{ticks:{color:'#252525',font:{size:9},callback:v=>BRL(v)},grid:{color:'#111'},border:{display:false}}}}});
-
-  if(charts[chartKeys[1]])charts[chartKeys[1]].destroy();
+  const barKey=scope+'CFBar',lineKey=scope+'CFLine';
+  if(charts[barKey])charts[barKey].destroy();
+  charts[barKey]=new Chart(document.getElementById('ch-'+scope+'-cf-bar'),{type:'bar',data:{labels:dates,datasets:[{label:'Entradas',data:dates.map(d=>byDate[d].e),backgroundColor:'#2a7a5044',borderRadius:2},{label:'Saídas',data:dates.map(d=>byDate[d].s),backgroundColor:'#c0404088',borderRadius:2}]},options:{responsive:true,plugins:{legend:{labels:{color:'#383838',font:{size:10},boxWidth:7}}},scales:{x:{ticks:{color:'#252525',font:{size:9},maxTicksLimit:12},grid:{display:false},border:{display:false}},y:{ticks:{color:'#252525',font:{size:9},callback:v=>BRL(v)},grid:{color:'#111'},border:{display:false}}}}});
+  if(charts[lineKey])charts[lineKey].destroy();
   const lc=cumData[cumData.length-1]||0;
-  charts[chartKeys[1]]=new Chart(document.getElementById(lineId),{type:'line',data:{labels:dates,datasets:[{label:'Saldo acumulado',data:cumData,borderColor:lc>=0?'#2a7a50':'#c04040',backgroundColor:'transparent',tension:.3,pointRadius:2,borderWidth:1.5}]},options:{responsive:true,plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#252525',font:{size:9},maxTicksLimit:12},grid:{display:false},border:{display:false}},y:{ticks:{color:'#252525',font:{size:9},callback:v=>BRL(v)},grid:{color:'#111'},border:{display:false}}}}});
+  charts[lineKey]=new Chart(document.getElementById('ch-'+scope+'-cf-line'),{type:'line',data:{labels:dates,datasets:[{data:cumData,borderColor:lc>=0?'#2a7a50':'#c04040',backgroundColor:'transparent',tension:.3,pointRadius:2,borderWidth:1.5}]},options:{responsive:true,plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#252525',font:{size:9},maxTicksLimit:12},grid:{display:false},border:{display:false}},y:{ticks:{color:'#252525',font:{size:9},callback:v=>BRL(v)},grid:{color:'#111'},border:{display:false}}}}});
 
+  const bancoColors={'Nubank':'#6a50c0','Santander':'#c07010'};
   const hasMulti=txns.some(t=>t.banco);
-  document.getElementById(tbodyId).innerHTML=txns.map(t=>`<tr>
+  document.getElementById(scope+'-cf-tbody').innerHTML=txns.map(t=>`<tr>
     <td class="tm mut" style="font-size:10px">${t.data||'—'}</td>
-    <td style="max-width:170px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${t.dl||'—'}</td>
-    ${hasMulti?`<td><span class="badge src-nu">${t.banco||'—'}</span></td>`:''}
+    <td style="max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${t.dl||'—'}</td>
+    ${hasMulti&&scope==='an'?`<td><span class="badge" style="background:${(bancoColors[t.banco]||'#444')}18;color:${bancoColors[t.banco]||'#444'}">${t.banco||'—'}</span></td>`:''}
     <td><span class="badge" style="background:#18181800;border:1px solid var(--border2);color:var(--txt3)">${t.fonte||'—'}</span></td>
     <td>${badge(t.cat)}</td>
     <td class="tm grn" style="text-align:right">${t.entrada>0?BRL(t.entrada):'—'}</td>
@@ -597,55 +629,33 @@ function renderFluxoGeneric(mes,txns,kpisId,barId,lineId,tbodyId,chartKeys){
   </tr>`).join('');
 }
 
-function renderNuFluxo(){
-  const all=mesesAll();if(!all.length){document.getElementById('nu-cf-empty').style.display='block';document.getElementById('nu-cf-content').style.display='none';return;}
-  if(!all.includes(curMes))curMes=all[0];
-  document.getElementById('nu-cf-empty').style.display='none';document.getElementById('nu-cf-content').style.display='block';
-  renderPills('nu-cf-pills','renderNuFluxo');
-  const txns=buildCFTxns(curMes,nuCFTab,'Nubank');
-  renderFluxoGeneric(curMes,txns,'nu-cf-kpis','ch-nu-cf-bar','ch-nu-cf-line','nu-cf-tbody',['nuCFBar','nuCFLine']);
-}
-
-function renderAnFluxo(){
-  const all=mesesAll();if(!all.length){document.getElementById('an-cf-empty').style.display='block';document.getElementById('an-cf-content').style.display='none';return;}
-  if(!all.includes(curMes))curMes=all[0];
-  document.getElementById('an-cf-empty').style.display='none';document.getElementById('an-cf-content').style.display='block';
-  renderPills('an-cf-pills','renderAnFluxo');
-  // Por agora: Nubank. Santander virá depois.
-  let txns=buildCFTxns(curMes,'todos','Nubank');
-  renderFluxoGeneric(curMes,txns,'an-cf-kpis','ch-an-cf-bar','ch-an-cf-line','an-cf-tbody',['anCFBar','anCFLine']);
-}
-
 // ─── DRE (genérico) ────────────────────────────────────────────────────────────
-function saveRec(scope){
-  const inp=document.getElementById(scope+'-rec-inp');
-  const v=parseFloat(inp.value)||0;sRec(scope,curMes,v);
-}
+function saveRec(sc){const inp=document.getElementById(sc+'-rec-inp');const v=parseFloat(inp.value)||0;sRec(sc,curMes,v);}
 
-function buildDRE(mes,allTx,scope,contentId,emptyId,hintId,recRefId){
-  const all=mesesAll();
-  if(!all.length){document.getElementById(emptyId).style.display='block';document.getElementById(contentId).innerHTML='';return;}
-  if(!all.includes(mes)){mes=all[0];curMes=mes;}
-  document.getElementById(emptyId).style.display='none';
+function renderDRE(scope){
+  const all=mesesAll();if(!all.length){document.getElementById(scope+'-dre-empty').style.display='block';document.getElementById(scope+'-dre-content').innerHTML='';return;}
+  if(!all.includes(curMes))curMes=all[0];
+  document.getElementById(scope+'-dre-empty').style.display='none';
+  renderPills(scope+'-dre-pills','()=>renderDRE("'+scope+'")');
 
-  const tot=calcTot(mes,allTx);
+  const txns=getTxnsByScope(curMes,scope);
+  const tot=calcTot(curMes,txns);
   const recAuto=tot.receitaExt+tot.almocoBenefit;
-  const recManual=gRec(scope,mes);
+  const recManual=gRec(scope,curMes);
   const rec=recManual>0?recManual:recAuto;
 
   const inp=document.getElementById(scope+'-rec-inp');
   if(inp&&!inp.value&&rec>0)inp.value=recManual>0?recManual:tot.receitaExt;
 
-  const hint=document.getElementById(hintId);
+  const hint=document.getElementById(scope+'-dre-hint');
   if(hint){
     let h='Informe a receita líquida';
-    if(tot.receitaExt>0)h=`✓ Salário detectado: ${BRL(tot.receitaExt)}`;
+    if(tot.receitaExt>0)h=`✓ Receita detectada: ${BRL(tot.receitaExt)}`;
     if(tot.almocoBenefit>0)h+=` + Almoço da Edi: ${BRL(tot.almocoBenefit)} (${tot.almocoInfo.diasUsados}d)`;
     hint.textContent=h;
   }
-
-  const[y,m]=mes.split('-');
-  if(recRefId)document.getElementById(recRefId).textContent=MESES[parseInt(m)-1]+' '+y;
+  const[y,m]=curMes.split('-');
+  const refEl=document.getElementById(scope+'-rec-ref');if(refEl)refEl.textContent=MESES[parseInt(m)-1]+' '+y;
 
   const metas=gMetas();
   function pct(v){return rec>0?(v/rec*100).toFixed(1)+'%':'—';}
@@ -661,17 +671,16 @@ function buildDRE(mes,allTx,scope,contentId,emptyId,hintId,recRefId){
   const recItems=[];
   if(tot.receitaExt>0)recItems.push({s:'Salário',v:tot.receitaExt});
   if(tot.almocoBenefit>0)recItems.push({s:'Almoço da Edi',v:tot.almocoBenefit,note:`${tot.almocoInfo.diasUsados}d × ${BRL(gAlmoco().valor)}`});
-  allTx.filter(t=>t.cat==='RECEITA_LIQUIDA'&&t.subcategoria!=='Salário'&&t.valor>0).forEach(t=>recItems.push({s:t.subcategoria,v:t.valor}));
+  txns.filter(t=>t.cat==='RECEITA_LIQUIDA'&&t.subcategoria!=='Salário'&&t.valor>0).forEach(t=>recItems.push({s:t.subcategoria,v:t.valor}));
 
   html+=`<div class="card" style="padding:0;overflow:hidden;margin-bottom:8px">
     <div class="drow hdr"><span class="dlbl b" style="color:var(--grn)">(+) RECEITA LÍQUIDA</span><span class="dval b" style="color:var(--grn)">${rec>0?BRL(rec):'Informe acima'}</span></div>
-    ${recItems.map(r=>`<div class="drow sub"><span class="dlbl" style="color:var(--txt3);display:flex;align-items:center;gap:6px">${r.s}${r.note?`<span style="font-size:9px;color:var(--txt3)">(${r.note})</span>`:''}</span><span class="dval" style="color:var(--txt3)">${BRL(r.v)}</span></div>`).join('')}
+    ${recItems.map(r=>`<div class="drow sub"><span class="dlbl" style="color:var(--txt3)">${r.s}${r.note?` <span style="font-size:9px">(${r.note})</span>`:''}</span><span class="dval" style="color:var(--txt3)">${BRL(r.v)}</span></div>`).join('')}
   </div>`;
 
   // DESPESAS
-  const despGrupos={};
-  allTx.filter(t=>t.cat==='DESPESA').forEach(t=>{if(!despGrupos[t.grupo])despGrupos[t.grupo]=[];despGrupos[t.grupo].push(t);});
-  const gioWarn=tot.almocoInfo&&tot.almocoInfo.diasPerdidos>0?`<div style="font-size:9px;color:var(--amber);padding:5px 14px;background:#1a1000;border-top:1px solid #2a1800">⚠ ${tot.almocoInfo.diasPerdidos} dia(s) com Giovaniburgue em dia útil — possível substituto do almoço da Edi</div>`:'';
+  const despGrupos={};txns.filter(t=>t.cat==='DESPESA').forEach(t=>{if(!despGrupos[t.grupo])despGrupos[t.grupo]=[];despGrupos[t.grupo].push(t);});
+  const gioWarn=tot.almocoInfo&&tot.almocoInfo.diasPerdidos>0?`<div style="font-size:9px;color:var(--amber);padding:5px 14px;background:#1a1000;border-top:1px solid #2a1800">⚠ ${tot.almocoInfo.diasPerdidos} dia(s) com Giovaniburgue em dia útil</div>`:'';
 
   if(tot.despTotal>0){
     html+=`<div class="card" style="padding:0;overflow:hidden;margin-bottom:8px">
@@ -699,8 +708,7 @@ function buildDRE(mes,allTx,scope,contentId,emptyId,hintId,recRefId){
    {label:'PREVIDÊNCIA',cat:'PREVIDENCIA',total:tot.prev,meta:metas.prev,cor:'#107060'},
   ].forEach(b=>{
     if(b.total<=0)return;
-    const items=allTx.filter(t=>t.cat===b.cat);
-    const subT={};items.forEach(t=>{subT[t.subcategoria]=(subT[t.subcategoria]||0)+Math.abs(t.valor);});
+    const subT={};txns.filter(t=>t.cat===b.cat).forEach(t=>{subT[t.subcategoria]=(subT[t.subcategoria]||0)+Math.abs(t.valor);});
     html+=`<div class="card" style="padding:0;overflow:hidden;margin-bottom:8px">
       <div class="drow hdr"><span class="dlbl b" style="color:${b.cor}">(-) ${b.label}</span><div style="display:flex;align-items:center;gap:12px">${metaBar(b.total,b.meta)}<span class="dval b" style="color:${b.cor}">${BRL(b.total)}</span></div></div>
       ${Object.entries(subT).map(([s,v])=>`<div class="drow sub"><span class="dlbl" style="color:var(--txt3)">${s}</span><span class="dval" style="color:var(--txt3)">${BRL(v)}</span></div>`).join('')}
@@ -708,67 +716,61 @@ function buildDRE(mes,allTx,scope,contentId,emptyId,hintId,recRefId){
   });
 
   const resFinal=rec-tot.despTotal-tot.invTotal;
-  html+=`<div class="card" style="padding:0;overflow:hidden">
-    <div class="drow res"><span class="dlbl b" style="font-size:13px">= RESULTADO LÍQUIDO</span><span class="dval b" style="font-size:18px;color:${resFinal>=0?'var(--grn)':'var(--red)'}">${rec>0?(resFinal>=0?'+ ':'-')+BRL(Math.abs(resFinal)):'Informe a receita'}</span></div>
-  </div>`;
-
-  document.getElementById(contentId).innerHTML=html;
-}
-
-function renderNuDRE(){
-  const all=mesesAll();if(!all.includes(curMes)&&all.length)curMes=all[0];
-  renderPills('nu-dre-pills','renderNuDRE');
-  const allTx=[...txFat(curMes),...txExt(curMes)];
-  buildDRE(curMes,allTx,'nu','nu-dre-content','nu-dre-empty','nu-dre-hint','nu-rec-ref');
-}
-
-function renderAnDRE(){
-  const all=mesesAll();if(!all.includes(curMes)&&all.length)curMes=all[0];
-  renderPills('an-dre-pills','renderAnDRE');
-  // Por agora: Nubank. Quando Santander for adicionado, concatenar aqui também.
-  const allTx=[...txFat(curMes),...txExt(curMes)];
-  buildDRE(curMes,allTx,'an','an-dre-content','an-dre-empty','an-dre-hint','an-rec-ref');
+  html+=`<div class="card" style="padding:0;overflow:hidden"><div class="drow res"><span class="dlbl b" style="font-size:13px">= RESULTADO LÍQUIDO</span><span class="dval b" style="font-size:18px;color:${resFinal>=0?'var(--grn)':'var(--red)'}">${rec>0?(resFinal>=0?'+ ':'-')+BRL(Math.abs(resFinal)):'Informe a receita'}</span></div></div>`;
+  document.getElementById(scope+'-dre-content').innerHTML=html;
 }
 
 // ─── IMPORTAR ──────────────────────────────────────────────────────────────────
-function initImport(){
-  popMesSel('imp-mes-fat');popMesSel('imp-mes-ext');
-  const inpF=document.getElementById('inp-fat');
-  if(!inpF._i){inpF._i=true;inpF.addEventListener('change',()=>{if(inpF.files[0])setPDF(inpF.files[0]);});
-    const zf=document.getElementById('zone-fat');
-    zf.addEventListener('dragover',e=>{e.preventDefault();zf.classList.add('drag');});
-    zf.addEventListener('dragleave',()=>zf.classList.remove('drag'));
-    zf.addEventListener('drop',e=>{e.preventDefault();zf.classList.remove('drag');if(e.dataTransfer.files[0])setPDF(e.dataTransfer.files[0]);});}
-  const inpE=document.getElementById('inp-ext');
-  if(!inpE._i){inpE._i=true;inpE.addEventListener('change',()=>{if(inpE.files[0])setCSV(inpE.files[0]);});
-    const ze=document.getElementById('zone-ext');
-    ze.addEventListener('dragover',e=>{e.preventDefault();ze.classList.add('drag');});
-    ze.addEventListener('dragleave',()=>ze.classList.remove('drag'));
-    ze.addEventListener('drop',e=>{e.preventDefault();ze.classList.remove('drag');if(e.dataTransfer.files[0])setCSV(e.dataTransfer.files[0]);});}
+function initImport(){setImpTab(impTab);}
+
+function setImpTab(tab){
+  impTab=tab;
+  document.querySelectorAll('#imp-tabs .tab').forEach((el,i)=>el.classList.toggle('active',['nu-fat','nu-ext','st-fat','st-ext'][i]===tab));
+  const configs={
+    'nu-fat':{title:'Fatura Nubank Cartão',sub:'PDF',icon:'💜',accept:'.pdf',prompt:buildNuFatPrompt,onSave:saveNuFat,type:'pdf'},
+    'nu-ext':{title:'Extrato Nubank Conta',sub:'CSV',icon:'💜',accept:'.csv',prompt:null,onSave:saveNuExt,type:'csv'},
+    'st-fat':{title:'Fatura Santander Cartão',sub:'PDF',icon:'🟠',accept:'.pdf',prompt:buildStFatPrompt,onSave:saveStFat,type:'pdf'},
+    'st-ext':{title:'Extrato Santander Conta',sub:'PDF',icon:'🟠',accept:'.pdf',prompt:buildStExtPrompt,onSave:saveStExt,type:'pdf'},
+  };
+  const cfg=configs[tab];
+  const now=new Date();let mesOptions='';
+  for(let i=0;i<12;i++){const d=new Date(now.getFullYear(),now.getMonth()-i,1);const k=MK(d.getFullYear(),d.getMonth()+1);mesOptions+=`<option value="${k}"${curMes===k?' selected':''}>${MESES[d.getMonth()]} ${d.getFullYear()}</option>`;}
+
+  document.getElementById('imp-body').innerHTML=`
+    <div class="card" style="margin-bottom:10px"><div class="clbl">Mês de referência</div><select id="imp-mes" style="width:100%;margin-top:6px">${mesOptions}</select></div>
+    <div class="card" style="margin-bottom:10px">
+      <div class="clbl" style="margin-bottom:10px">${cfg.icon} ${cfg.title} (${cfg.sub})</div>
+      <div class="zone" id="imp-zone" onclick="document.getElementById('imp-file').click()">
+        <input type="file" id="imp-file" accept="${cfg.accept}" style="display:none">
+        <div style="font-size:18px;margin-bottom:6px;opacity:.3">${cfg.type==='pdf'?'📄':'📊'}</div>
+        <div style="font-size:12px;color:var(--txt2);margin-bottom:3px" id="imp-lbl">Arraste o arquivo ou clique</div>
+        <div style="font-size:10px;color:var(--txt3)">${tab==='nu-ext'?'App Nubank → Perfil → Extratos → Exportar CSV':tab==='st-fat'?'Santander Internet Banking → Cartão → Ver Fatura → PDF':tab==='st-ext'?'Santander Internet Banking → Conta → Extrato → PDF':'App Nubank → Cartão → Ver fatura → Exportar PDF'}</div>
+      </div>
+    </div>
+    <div style="display:flex;justify-content:flex-end;gap:8px;margin-bottom:12px">
+      <button class="btn-g" onclick="goTo('dash')">Cancelar</button>
+      <button class="btn" onclick="processarImp()">Processar com IA →</button>
+    </div>
+    <div id="imp-proc" style="display:none"><div class="card" style="text-align:center;padding:26px"><div class="spin" style="margin-bottom:12px"></div><div id="imp-msg" style="font-size:11px;color:var(--txt2)"></div><div id="imp-err" style="color:var(--red);font-size:11px;display:none;margin-top:8px;line-height:1.6;max-width:400px;margin:8px auto 0"></div><button class="btn-g" id="imp-back" style="display:none;margin-top:10px" onclick="initImport()">← Voltar</button></div></div>
+    <div id="imp-rev" style="display:none"></div>`;
+
+  const inpF=document.getElementById('imp-file');
+  inpF.addEventListener('change',()=>{if(inpF.files[0])setImpFile(inpF.files[0]);});
+  const z=document.getElementById('imp-zone');
+  z.addEventListener('dragover',e=>{e.preventDefault();z.classList.add('drag');});
+  z.addEventListener('dragleave',()=>z.classList.remove('drag'));
+  z.addEventListener('drop',e=>{e.preventDefault();z.classList.remove('drag');if(e.dataTransfer.files[0])setImpFile(e.dataTransfer.files[0]);});
 }
-function setImpTab(t){
-  document.getElementById('imp-tab-fat').style.display=t==='fatura'?'block':'none';
-  document.getElementById('imp-tab-ext').style.display=t==='extrato'?'block':'none';
-  document.querySelectorAll('#imp-tabs .tab').forEach((el,i)=>el.classList.toggle('active',(i===0&&t==='fatura')||(i===1&&t==='extrato')));
-}
-function setPDF(f){pdfFile=f;document.getElementById('lbl-fat').textContent='✓ '+f.name;document.getElementById('lbl-fat').style.color='var(--grn)';document.getElementById('zone-fat').classList.add('loaded');}
-function setCSV(f){csvFile=f;document.getElementById('lbl-ext').textContent='✓ '+f.name;document.getElementById('lbl-ext').style.color='var(--grn)';document.getElementById('zone-ext').classList.add('loaded');}
+
+function setImpFile(f){pdfFiles[impTab]=f;document.getElementById('imp-lbl').textContent='✓ '+f.name;document.getElementById('imp-lbl').style.color='var(--grn)';document.getElementById('imp-zone').classList.add('loaded');}
 
 async function extractPDF(f){const ab=await f.arrayBuffer();const pdf=await pdfjsLib.getDocument({data:ab}).promise;let t='';for(let i=1;i<=pdf.numPages;i++){const pg=await pdf.getPage(i);const ct=await pg.getTextContent();t+=ct.items.map(x=>x.str).join(' ')+'\n';}return t;}
 
-async function processarFatura(){
-  if(!pdfFile){alert('Selecione o PDF.');return;}
-  document.getElementById('proc-fat').style.display='block';document.getElementById('rev-fat').style.display='none';
-  document.getElementById('proc-fat-err').style.display='none';document.getElementById('btn-fat-v').style.display='none';
-  try{
-    document.getElementById('proc-fat-msg').textContent='Extraindo texto do PDF...';
-    const pdfText=await extractPDF(pdfFile);
-    document.getElementById('proc-fat-msg').textContent='Claude categorizando...';
-    const mesRef=document.getElementById('imp-mes-fat').value;const[y,m]=mesRef.split('-');
-    const venc=`19/${String(m).padStart(2,'0')}/${y}`;
-    const prompt=`Analise esta fatura Nubank e extraia TODAS as transações de compra.
-REGRAS: Ignore "Pagamento em [data]" e "Saldo restante". data_competencia=data da compra, data_pagamento=${venc}. parcela="X/Y".
-MAPEAMENTOS:
+function buildNuFatPrompt(pdfText,mesRef){
+  const[y,m]=mesRef.split('-');const venc=`19/${String(m).padStart(2,'0')}/${y}`;
+  return`Analise esta fatura Nubank e extraia TODAS as transações de compra.
+REGRAS: Ignore "Pagamento em [data]" e "Saldo restante". data_competencia=data da compra (ano ${parseInt(y)}), data_pagamento=${venc}. parcela="X/Y".
+MAPEAMENTOS NUBANK:
 - Mp *Giovaniburgue/Cafe Campos Altos/Distribuidora da India/Mp *Emporiolucian/Mp *Keyllany/Valori *Walmor Grill → sub:"Restaurantes",cat:DESPESA,grupo:Alimentação
 - Padaria la Panetteria → sub:"Padaria",cat:DESPESA,grupo:Alimentação
 - Supermercado e Padaria → sub:"Supermercado",cat:DESPESA,grupo:Alimentação
@@ -777,11 +779,11 @@ MAPEAMENTOS:
 - AZUL LINHAS AEREAS → sub:"Viagem",cat:DESPESA,grupo:Lazer
 - Insider Come*Insiderst → sub:"Cursos",cat:INVESTIMENTO_PESSOAL,grupo:Investimento Pessoal
 - Ec *Truepaleo → sub:"Outros Pessoal",cat:DESPESA,grupo:Pessoal
-- Netflix/Spotify/Disney/YouTube/ChatGPT/OpenAI/AmazonPrime → sub:"Streaming",cat:DESPESA,grupo:Lazer
+- Netflix/Spotify/Disney/YouTube/ChatGPT/OpenAI/AmazonPrime/GOOGLE YOUTUBE/GOOGLE TANDEM → sub:"Streaming",cat:DESPESA,grupo:Lazer
 - iFood/IFD*/Uber Eats/Rappi → sub:"Outros Alimentação",cat:DESPESA,grupo:Alimentação
 - UBER/Uber* → sub:"Uber",cat:DESPESA,grupo:Transporte
 - Gympass/Wellhub → sub:"Academia",cat:INVESTIMENTO_PESSOAL,grupo:Investimento Pessoal
-- Barbearia → sub:"Barbearia",cat:DESPESA,grupo:Pessoal
+- ASA*Barbearia/Barbearia → sub:"Barbearia",cat:DESPESA,grupo:Pessoal
 - Caixa Instantânea → sub:"Loteria",cat:DESPESA,grupo:Pessoal
 - PADRE PAULO RICARDO → sub:"Padre Paulo Ricardo",cat:INVESTIMENTO_PESSOAL,grupo:Investimento Pessoal
 - GUILHERME FREIRE → sub:"Guilherme Freire",cat:INVESTIMENTO_PESSOAL,grupo:Investimento Pessoal
@@ -789,49 +791,52 @@ MAPEAMENTOS:
 DICIONÁRIO:${buildDict()}
 FATURA:${pdfText.substring(0,16000)}
 JSON APENAS:{"vencimento":"DD/MM/AAAA","total":0.00,"transacoes":[{"data_competencia":"DD/MM/AAAA","data_pagamento":"DD/MM/AAAA","descricao":"nome","subcategoria":"sub","cat":"DESPESA","grupo":"Alimentação","valor":0.00,"parcela":""}]}`;
-    const res=await fetch('/api/claude',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:8000,messages:[{role:'user',content:prompt}]})});
-    if(!res.ok)throw new Error('API '+res.status+': '+await res.text());
-    const data=await res.json();if(data.error)throw new Error(data.error.message||JSON.stringify(data.error));
-    const txt=data.content.map(b=>b.text||'').join('');
-    const json=JSON.parse(txt.replace(/```json|```/g,'').trim());
-    pendFat=json.transacoes.map((t,i)=>({id:i,data_competencia:t.data_competencia||'',data_pagamento:t.data_pagamento||venc,descricao:t.descricao||'',subcategoria:t.subcategoria||'Outros Pessoal',cat:t.cat||'DESPESA',grupo:t.grupo||'Pessoal',valor:parseFloat(t.valor)||0,parcela:t.parcela||''})).filter(t=>t.valor>0&&t.descricao);
-    document.getElementById('proc-fat').style.display='none';showRevFat(json.vencimento||venc);
-  }catch(e){document.getElementById('proc-fat-msg').textContent='';document.getElementById('proc-fat-err').textContent='Erro: '+e.message;document.getElementById('proc-fat-err').style.display='block';document.getElementById('btn-fat-v').style.display='inline-block';}
 }
-function showRevFat(venc){
-  const[y,m]=document.getElementById('imp-mes-fat').value.split('-');
-  document.getElementById('rev-fat-title').textContent='Revisar — '+MESES[parseInt(m)-1]+' '+y;
-  document.getElementById('rev-fat-sub').textContent=pendFat.length+' transações • Vencimento: '+venc;
-  document.getElementById('rev-fat-total').textContent=BRL(pendFat.reduce((s,t)=>s+t.valor,0));
-  const allSubs=getAllSubs();
-  document.getElementById('rev-fat-tbody').innerHTML=pendFat.map(t=>`<tr>
-    <td class="tm mut" style="font-size:10px">${t.data_competencia}</td>
-    <td style="max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${t.descricao}</td>
-    <td><select style="font-size:10px;padding:2px 6px;border-color:${catCor(t.cat)}33" onchange="editPF(${t.id},this.value)">${allSubs.map(s=>`<option${s===t.subcategoria?' selected':''}>${s}</option>`).join('')}</select></td>
-    <td>${badge(t.cat)}</td>
-    <td class="tm mut" style="font-size:10px">${t.parcela||'—'}</td>
-    <td class="tm red" style="text-align:right">${BRL(t.valor)}</td>
-  </tr>`).join('');
-  document.getElementById('rev-fat').style.display='block';
+
+function buildStFatPrompt(pdfText,mesRef){
+  const[y,m]=mesRef.split('-');const venc=`10/${String(m).padStart(2,'0')}/${y}`;
+  return`Analise esta fatura Santander Mastercard e extraia TODAS as transações de compra (despesas e parcelamentos). Ignore "PAGAMENTO DE FATURA".
+REGRAS: data_competencia=data da compra (formato DD/MM, ano ${parseInt(y)-1} se mês DEZ/NOV, ${parseInt(y)} se JAN+), data_pagamento=${venc}. parcela="X/Y" quando houver "Parcela X/Y" ou coluna Parcela.
+MAPEAMENTOS SANTANDER:
+- UBER*/UBER UBER* → sub:"Uber",cat:DESPESA,grupo:Transporte
+- GOOGLE YOUTUBE → sub:"Streaming",cat:DESPESA,grupo:Lazer
+- GOOGLE TANDEM LANGUAG → sub:"Outros Inv. Pessoal",cat:INVESTIMENTO_PESSOAL,grupo:Investimento Pessoal
+- IFD*/IFOOD → sub:"Outros Alimentação",cat:DESPESA,grupo:Alimentação
+- AMAZON BR/AMAZONPRIMEBR → sub:"Streaming",cat:DESPESA,grupo:Lazer
+- OPENAI *CHATGPT → sub:"Streaming",cat:DESPESA,grupo:Lazer
+- WELLHUB/GYMPASS → sub:"Academia",cat:INVESTIMENTO_PESSOAL,grupo:Investimento Pessoal
+- ASA*BARBEARIABESTBARBE/Barbearia → sub:"Barbearia",cat:DESPESA,grupo:Pessoal
+- PADRE PAULO RICARDO → sub:"Padre Paulo Ricardo",cat:INVESTIMENTO_PESSOAL,grupo:Investimento Pessoal
+- PG *GUILHERME FREIRE → sub:"Guilherme Freire",cat:INVESTIMENTO_PESSOAL,grupo:Investimento Pessoal
+- PG *LI FLOS CARMELI → sub:"Li Flos Carmeli",cat:INVESTIMENTO_PESSOAL,grupo:Investimento Pessoal
+- IOF DESPESA NO EXTERIOR → sub:"IOF",cat:DESPESA,grupo:Tributos
+- COTAÇÃO DOLAR → ignorar (não incluir como transação separada)
+DICIONÁRIO:${buildDict()}
+FATURA:${pdfText.substring(0,18000)}
+JSON APENAS:{"vencimento":"DD/MM/AAAA","total":0.00,"transacoes":[{"data_competencia":"DD/MM/AAAA","data_pagamento":"DD/MM/AAAA","descricao":"nome","subcategoria":"sub","cat":"DESPESA","grupo":"Alimentação","valor":0.00,"parcela":""}]}`;
 }
-function editPF(id,sub){const t=pendFat.find(t=>t.id===id);if(!t)return;const{cat,g}=subToCat(sub);t.subcategoria=sub;t.cat=cat;t.grupo=g;}
-function salvarFatura(){const key=document.getElementById('imp-mes-fat').value;const d=gFat();d[key]=pendFat;sFat(d);curMes=key;resetFatura();goTo('nu-cartao');}
-function resetFatura(){pdfFile=null;pendFat=[];document.getElementById('lbl-fat').textContent='Arraste o PDF ou clique';document.getElementById('lbl-fat').style.color='';document.getElementById('zone-fat').classList.remove('loaded');document.getElementById('inp-fat').value='';document.getElementById('inp-fat')._i=false;document.getElementById('proc-fat').style.display='none';document.getElementById('rev-fat').style.display='none';}
+
+function buildStExtPrompt(pdfText,mesRef){
+  return`Analise este extrato bancário Santander e categorize cada transação. O extrato tem colunas: Data, Descrição, Crédito, Débito, Saldo.
+REGRAS: valor positivo=crédito, valor negativo=débito.
+MAPEAMENTOS SANTANDER EXTRATO:
+- "Claudia Tofani Barakat" → sub:"Dentista",cat:DESPESA,grupo:Saúde,desc:"Dentista — Claudia Barakat",origem:"Claudia Barakat"
+- "Liliana Borges" → sub:"Outras Receitas",cat:RECEITA_LIQUIDA,grupo:Receita,desc:"Recebido Liliana (mãe)",origem:"Liliana Borges"
+- "PAGAMENTO CARTAO CREDITO" → sub:"Pagamento Fatura",cat:TRANSFERENCIA,grupo:Transferência,desc:"Pagamento Fatura Santander",origem:"Santander"
+- "Victor Bessa de Pinho Tav" (PIX RECEBIDO do próprio Victor) → sub:"Transferência entre contas",cat:TRANSFERENCIA,desc:"Transferência Nubank→Santander",origem:"Conta Nubank"
+- "Victor Bessa de Pinho Tav" (PIX ENVIADO para o próprio Victor) → sub:"Transferência entre contas",cat:TRANSFERENCIA,desc:"Transferência Santander→Nubank",origem:"Conta Nubank"
+DICIONÁRIO:${buildDict()}
+EXTRATO:${pdfText.substring(0,12000)}
+JSON APENAS:{"transacoes":[{"id":0,"data":"DD/MM/AAAA","valor":0.00,"descricao_limpa":"nome amigável","origem":"banco/pessoa","subcategoria":"sub","cat":"DESPESA","grupo":"Saúde"}]}`;
+}
 
 async function parseCSVFile(f){return new Promise((res,rej)=>Papa.parse(f,{header:true,skipEmptyLines:true,complete:r=>res(r.data.map((row,i)=>({id:i,data:row['Data']||'',valor:parseFloat(String(row['Valor']||'0').replace(',','.')),descricao:row['Descrição']||row['Descricao']||''}))),error:rej}));}
 
-async function processarExtrato(){
-  if(!csvFile){alert('Selecione o CSV.');return;}
-  document.getElementById('proc-ext').style.display='block';document.getElementById('rev-ext').style.display='none';
-  document.getElementById('proc-ext-err').style.display='none';document.getElementById('btn-ext-v').style.display='none';
-  try{
-    document.getElementById('proc-ext-msg').textContent='Lendo CSV...';
-    const rows=await parseCSVFile(csvFile);
-    document.getElementById('proc-ext-msg').textContent='Claude categorizando extrato...';
-    const prompt=`Analise este extrato bancário Nubank e categorize cada transação.
+function buildNuExtPrompt(rows){
+  return`Analise este extrato bancário Nubank e categorize cada transação.
 MAPEAMENTOS:
-- "Resgate RDB" → sub:"Resgate RDB",cat:TRANSFERENCIA,grupo:Transferência,desc:"Resgate RDB",origem:""
-- "Aplicação RDB" → sub:"Aplicação RDB",cat:TRANSFERENCIA,grupo:Transferência,desc:"Aplicação RDB",origem:""
+- "Resgate RDB" → sub:"Resgate RDB",cat:TRANSFERENCIA,desc:"Resgate RDB",origem:""
+- "Aplicação RDB" → sub:"Aplicação RDB",cat:TRANSFERENCIA,desc:"Aplicação RDB",origem:""
 - "Transferência de saldo NuInvest" → sub:"NuInvest",cat:TRANSFERENCIA,desc:"NuInvest",origem:""
 - "Pagamento de fatura" → sub:"Pagamento Fatura",cat:TRANSFERENCIA,desc:"Pagamento Fatura",origem:""
 - "Compra de Ações - CMIG4" → sub:"CMIG4",cat:PREVIDENCIA,grupo:Previdência,desc:"Compra CMIG4",origem:"NuInvest"
@@ -841,7 +846,7 @@ MAPEAMENTOS:
 - "BARBEARIA DO RAPHA" → sub:"Barbearia",cat:DESPESA,grupo:Pessoal,desc:"Barbearia do Rapha",origem:"Barbearia do Rapha"
 - "Giovani de Medici" → sub:"Restaurantes",cat:DESPESA,grupo:Alimentação,desc:"Giovaniburgue",origem:"Giovani de Medici"
 - "CAIXA INSTANTANEA" → sub:"Loteria",cat:DESPESA,grupo:Pessoal,desc:"Loteria",origem:"Caixa Instantânea"
-- "TRANSMED CLINICA" → sub:"Outros Transporte",cat:DESPESA,grupo:Transporte,desc:"Exame CNH",origem:"Transmed"
+- "TRANSMED CLINICA" → sub:"Dentista",cat:DESPESA,grupo:Saúde,desc:"Exame médico",origem:"Transmed"
 - "CENTRO DE FORMACAO DE CONDUTORES TRAFEGAR" → sub:"Outros Transporte",cat:DESPESA,grupo:Transporte,desc:"CNH Moto",origem:"Trafegar"
 - "PAGAR.ME"/"Pagar Me"/"STONE" → sub:"Ônibus",cat:DESPESA,grupo:Transporte,desc:"Crédito Ônibus",origem:"BH Bus"
 - "Igor Alexandre Barbosa" → sub:"Outros Saúde",cat:DESPESA,grupo:Saúde,desc:"Óculos (parcelado)",origem:"Igor Alexandre"
@@ -855,41 +860,111 @@ MAPEAMENTOS:
 DICIONÁRIO:${buildDict()}
 TRANSAÇÕES:${JSON.stringify(rows.map(r=>({id:r.id,data:r.data,valor:r.valor,desc:r.descricao})))}
 JSON APENAS:{"transacoes":[{"id":0,"data":"DD/MM/AAAA","valor":0.00,"descricao_limpa":"nome","origem":"banco","subcategoria":"sub","cat":"DESPESA","grupo":"Alimentação"}]}`;
+}
+
+async function processarImp(){
+  const f=pdfFiles[impTab];if(!f){alert('Selecione o arquivo.');return;}
+  document.getElementById('imp-proc').style.display='block';document.getElementById('imp-rev').style.display='none';
+  document.getElementById('imp-err').style.display='none';document.getElementById('imp-back').style.display='none';
+  const mesRef=document.getElementById('imp-mes').value;
+  try{
+    let prompt,rawRows=null;
+    if(impTab==='nu-ext'){
+      document.getElementById('imp-msg').textContent='Lendo CSV...';
+      rawRows=await parseCSVFile(f);
+      document.getElementById('imp-msg').textContent='Claude categorizando extrato...';
+      prompt=buildNuExtPrompt(rawRows);
+    } else {
+      document.getElementById('imp-msg').textContent='Extraindo texto do PDF...';
+      const pdfText=await extractPDF(f);
+      document.getElementById('imp-msg').textContent='Claude categorizando...';
+      prompt=impTab==='nu-fat'?buildNuFatPrompt(pdfText,mesRef):impTab==='st-fat'?buildStFatPrompt(pdfText,mesRef):buildStExtPrompt(pdfText,mesRef);
+    }
     const res=await fetch('/api/claude',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:8000,messages:[{role:'user',content:prompt}]})});
     if(!res.ok)throw new Error('API '+res.status+': '+await res.text());
     const data=await res.json();if(data.error)throw new Error(data.error.message||JSON.stringify(data.error));
     const txt=data.content.map(b=>b.text||'').join('');
     const json=JSON.parse(txt.replace(/```json|```/g,'').trim());
-    pendExt=json.transacoes.map((t,i)=>{const orig=rows[t.id]||rows[i]||{};return{id:i,data:t.data||orig.data||'',descricao:orig.descricao||'',descricao_limpa:t.descricao_limpa||orig.descricao||'',origem:t.origem||'',subcategoria:t.subcategoria||'Outros',cat:t.cat||'TRANSFERENCIA',grupo:t.grupo||'Transferência',valor:parseFloat(t.valor!==undefined?t.valor:orig.valor)||0};}).filter(t=>t.descricao);
-    document.getElementById('proc-ext').style.display='none';showRevExt();
-  }catch(e){document.getElementById('proc-ext-msg').textContent='';document.getElementById('proc-ext-err').textContent='Erro: '+e.message;document.getElementById('proc-ext-err').style.display='block';document.getElementById('btn-ext-v').style.display='inline-block';}
+
+    let pending=[];
+    if(impTab==='nu-fat'||impTab==='st-fat'){
+      const[y,m]=mesRef.split('-');
+      const venc=impTab==='nu-fat'?`19/${String(m).padStart(2,'0')}/${y}`:`10/${String(m).padStart(2,'0')}/${y}`;
+      pending=json.transacoes.map((t,i)=>({id:i,data_competencia:t.data_competencia||'',data_pagamento:t.data_pagamento||venc,descricao:t.descricao||'',subcategoria:t.subcategoria||'Outros Pessoal',cat:t.cat||'DESPESA',grupo:t.grupo||'Pessoal',valor:parseFloat(t.valor)||0,parcela:t.parcela||''})).filter(t=>t.valor>0&&t.descricao);
+    } else {
+      const rows=rawRows||[];
+      pending=json.transacoes.map((t,i)=>{const orig=rows[t.id]||rows[i]||{};return{id:i,data:t.data||orig.data||'',descricao:orig.descricao||'',descricao_limpa:t.descricao_limpa||orig.descricao||'',origem:t.origem||'',subcategoria:t.subcategoria||'Outros',cat:t.cat||'TRANSFERENCIA',grupo:t.grupo||'Transferência',valor:parseFloat(t.valor!==undefined?t.valor:orig.valor)||0};}).filter(t=>t.descricao);
+    }
+    pendData[impTab]=pending;
+    document.getElementById('imp-proc').style.display='none';
+    showRevImp(mesRef,json.vencimento);
+  }catch(e){
+    document.getElementById('imp-msg').textContent='';document.getElementById('imp-err').textContent='Erro: '+e.message;
+    document.getElementById('imp-err').style.display='block';document.getElementById('imp-back').style.display='inline-block';
+  }
 }
-function showRevExt(){
-  const[y,m]=document.getElementById('imp-mes-ext').value.split('-');
-  document.getElementById('rev-ext-title').textContent='Revisar — '+MESES[parseInt(m)-1]+' '+y;
-  const e=pendExt.filter(t=>t.valor>0).reduce((s,t)=>s+t.valor,0),sa=pendExt.filter(t=>t.valor<0).reduce((s,t)=>s+Math.abs(t.valor),0);
-  document.getElementById('rev-ext-sub').textContent=pendExt.length+' lançamentos';
-  document.getElementById('rev-ext-count').textContent=pendExt.length+' lançamentos';
-  document.getElementById('rev-ext-in').textContent=BRL(e);document.getElementById('rev-ext-out').textContent=BRL(sa);
+
+function showRevImp(mesRef,venc){
+  const[y,m]=mesRef.split('-');const pending=pendData[impTab]||[];
+  const isFat=impTab.endsWith('fat');
+  const entrada=pending.filter(t=>t.valor>0).reduce((s,t)=>s+t.valor,0);
+  const saida=pending.filter(t=>t.valor<0).reduce((s,t)=>s+Math.abs(t.valor),0);
+  const total=isFat?pending.reduce((s,t)=>s+Math.abs(t.valor),0):null;
   const allSubs=getAllSubs();
-  document.getElementById('rev-ext-tbody').innerHTML=pendExt.map(t=>`<tr>
-    <td class="tm mut" style="font-size:10px">${t.data}</td>
-    <td style="max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${t.descricao_limpa||t.descricao}</td>
-    <td style="max-width:90px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--txt3);font-size:11px">${t.origem||'—'}</td>
-    <td><select style="font-size:10px;padding:2px 6px;border-color:${catCor(t.cat)}33" onchange="editPE(${t.id},this.value)">${allSubs.map(s=>`<option${s===t.subcategoria?' selected':''}>${s}</option>`).join('')}</select></td>
-    <td>${badge(t.cat)}</td>
-    <td class="tm" style="text-align:right;font-weight:500;color:${t.valor>0?'var(--grn)':'var(--red)'}">${t.valor>0?'+':''}${BRL(t.valor)}</td>
-  </tr>`).join('');
-  document.getElementById('rev-ext').style.display='block';
+  document.getElementById('imp-rev').innerHTML=`
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+      <div><div style="font-size:13px;font-weight:600;color:var(--white)">Revisar — ${MESES[parseInt(m)-1]} ${y}</div>
+      <div style="font-size:10px;color:var(--txt3);margin-top:2px">${pending.length} lançamentos${venc?' • Vencimento: '+venc:''}</div></div>
+      <div style="display:flex;gap:7px"><button class="btn-g btn-sm" onclick="initImport()">Cancelar</button><button class="btn btn-sm" onclick="salvarImp('${mesRef}')">Salvar →</button></div>
+    </div>
+    <div class="card" style="padding:0;overflow:hidden">
+      <div style="max-height:420px;overflow-y:auto"><table><thead><tr>
+        ${isFat?'<th>Dt. Compet.</th>':'<th>Data</th>'}
+        <th>Descrição</th>${!isFat?'<th>Origem</th>':''}
+        <th>Subcategoria</th><th>Categoria</th>
+        ${isFat?'<th>Parcela</th>':''}
+        <th style="text-align:right">Valor</th>
+      </tr></thead><tbody>
+        ${pending.map(t=>`<tr>
+          <td class="tm mut" style="font-size:10px">${isFat?t.data_competencia:t.data}</td>
+          <td style="max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${isFat?t.descricao:(t.descricao_limpa||t.descricao)}</td>
+          ${!isFat?`<td style="max-width:90px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--txt3);font-size:11px">${t.origem||'—'}</td>`:''}
+          <td><select style="font-size:10px;padding:2px 6px;border-color:${catCor(t.cat)}33" onchange="editPend(${t.id},this.value)">${allSubs.map(s=>`<option${s===t.subcategoria?' selected':''}>${s}</option>`).join('')}</select></td>
+          <td>${badge(t.cat)}</td>
+          ${isFat?`<td class="tm mut" style="font-size:10px">${t.parcela||'—'}</td>`:''}
+          <td class="tm" style="text-align:right;font-weight:500;color:${isFat?'var(--red)':t.valor>0?'var(--grn)':'var(--red)'}">${!isFat&&t.valor>0?'+':''}${BRL(t.valor)}</td>
+        </tr>`).join('')}
+      </tbody></table></div>
+      <div style="padding:7px 14px;border-top:1px solid var(--border);background:var(--bg);display:flex;justify-content:flex-end;gap:14px;font-size:10px;color:var(--txt3);font-family:var(--mono)">
+        ${isFat?`Total: <strong class="red" style="margin-left:6px">${BRL(total)}</strong>`:`<span>Ent: <strong class="grn">${BRL(entrada)}</strong></span><span>Saí: <strong class="red">${BRL(saida)}</strong></span>`}
+      </div>
+    </div>`;
+  document.getElementById('imp-rev').style.display='block';
 }
-function editPE(id,sub){const t=pendExt.find(t=>t.id===id);if(!t)return;const{cat,g}=subToCat(sub);t.subcategoria=sub;t.cat=cat;t.grupo=g;}
-function salvarExtrato(){
-  const key=document.getElementById('imp-mes-ext').value;const d=gExt();d[key]=pendExt;sExt(d);
-  const sal=pendExt.filter(t=>t.cat==='RECEITA_LIQUIDA'&&t.valor>0).reduce((s,t)=>s+t.valor,0);
-  if(sal>0){sRec('nu',key,sal);sRec('an',key,sal);}
-  curMes=key;resetExtrato();goTo('nu-extrato');
+
+function editPend(id,sub){const t=(pendData[impTab]||[]).find(t=>t.id===id);if(!t)return;const{cat,g}=subToCat(sub);t.subcategoria=sub;t.cat=cat;t.grupo=g;}
+
+function salvarImp(mesRef){
+  const pending=pendData[impTab]||[];
+  if(impTab==='nu-fat'){const d=gNuFat();d[mesRef]=pending;sNuFat(d);goTo('nu-cartao');}
+  else if(impTab==='nu-ext'){
+    const d=gNuExt();d[mesRef]=pending;sNuExt(d);
+    const sal=pending.filter(t=>t.cat==='RECEITA_LIQUIDA'&&t.valor>0).reduce((s,t)=>s+t.valor,0);
+    if(sal>0){sRec('nu',mesRef,sal);sRec('an',mesRef,sal);}
+    goTo('nu-extrato');
+  }
+  else if(impTab==='st-fat'){const d=gStFat();d[mesRef]=pending;sStFat(d);goTo('st-cartao');}
+  else if(impTab==='st-ext'){
+    const d=gStExt();d[mesRef]=pending;sStExt(d);
+    const sal=pending.filter(t=>t.cat==='RECEITA_LIQUIDA'&&t.valor>0).reduce((s,t)=>s+t.valor,0);
+    if(sal>0)sRec('st',mesRef,sal);
+    goTo('st-extrato');
+  }
+  curMes=mesRef;
 }
-function resetExtrato(){csvFile=null;pendExt=[];document.getElementById('lbl-ext').textContent='Arraste o CSV ou clique';document.getElementById('lbl-ext').style.color='';document.getElementById('zone-ext').classList.remove('loaded');document.getElementById('inp-ext').value='';document.getElementById('inp-ext')._i=false;document.getElementById('proc-ext').style.display='none';document.getElementById('rev-ext').style.display='none';}
+
+function saveNuFat(d,k){sNuFat(d);}function saveNuExt(d,k){sNuExt(d);}
+function saveStFat(d,k){sStFat(d);}function saveStExt(d,k){sStExt(d);}
 
 // ─── CONFIG ────────────────────────────────────────────────────────────────────
 function initConfig(){
@@ -902,18 +977,21 @@ function initConfig(){
   document.getElementById('almoco-valor').value=cfg.valor||'';
   document.getElementById('almoco-ativo').value=cfg.ativo?'1':'0';
   updateAlmocoPreview();
-  const mf=mesesFat(),me=mesesExt();
-  document.getElementById('cfg-dados').innerHTML=`Faturas: ${mf.length?mf.map(k=>{const[y,m]=k.split('-');return MESES[parseInt(m)-1].slice(0,3)+'/'+y.slice(2);}).join(', '):'nenhuma'}<br>Extratos: ${me.length?me.map(k=>{const[y,m]=k.split('-');return MESES[parseInt(m)-1].slice(0,3)+'/'+y.slice(2);}).join(', '):'nenhum'}`;
+  document.getElementById('cfg-dados').innerHTML=`
+    Nubank Faturas: ${mesesNuFat().length?mesesNuFat().map(k=>{const[y,m]=k.split('-');return MESES[parseInt(m)-1].slice(0,3)+'/'+y.slice(2);}).join(', '):'—'}<br>
+    Nubank Extratos: ${mesesNuExt().length?mesesNuExt().map(k=>{const[y,m]=k.split('-');return MESES[parseInt(m)-1].slice(0,3)+'/'+y.slice(2);}).join(', '):'—'}<br>
+    Santander Faturas: ${mesesStFat().length?mesesStFat().map(k=>{const[y,m]=k.split('-');return MESES[parseInt(m)-1].slice(0,3)+'/'+y.slice(2);}).join(', '):'—'}<br>
+    Santander Extratos: ${mesesStExt().length?mesesStExt().map(k=>{const[y,m]=k.split('-');return MESES[parseInt(m)-1].slice(0,3)+'/'+y.slice(2);}).join(', '):'—'}`;
 }
 function salvarAlmoco(){sAlmocoLS({valor:parseFloat(document.getElementById('almoco-valor').value)||0,ativo:document.getElementById('almoco-ativo').value==='1'});updateAlmocoPreview();}
 function updateAlmocoPreview(){
   const cfg=gAlmoco();const prev=document.getElementById('almoco-preview');if(!prev)return;
   const all=mesesAll();if(!all.length||!cfg.valor||!cfg.ativo){prev.textContent='';return;}
   const mes=curMes||all[0];const a=calcAlmoco(mes);
-  prev.innerHTML=`Mês atual: ${a.diasTotais} dias úteis − ${a.diasPerdidos} Giovaniburgue = <strong style="color:var(--grn)">${a.diasUsados} dias × ${BRL(cfg.valor)} = ${BRL(a.benefit)}</strong>`;
+  prev.innerHTML=`Mês atual: ${a.diasTotais} dias úteis − ${a.diasPerdidos} Giovaniburgue = <strong style="color:var(--grn)">${a.diasUsados}d × ${BRL(cfg.valor)} = ${BRL(a.benefit)}</strong>`;
 }
 function salvarMetas(){sMetas({despesas:+document.getElementById('meta-despesas').value||50,invPessoal:+document.getElementById('meta-invPessoal').value||10,invFin:+document.getElementById('meta-invFin').value||10,planos:+document.getElementById('meta-planos').value||10,prev:+document.getElementById('meta-prev').value||10});alert('Metas salvas!');}
-function limparDados(){if(confirm('Apagar tudo?')){['fc_fat','fc_ext','fc_metas','fc_almoco'].forEach(k=>localStorage.removeItem(k));mesesAll().forEach(m=>{['nu','an'].forEach(s=>localStorage.removeItem(`fc_rec_${s}_${m}`));});initMes();goTo('dash');}}
+function limparDados(){if(confirm('Apagar tudo?')){['fc_nu_fat','fc_nu_ext','fc_st_fat','fc_st_ext','fc_metas','fc_almoco','fc_fat','fc_ext'].forEach(k=>localStorage.removeItem(k));mesesAll().forEach(m=>['nu','st','an'].forEach(s=>localStorage.removeItem(`fc_rec_${s}_${m}`)));initMes();goTo('dash');}}
 
 // ─── INIT ──────────────────────────────────────────────────────────────────────
 renderDash();
