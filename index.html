@@ -133,16 +133,31 @@ select:focus,input:focus{border-color:#333}
   <div class="pb">
     <div id="dash-empty" class="empty" style="display:none"><div style="font-size:22px;opacity:.1;margin-bottom:10px">📊</div>Nenhum dado. <span style="cursor:pointer;color:var(--txt2);text-decoration:underline" onclick="goTo('import')">Importar →</span></div>
     <div id="dash-content">
-      <div id="dash-alerts" style="margin-bottom:12px"></div>
-      <div class="g5" id="dash-kpis" style="margin-bottom:12px"></div>
-      <div class="g2" style="margin-bottom:12px">
-        <div class="card"><div class="clbl" style="margin-bottom:8px">Receita vs Despesas vs Investimentos</div><canvas id="ch-bar" height="180"></canvas></div>
-        <div class="card"><div class="clbl" style="margin-bottom:8px">Distribuição dos gastos</div><canvas id="ch-pie" height="180"></canvas></div>
+
+      <!-- ALERTAS -->
+      <div id="dash-alerts" style="margin-bottom:14px"></div>
+
+      <!-- KPIs PRINCIPAIS — 3 grandes -->
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:12px" id="dash-kpis-main"></div>
+
+      <!-- KPIs SECUNDÁRIOS — 4 médios -->
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px" id="dash-kpis-sec"></div>
+
+      <!-- RECEITAS EXTRAS (aparece só se tiver) -->
+      <div id="dash-receitas-extras" style="margin-bottom:14px"></div>
+
+      <!-- GRÁFICO PRINCIPAL -->
+      <div class="card" style="margin-bottom:14px">
+        <div class="clbl" style="margin-bottom:10px">Alocação da receita</div>
+        <canvas id="ch-bar" height="120"></canvas>
       </div>
+
+      <!-- TOP GASTOS -->
       <div class="g2">
-        <div class="card" style="padding:0;overflow:hidden"><div style="padding:9px 14px;border-bottom:1px solid var(--border)"><div class="clbl">Top — Nubank Cartão</div></div><table><tbody id="dash-top-nu"></tbody></table></div>
-        <div class="card" style="padding:0;overflow:hidden"><div style="padding:9px 14px;border-bottom:1px solid var(--border)"><div class="clbl">Top — Santander Cartão</div></div><table><tbody id="dash-top-st"></tbody></table></div>
+        <div class="card" style="padding:0;overflow:hidden"><div style="padding:9px 14px;border-bottom:1px solid var(--border)"><div class="clbl">Top gastos — Nubank Cartão</div></div><table><tbody id="dash-top-nu"></tbody></table></div>
+        <div class="card" style="padding:0;overflow:hidden"><div style="padding:9px 14px;border-bottom:1px solid var(--border)"><div class="clbl">Top gastos — Santander Cartão</div></div><table><tbody id="dash-top-st"></tbody></table></div>
       </div>
+
     </div>
   </div>
 </div>
@@ -446,42 +461,141 @@ function renderDash(){
   if(!all.includes(curMes))curMes=all[0];
   document.getElementById('dash-empty').style.display='none';document.getElementById('dash-content').style.display='block';
   renderPills('dash-pills','renderDash');
+
   const allTx=getTxnsByScope(curMes,'an');
   const tot=calcTot(curMes,allTx);
-  const recBase=gRec('an',curMes)||gRec('nu',curMes)||tot.receitaExt;
-  const rec=recBase+tot.almocoBenefit;
-  const metas=gMetas();const saldo=rec-tot.despTotal-tot.invTotal;
 
-  document.getElementById('dash-kpis').innerHTML=[
-    {l:'Receita Total',v:rec>0?BRL(rec):'—',s:'todas as fontes',c:'var(--grn)'},
-    {l:'Despesas Total',v:BRL(tot.despTotal),s:rec>0?(tot.despTotal/rec*100).toFixed(1)+'% da receita':'—',c:'var(--red)'},
-    {l:'Investido Total',v:BRL(tot.invTotal),s:rec>0?(tot.invTotal/rec*100).toFixed(1)+'% da receita':'—',c:'#1060a0'},
-    {l:'Saldo',v:rec>0?BRL(Math.abs(saldo)):'—',s:saldo>=0?'✓ positivo':'⚠ negativo',c:saldo>=0?'var(--grn)':'var(--red)'},
-    {l:'Almoço Edi',v:tot.almocoBenefit>0?BRL(tot.almocoBenefit):'—',s:tot.almocoBenefit>0?tot.almocoInfo.diasUsados+' dias':'Configure em ⚙',c:'var(--amber)'},
-  ].map(k=>`<div class="card" style="margin:0"><div class="clbl">${k.l}</div><div class="kv" style="color:${k.c}">${k.v}</div><div class="ks">${k.s}</div></div>`).join('');
+  // Receitas detalhadas
+  const salario=allTx.filter(t=>t.cat==='RECEITA_LIQUIDA'&&t.subcategoria==='Salário'&&t.valor>0).reduce((s,t)=>s+t.valor,0);
+  const outrasRec=allTx.filter(t=>t.cat==='RECEITA_LIQUIDA'&&t.subcategoria!=='Salário'&&t.valor>0);
+  const outrasRecTotal=outrasRec.reduce((s,t)=>s+t.valor,0);
+  const rec=tot.receitaExt+tot.almocoBenefit;
 
-  const grpD=Object.entries(tot.despGrupos).sort((a,b)=>b[1]-a[1]).slice(0,6);
+  const metas=gMetas();
+  const saldo=rec-tot.despTotal-tot.invTotal;
+  const taxaPoup=rec>0?tot.invTotal/rec*100:0;
+  const burnRateDay=tot.despTotal>0?(tot.despTotal/30):0;
+
+  // ── KPIs PRINCIPAIS (3 grandes)
+  document.getElementById('dash-kpis-main').innerHTML=[
+    {
+      l:'Receita Total',
+      v:rec>0?BRL(rec):'—',
+      s:salario>0?`Salário ${BRL(salario)}`+(outrasRecTotal>0?` + extras ${BRL(outrasRecTotal)}`:'')+(tot.almocoBenefit>0?` + Edi ${BRL(tot.almocoBenefit)}`:''):'Importe extrato',
+      c:'var(--grn)',border:'2px solid #2a7a5022'
+    },
+    {
+      l:'Custo de Vida',
+      v:BRL(tot.despTotal),
+      s:rec>0?`${(tot.despTotal/rec*100).toFixed(1)}% da receita — meta ${metas.despesas}%`:'—',
+      c:rec>0&&tot.despTotal/rec*100>metas.despesas?'var(--red)':'var(--txt)',border:'2px solid #c0404022'
+    },
+    {
+      l:'Resultado Líquido',
+      v:rec>0?BRL(Math.abs(saldo)):'—',
+      s:saldo>=0?'✓ sobrou após despesas e investimentos':'⚠ gastou mais do que entrou',
+      c:saldo>=0?'var(--grn)':'var(--red)',border:`2px solid ${saldo>=0?'#2a7a5022':'#c0404022'}`
+    },
+  ].map(k=>`<div class="card" style="margin:0;border:${k.border};padding:18px">
+    <div class="clbl" style="margin-bottom:6px">${k.l}</div>
+    <div style="font-family:var(--mono);font-size:26px;font-weight:600;color:${k.c};margin:4px 0 6px">${k.v}</div>
+    <div style="font-size:10px;color:var(--txt3);line-height:1.5">${k.s}</div>
+  </div>`).join('');
+
+  // ── KPIs SECUNDÁRIOS (4 médios)
+  const metaInv=(metas.invPessoal+metas.invFin+metas.planos+metas.prev);
+  document.getElementById('dash-kpis-sec').innerHTML=[
+    {
+      l:'Taxa de Poupança',
+      v:rec>0?taxaPoup.toFixed(1)+'%':'—',
+      s:taxaPoup>=20?'✓ acima de 20%':taxaPoup>=10?'⚠ abaixo do ideal (20%)':'⚠ baixa — meta é 20%+',
+      c:taxaPoup>=20?'var(--grn)':taxaPoup>=10?'var(--amber)':'var(--red)'
+    },
+    {
+      l:'Total Investido',
+      v:BRL(tot.invTotal),
+      s:rec>0?`${(tot.invTotal/rec*100).toFixed(1)}% — meta ${metaInv}%`:'—',
+      c:'#2050a0'
+    },
+    {
+      l:'Burn Rate Diário',
+      v:BRL(burnRateDay),
+      s:'custo médio por dia',
+      c:'var(--txt2)'
+    },
+    {
+      l:'Almoço da Edi',
+      v:tot.almocoBenefit>0?BRL(tot.almocoBenefit):'—',
+      s:tot.almocoBenefit>0?`${tot.almocoInfo.diasUsados}d usados / ${tot.almocoInfo.diasTotais}d úteis`:'Configure em ⚙',
+      c:'var(--amber)'
+    },
+  ].map(k=>`<div class="card" style="margin:0;padding:14px">
+    <div class="clbl" style="margin-bottom:4px">${k.l}</div>
+    <div style="font-family:var(--mono);font-size:18px;font-weight:600;color:${k.c};margin:3px 0 4px">${k.v}</div>
+    <div style="font-size:10px;color:var(--txt3)">${k.s}</div>
+  </div>`).join('');
+
+  // ── RECEITAS EXTRAS
+  const extrasEl=document.getElementById('dash-receitas-extras');
+  if(outrasRec.length>0){
+    const bySource={};
+    outrasRec.forEach(t=>{const k=t.subcategoria||t.descricao_limpa||t.descricao;bySource[k]=(bySource[k]||0)+t.valor;});
+    extrasEl.innerHTML=`<div class="card" style="border:1px solid #2a7a5022">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+        <div class="clbl" style="margin:0">Receitas além do salário</div>
+        <span style="font-family:var(--mono);font-size:11px;color:var(--grn);font-weight:600">${BRL(outrasRecTotal)} total</span>
+      </div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        ${Object.entries(bySource).map(([k,v])=>`<div style="background:#0a0a0a;border:1px solid #161616;border-radius:5px;padding:8px 12px;min-width:140px">
+          <div style="font-size:10px;color:var(--txt3);margin-bottom:3px">${k}</div>
+          <div style="font-family:var(--mono);font-size:14px;font-weight:600;color:var(--grn)">${BRL(v)}</div>
+        </div>`).join('')}
+        ${tot.almocoBenefit>0?`<div style="background:#0a0a0a;border:1px solid #161616;border-radius:5px;padding:8px 12px;min-width:140px">
+          <div style="font-size:10px;color:var(--txt3);margin-bottom:3px">Almoço da Edi</div>
+          <div style="font-family:var(--mono);font-size:14px;font-weight:600;color:var(--amber)">${BRL(tot.almocoBenefit)}</div>
+        </div>`:''}
+      </div>
+    </div>`;
+  } else {extrasEl.innerHTML='';}
+
+  // ── GRÁFICO — waterfall horizontal por bloco
+  const despGrupos=Object.entries(tot.despGrupos).sort((a,b)=>b[1]-a[1]);
+  const labels=['Salário',...(outrasRecTotal>0?['+ Extras']:[]),...(tot.almocoBenefit>0?['+ Edi']:[]),'Despesas',...despGrupos.map(([g])=>g),'Investido','Saldo'];
+  const values=[salario,...(outrasRecTotal>0?[outrasRecTotal]:[]),...(tot.almocoBenefit>0?[tot.almocoBenefit]:[]),-tot.despTotal,...despGrupos.map(([,v])=>-v),-tot.invTotal,saldo];
+  const colors=values.map((v,i)=>{
+    if(i===0||i===labels.indexOf('+ Extras')||i===labels.indexOf('+ Edi'))return '#2a7a5066';
+    if(labels[i]==='Despesas')return '#c0404088';
+    if(labels[i]==='Investido')return '#2050a066';
+    if(labels[i]==='Saldo')return v>=0?'#2a7a5099':'#c0404099';
+    return '#c0404044';
+  });
+
   if(charts.bar)charts.bar.destroy();
-  charts.bar=new Chart(document.getElementById('ch-bar'),{type:'bar',data:{labels:['Receita','Despesas','Investido'],datasets:[{data:[rec,tot.despTotal,tot.invTotal],backgroundColor:['#2a7a5044','#c0404088','#1060a044'],borderRadius:4,borderSkipped:false}]},options:{responsive:true,plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>BRL(ctx.raw)}}},scales:{x:{ticks:{color:'#333',font:{size:9}},grid:{display:false},border:{display:false}},y:{ticks:{color:'#252525',font:{size:9},callback:v=>BRL(v)},grid:{color:'#0f0f0f'},border:{display:false}}}}});
-  if(charts.pie)charts.pie.destroy();
-  if(grpD.length){charts.pie=new Chart(document.getElementById('ch-pie'),{type:'doughnut',data:{labels:grpD.map(([g])=>g),datasets:[{data:grpD.map(([,v])=>v),backgroundColor:['#c04040','#905010','#703080','#304070','#2a7a50','#804030'],borderWidth:0}]},options:{responsive:true,cutout:'55%',plugins:{legend:{position:'right',labels:{color:'#444',font:{size:10},boxWidth:7,padding:6}},tooltip:{callbacks:{label:ctx=>`${ctx.label}: ${BRL(ctx.raw)}`}}}}});}
+  charts.bar=new Chart(document.getElementById('ch-bar'),{
+    type:'bar',
+    data:{labels,datasets:[{data:values.map(v=>Math.abs(v)),backgroundColor:colors,borderRadius:3,borderSkipped:false}]},
+    options:{responsive:true,plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>`${ctx.label}: ${BRL(ctx.raw)}`}}},scales:{x:{ticks:{color:'#333',font:{size:9},maxRotation:30},grid:{display:false},border:{display:false}},y:{ticks:{color:'#252525',font:{size:9},callback:v=>BRL(v)},grid:{color:'#0f0f0f'},border:{display:false}}}}
+  });
 
+  // ── TOP TABELAS
   function topTable(txns,id){
-    const vm={};txns.filter(t=>t.cat==='DESPESA').forEach(t=>{const k=t.descricao.trim().split(/\s+/).slice(0,4).join(' ');vm[k]=(vm[k]||0)+Math.abs(t.valor);});
-    document.getElementById(id).innerHTML=Object.entries(vm).sort((a,b)=>b[1]-a[1]).slice(0,6).map(([n,v],i)=>`<tr><td><span class="tm mut" style="font-size:9px;margin-right:6px">${String(i+1).padStart(2,'0')}</span><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:150px;display:inline-block;vertical-align:middle">${n}</span></td><td class="tm red" style="text-align:right">${BRL(v)}</td></tr>`).join('')||'<tr><td colspan="2" style="text-align:center;color:var(--txt3);padding:14px">Sem dados</td></tr>';
+    const vm={};txns.filter(t=>t.cat==='DESPESA').forEach(t=>{const k=(t.descricao||'').trim().split(/\s+/).slice(0,4).join(' ');vm[k]=(vm[k]||0)+Math.abs(t.valor);});
+    document.getElementById(id).innerHTML=Object.entries(vm).sort((a,b)=>b[1]-a[1]).slice(0,7).map(([n,v],i)=>`<tr><td><span class="tm mut" style="font-size:9px;margin-right:6px">${String(i+1).padStart(2,'0')}</span><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:150px;display:inline-block;vertical-align:middle">${n}</span></td><td class="tm red" style="text-align:right">${BRL(v)}</td></tr>`).join('')||'<tr><td colspan="2" style="text-align:center;color:var(--txt3);padding:14px">Sem dados</td></tr>';
   }
   topTable(txNuFat(curMes),'dash-top-nu');
   topTable(txStFat(curMes),'dash-top-st');
 
+  // ── ALERTAS
   const als=[];
   if(rec>0){
-    const p=tot.despTotal/rec*100,meta=metas.despesas;
-    als.push(p>meta?{t:'w',m:`⚠ Despesas em ${p.toFixed(0)}% da receita — meta é ${meta}%`}:{t:'ok',m:`✓ Despesas em ${p.toFixed(0)}% — dentro da meta de ${meta}%`});
+    const p=tot.despTotal/rec*100;
+    als.push(p>metas.despesas?{t:'w',m:`⚠ Despesas em ${p.toFixed(0)}% da receita — meta é ${metas.despesas}%`}:{t:'ok',m:`✓ Despesas em ${p.toFixed(0)}% da receita — dentro da meta de ${metas.despesas}%`});
     if(saldo<0)als.push({t:'w',m:`⚠ Mês no vermelho: ${BRL(Math.abs(saldo))} acima da receita`});
+    if(taxaPoup<10)als.push({t:'w',m:`⚠ Taxa de poupança baixa: ${taxaPoup.toFixed(1)}% — meta mínima é 20%`});
     if(tot.almocoInfo&&tot.almocoInfo.diasPerdidos>0)als.push({t:'i',m:`🍽 Giovaniburgue em ${tot.almocoInfo.diasPerdidos} dia(s) útil(eis) — possível substituto do almoço da Edi`});
-    // Uber alert
     const uberTotal=allTx.filter(t=>t.subcategoria==='Uber').reduce((s,t)=>s+Math.abs(t.valor),0);
-    if(uberTotal>0&&uberTotal/tot.despTotal>0.15)als.push({t:'w',m:`🚗 Uber: ${BRL(uberTotal)} — ${(uberTotal/tot.despTotal*100).toFixed(0)}% das despesas totais`});
+    if(uberTotal>0&&tot.despTotal>0&&uberTotal/tot.despTotal>0.15)als.push({t:'w',m:`🚗 Uber: ${BRL(uberTotal)} — ${(uberTotal/tot.despTotal*100).toFixed(0)}% das despesas`});
+    if(outrasRecTotal>0)als.push({t:'i',m:`💡 Receitas extras além do salário: ${BRL(outrasRecTotal)} este mês`});
   }
   document.getElementById('dash-alerts').innerHTML=als.map(a=>`<div class="alert ${a.t==='w'?'aw':a.t==='i'?'ai':'aok'}">${a.m}</div>`).join('');
 }
@@ -640,18 +754,25 @@ function renderDRE(scope){
 
   const txns=getTxnsByScope(curMes,scope);
   const tot=calcTot(curMes,txns);
+  // Sempre usa tot.receitaExt (soma de todas RECEITA_LIQUIDA importadas) + almoço Edi
+  // Input manual só sobrescreve se o usuário digitou explicitamente (e for diferente do auto)
   const recAuto=tot.receitaExt+tot.almocoBenefit;
-  const recManual=gRec(scope,curMes);
-  const rec=recManual>0?recManual:recAuto;
+  const recManualRaw=gRec(scope,curMes);
+  // Usa manual só se foi setado manualmente E diferente do auto (evita override pelo save do extrato)
+  const rec=recManualRaw>0&&Math.abs(recManualRaw-tot.receitaExt)>1?recManualRaw+tot.almocoBenefit:recAuto;
 
   const inp=document.getElementById(scope+'-rec-inp');
   if(inp&&!inp.value&&rec>0)inp.value=recManual>0?recManual:tot.receitaExt;
 
   const hint=document.getElementById(scope+'-dre-hint');
   if(hint){
+    const salTot=txns.filter(t=>t.cat==='RECEITA_LIQUIDA'&&t.subcategoria==='Salário'&&t.valor>0).reduce((s,t)=>s+t.valor,0);
+    const extrasTot=txns.filter(t=>t.cat==='RECEITA_LIQUIDA'&&t.subcategoria!=='Salário'&&t.valor>0).reduce((s,t)=>s+t.valor,0);
     let h='Informe a receita líquida';
-    if(tot.receitaExt>0)h=`✓ Receita detectada: ${BRL(tot.receitaExt)}`;
+    if(salTot>0)h=`Salário: ${BRL(salTot)}`;
+    if(extrasTot>0)h+=` + Outras receitas: ${BRL(extrasTot)}`;
     if(tot.almocoBenefit>0)h+=` + Almoço da Edi: ${BRL(tot.almocoBenefit)} (${tot.almocoInfo.diasUsados}d)`;
+    if(tot.receitaExt>0)h+=` = ${BRL(rec)}`;
     hint.textContent=h;
   }
   const[y,m]=curMes.split('-');
@@ -667,15 +788,19 @@ function renderDRE(scope){
 
   let html=`<div style="font-family:var(--mono);font-size:9px;color:var(--txt3);letter-spacing:1px;text-transform:uppercase;margin-bottom:10px">DRE — ${MESES[parseInt(m)-1]} ${y}</div>`;
 
-  // RECEITA
+  // RECEITA — detalhar todas as fontes
   const recItems=[];
-  if(tot.receitaExt>0)recItems.push({s:'Salário',v:tot.receitaExt});
+  const salTxns=txns.filter(t=>t.cat==='RECEITA_LIQUIDA'&&t.subcategoria==='Salário'&&t.valor>0);
+  const extraTxns=txns.filter(t=>t.cat==='RECEITA_LIQUIDA'&&t.subcategoria!=='Salário'&&t.valor>0);
+  if(salTxns.length>0)recItems.push({s:'Salário',v:salTxns.reduce((s,t)=>s+t.valor,0)});
+  const extrasGrp={};
+  extraTxns.forEach(t=>{extrasGrp[t.subcategoria]=(extrasGrp[t.subcategoria]||0)+t.valor;});
+  Object.entries(extrasGrp).forEach(([s,v])=>recItems.push({s,v,extra:true}));
   if(tot.almocoBenefit>0)recItems.push({s:'Almoço da Edi',v:tot.almocoBenefit,note:`${tot.almocoInfo.diasUsados}d × ${BRL(gAlmoco().valor)}`});
-  txns.filter(t=>t.cat==='RECEITA_LIQUIDA'&&t.subcategoria!=='Salário'&&t.valor>0).forEach(t=>recItems.push({s:t.subcategoria,v:t.valor}));
 
   html+=`<div class="card" style="padding:0;overflow:hidden;margin-bottom:8px">
     <div class="drow hdr"><span class="dlbl b" style="color:var(--grn)">(+) RECEITA LÍQUIDA</span><span class="dval b" style="color:var(--grn)">${rec>0?BRL(rec):'Informe acima'}</span></div>
-    ${recItems.map(r=>`<div class="drow sub"><span class="dlbl" style="color:var(--txt3)">${r.s}${r.note?` <span style="font-size:9px">(${r.note})</span>`:''}</span><span class="dval" style="color:var(--txt3)">${BRL(r.v)}</span></div>`).join('')}
+    ${recItems.map(r=>`<div class="drow sub"><span class="dlbl" style="color:${r.extra?'var(--grn)':'var(--txt3)'};display:flex;align-items:center;gap:6px">${r.s}${r.extra?'<span style="font-size:8px;background:#2a7a5022;color:var(--grn);padding:1px 5px;border-radius:3px;font-family:var(--mono)">extra</span>':''}${r.note?` <span style="font-size:9px;color:var(--txt3)">(${r.note})</span>`:''}</span><span class="dval" style="color:${r.extra?'var(--grn)':'var(--txt3)'}">${BRL(r.v)}</span></div>`).join('')}
   </div>`;
 
   // DESPESAS
