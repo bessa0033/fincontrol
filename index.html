@@ -139,7 +139,7 @@ select:focus,input:focus{border-color:#333}
 
 <!-- DASHBOARD -->
 <div id="pg-dash" class="page active">
-  <div class="topbar"><div class="tb-t">Dashboard</div><div class="tb-r"><div id="dash-pills" style="display:flex;gap:4px"></div><button class="btn-g btn-sm" onclick="goTo('import')">+ Importar</button></div></div>
+  <div class="topbar"><div class="tb-t">Dashboard</div><div class="tb-r"><div id="dash-pills" style="display:flex;gap:4px"></div><span class="topbar-mes-ind" style="font-family:var(--mono);font-size:11px;color:var(--txt3);padding:0 4px"></span><button class="btn-g btn-sm" onclick="goTo('import')">+ Importar</button></div></div>
   <div class="pb">
     <div id="dash-empty" class="empty" style="display:none"><div style="font-size:22px;opacity:.1;margin-bottom:10px">📊</div>Nenhum dado. <span style="cursor:pointer;color:var(--txt2);text-decoration:underline" onclick="goTo('import')">Importar →</span></div>
     <div id="dash-content">
@@ -206,7 +206,7 @@ select:focus,input:focus{border-color:#333}
 
 <!-- NUBANK: DRE -->
 <div id="pg-nu-dre" class="page">
-  <div class="topbar"><div class="tb-t">DRE</div><div class="tb-s" style="color:var(--nu)">Nubank</div><div class="tb-r"><div id="nu-dre-pills" style="display:flex;gap:4px"></div><button class="btn-g btn-sm" onclick="goTo('config')">⚙ Metas</button></div></div>
+  <div class="topbar"><div class="tb-t">DRE</div><div class="tb-s" style="color:var(--nu)">Nubank</div><div class="tb-r"><div id="nu-dre-pills" style="display:flex;gap:4px"></div><span class="topbar-mes-ind" style="font-family:var(--mono);font-size:11px;color:var(--txt3);padding:0 4px"></span><button class="btn-g btn-sm" onclick="goTo('config')">⚙ Metas</button></div></div>
   <div class="pb" style="max-width:860px">
     <div id="nu-dre-empty" class="empty" style="display:none"><div style="font-size:20px;opacity:.1;margin-bottom:8px">📋</div>Nenhum dado Nubank.</div>
     <div id="nu-dre-rec-card" class="card" style="margin-bottom:10px;display:none">
@@ -253,7 +253,7 @@ select:focus,input:focus{border-color:#333}
 
 <!-- SANTANDER: DRE -->
 <div id="pg-st-dre" class="page">
-  <div class="topbar"><div class="tb-t">DRE</div><div class="tb-s" style="color:var(--st)">Santander</div><div class="tb-r"><div id="st-dre-pills" style="display:flex;gap:4px"></div><button class="btn-g btn-sm" onclick="goTo('config')">⚙ Metas</button></div></div>
+  <div class="topbar"><div class="tb-t">DRE</div><div class="tb-s" style="color:var(--st)">Santander</div><div class="tb-r"><div id="st-dre-pills" style="display:flex;gap:4px"></div><span class="topbar-mes-ind" style="font-family:var(--mono);font-size:11px;color:var(--txt3);padding:0 4px"></span><button class="btn-g btn-sm" onclick="goTo('config')">⚙ Metas</button></div></div>
   <div class="pb" style="max-width:860px">
     <div id="st-dre-empty" class="empty" style="display:none"><div style="font-size:20px;opacity:.1;margin-bottom:8px">📋</div>Nenhum dado Santander.</div>
     <div id="st-dre-rec-card" class="card" style="margin-bottom:10px;display:none">
@@ -268,7 +268,7 @@ select:focus,input:focus{border-color:#333}
 
 <!-- ANÁLISE: DRE CONSOLIDADO -->
 <div id="pg-an-dre" class="page">
-  <div class="topbar"><div class="tb-t">DRE Consolidado</div><div class="tb-s">Nubank + Santander</div><div class="tb-r"><div id="an-dre-pills" style="display:flex;gap:4px"></div><button class="btn-g btn-sm" onclick="goTo('config')">⚙ Metas</button></div></div>
+  <div class="topbar"><div class="tb-t">DRE Consolidado</div><div class="tb-s">Nubank + Santander</div><div class="tb-r"><div id="an-dre-pills" style="display:flex;gap:4px"></div><span class="topbar-mes-ind" style="font-family:var(--mono);font-size:11px;color:var(--txt3);padding:0 4px"></span><button class="btn-g btn-sm" onclick="goTo('config')">⚙ Metas</button></div></div>
   <div class="pb" style="max-width:860px">
     <div id="an-dre-empty" class="empty" style="display:none"><div style="font-size:20px;opacity:.1;margin-bottom:8px">📊</div>Nenhum dado importado.</div>
     <div id="an-dre-rec-card" class="card" style="margin-bottom:10px;display:none">
@@ -417,11 +417,20 @@ function renderPills(id,cbName){
   const el=document.getElementById(id);if(!el)return;
   const meses=mesesAll();
   if(!meses.length){el.innerHTML='';return;}
-  el.innerHTML=meses.slice(0,8).map(k=>{
+
+  // Garante que curMes é um mês válido
+  if(!meses.includes(curMes))curMes=meses[0];
+
+  el.innerHTML=meses.slice(0,12).map(k=>{
     const[y,m]=k.split('-');
     const isActive=k===curMes;
     return`<button class="pill-btn${isActive?' active':''}" onclick="curMes='${k}';renderPills('${id}','${cbName}');_callCB('${cbName}')">${MESES[parseInt(m)-1].slice(0,3)}/${y.slice(2)}</button>`;
   }).join('');
+
+  // Atualizar indicador de mês no topbar se existir
+  const[y,m]=curMes.split('-');
+  const mesLabel=`${MESES[parseInt(m)-1].slice(0,3)}/${y.slice(2)}`;
+  document.querySelectorAll('.topbar-mes-ind').forEach(el=>el.textContent=mesLabel);
 }
 function popMesSel(id,meses){
   const sel=document.getElementById(id);if(!sel)return;sel.innerHTML='';
@@ -764,10 +773,10 @@ function renderDRE(scope){
 
   const txns=getTxnsByScope(curMes,scope);
   const tot=calcTot(curMes,txns);
-  // Receita 100% automática — soma tudo que foi importado como RECEITA_LIQUIDA + almoço Edi
-  const rec=tot.receitaExt+tot.almocoBenefit;
+  // Receita = só transações reais importadas. Almoço da Edi fica APENAS no Dashboard.
+  const rec=tot.receitaExt;
 
-  // Atualizar card informativo de receita
+  // Card informativo de receita (sem Edi)
   const recCard=document.getElementById(scope+'-dre-rec-card');
   const recVal=document.getElementById(scope+'-dre-rec-val');
   const hintEl=document.getElementById(scope+'-dre-hint');
@@ -776,23 +785,16 @@ function renderDRE(scope){
       recCard.style.display='block';
       if(recVal)recVal.textContent=BRL(rec);
       if(hintEl){
-        const salTot=txns.filter(t=>t.cat==='RECEITA_LIQUIDA'&&t.subcategoria==='Salário'&&t.valor>0).reduce((s,t)=>s+t.valor,0);
-        const extrasTot=txns.filter(t=>t.cat==='RECEITA_LIQUIDA'&&t.subcategoria!=='Salário'&&t.valor>0).reduce((s,t)=>s+t.valor,0);
-        let parts=[];
-        if(salTot>0)parts.push(`Salário ${BRL(salTot)}`);
-        if(extrasTot>0)parts.push(`Outras receitas ${BRL(extrasTot)}`);
-        if(tot.almocoBenefit>0)parts.push(`Almoço Edi ${BRL(tot.almocoBenefit)} (${tot.almocoInfo.diasUsados}d)`);
-        hintEl.textContent=parts.join(' + ')||'Detectado automaticamente';
+        const recTxns=txns.filter(t=>t.cat==='RECEITA_LIQUIDA'&&t.valor>0);
+        const nFontes=[...new Set(recTxns.map(t=>t.subcategoria||t.descricao_limpa||t.descricao))].slice(0,3);
+        hintEl.textContent=nFontes.join(' · ')||'Detectado automaticamente';
       }
     } else {
       recCard.style.display='none';
     }
   }
 
-
-  const hint=document.getElementById(scope+'-dre-hint');
   const[y,m]=curMes.split('-');
-
   const metas=gMetas();
   function pct(v){return rec>0?(v/rec*100).toFixed(1)+'%':'—';}
   function metaBar(v,mp){
@@ -803,20 +805,50 @@ function renderDRE(scope){
 
   let html=`<div style="font-family:var(--mono);font-size:9px;color:var(--txt3);letter-spacing:1px;text-transform:uppercase;margin-bottom:10px">DRE — ${MESES[parseInt(m)-1]} ${y}</div>`;
 
-  // RECEITA — detalhar todas as fontes
-  const recItems=[];
-  const salTxns=txns.filter(t=>t.cat==='RECEITA_LIQUIDA'&&t.subcategoria==='Salário'&&t.valor>0);
-  const extraTxns=txns.filter(t=>t.cat==='RECEITA_LIQUIDA'&&t.subcategoria!=='Salário'&&t.valor>0);
-  if(salTxns.length>0)recItems.push({s:'Salário',v:salTxns.reduce((s,t)=>s+t.valor,0)});
-  const extrasGrp={};
-  extraTxns.forEach(t=>{extrasGrp[t.subcategoria]=(extrasGrp[t.subcategoria]||0)+t.valor;});
-  Object.entries(extrasGrp).forEach(([s,v])=>recItems.push({s,v,extra:true}));
-  if(tot.almocoBenefit>0)recItems.push({s:'Almoço da Edi',v:tot.almocoBenefit,note:`${tot.almocoInfo.diasUsados}d × ${BRL(gAlmoco().valor)}`});
+  // ── RECEITA: cada transação individual com origem real
+  const recTxns=txns.filter(t=>t.cat==='RECEITA_LIQUIDA'&&t.valor>0);
 
-  html+=`<div class="card" style="padding:0;overflow:hidden;margin-bottom:8px">
-    <div class="drow hdr"><span class="dlbl b" style="color:var(--grn)">(+) RECEITA LÍQUIDA</span><span class="dval b" style="color:var(--grn)">${rec>0?BRL(rec):'Informe acima'}</span></div>
-    ${recItems.map(r=>`<div class="drow sub"><span class="dlbl" style="color:${r.extra?'var(--grn)':'var(--txt3)'};display:flex;align-items:center;gap:6px">${r.s}${r.extra?'<span style="font-size:8px;background:#2a7a5022;color:var(--grn);padding:1px 5px;border-radius:3px;font-family:var(--mono)">extra</span>':''}${r.note?` <span style="font-size:9px;color:var(--txt3)">(${r.note})</span>`:''}</span><span class="dval" style="color:${r.extra?'var(--grn)':'var(--txt3)'}">${BRL(r.v)}</span></div>`).join('')}
-  </div>`;
+  // Agrupar por subcategoria, mas dentro mostrar cada transação
+  const recPorSub={};
+  recTxns.forEach(t=>{
+    const sub=t.subcategoria||'Outros';
+    if(!recPorSub[sub])recPorSub[sub]=[];
+    recPorSub[sub].push(t);
+  });
+
+  if(recTxns.length>0){
+    html+=`<div class="card" style="padding:0;overflow:hidden;margin-bottom:8px">
+      <div class="drow hdr"><span class="dlbl b" style="color:var(--grn)">(+) RECEITA LÍQUIDA</span><span class="dval b" style="color:var(--grn)">${BRL(rec)}</span></div>`;
+
+    Object.entries(recPorSub).forEach(([sub,txList])=>{
+      const subTotal=txList.reduce((s,t)=>s+t.valor,0);
+      const isSalario=sub==='Salário';
+      const cor=isSalario?'var(--txt)':'var(--grn)';
+      const extraBadge=!isSalario?'<span style="font-size:8px;background:#2a7a5022;color:var(--grn);padding:1px 5px;border-radius:3px;font-family:var(--mono);margin-left:6px">extra</span>':'';
+
+      if(txList.length===1){
+        // Uma transação só: mostrar com origem
+        const t=txList[0];
+        const descr=t.descricao_limpa||t.origem||t.descricao||sub;
+        html+=`<div class="drow sub"><span class="dlbl" style="color:${cor};display:flex;align-items:center">${descr}${extraBadge}</span><span class="dval" style="color:${cor}">${BRL(t.valor)}</span></div>`;
+      } else {
+        // Várias transações: mostrar grupo clicável com detalhe
+        html+=`<div class="drow" style="cursor:pointer" onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display==='none'?'block':'none'">
+          <span class="dlbl" style="display:flex;align-items:center;color:${cor}">${sub}${extraBadge}<span style="font-size:10px;color:var(--txt3);margin-left:6px">${txList.length}x ▸</span></span>
+          <span class="dval" style="color:${cor}">${BRL(subTotal)}</span>
+        </div>
+        <div style="display:none;background:#090909">
+          ${txList.map(t=>{const d=t.descricao_limpa||t.origem||t.descricao||sub;return`<div class="drow sub" style="padding-left:40px"><span class="dlbl" style="color:var(--txt3);display:flex;align-items:center;gap:8px"><span class="tm mut" style="font-size:9px">${t.data||''}</span>${d}</span><span class="dval" style="color:var(--grn)">${BRL(t.valor)}</span></div>`;}).join('')}
+        </div>`;
+      }
+    });
+
+    html+=`</div>`;
+  } else {
+    html+=`<div class="card" style="padding:0;overflow:hidden;margin-bottom:8px">
+      <div class="drow hdr"><span class="dlbl b" style="color:var(--grn)">(+) RECEITA LÍQUIDA</span><span class="dval" style="color:var(--txt3);font-size:11px">Importe extrato para detectar automaticamente</span></div>
+    </div>`;
+  }
 
   // DESPESAS
   const despGrupos={};txns.filter(t=>t.cat==='DESPESA').forEach(t=>{if(!despGrupos[t.grupo])despGrupos[t.grupo]=[];despGrupos[t.grupo].push(t);});
@@ -856,7 +888,13 @@ function renderDRE(scope){
   });
 
   const resFinal=rec-tot.despTotal-tot.invTotal;
-  html+=`<div class="card" style="padding:0;overflow:hidden"><div class="drow res"><span class="dlbl b" style="font-size:13px">= RESULTADO LÍQUIDO</span><span class="dval b" style="font-size:18px;color:${resFinal>=0?'var(--grn)':'var(--red)'}">${rec>0?(resFinal>=0?'+ ':'-')+BRL(Math.abs(resFinal)):'Informe a receita'}</span></div></div>`;
+  html+=`<div class="card" style="padding:0;overflow:hidden"><div class="drow res">
+    <span class="dlbl b" style="font-size:13px">= RESULTADO LÍQUIDO</span>
+    <div style="display:flex;flex-direction:column;align-items:flex-end;gap:3px">
+      <span class="dval b" style="font-size:18px;color:${resFinal>=0?'var(--grn)':'var(--red)'}">${rec>0?(resFinal>=0?'+ ':'-')+BRL(Math.abs(resFinal)):'Sem receita detectada'}</span>
+      ${tot.almocoBenefit>0?`<span style="font-size:9px;color:var(--txt3);font-family:var(--mono)">+ Almoço Edi ${BRL(tot.almocoBenefit)} não contabilizado (ver Dashboard)</span>`:''}
+    </div>
+  </div></div>`;
   document.getElementById(scope+'-dre-content').innerHTML=html;
 }
 
