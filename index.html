@@ -174,7 +174,7 @@ select:focus,input:focus{border-color:#333}
 
 <!-- NUBANK: CARTÃO -->
 <div id="pg-nu-cartao" class="page">
-  <div class="topbar"><div class="tb-t">Cartão</div><div class="tb-s" style="color:var(--nu)">Nubank</div><div class="tb-r"><select id="nu-fat-mes" onchange="renderCartao('nu')"></select><select id="nu-fat-cat" onchange="renderCartao('nu')"><option value="">Todas categorias</option></select><input type="text" id="nu-fat-busca" placeholder="Buscar..." style="width:120px" oninput="renderCartao('nu')"></div></div>
+  <div class="topbar"><div class="tb-t">Cartão</div><div class="tb-s" style="color:var(--nu)">Nubank</div><div class="tb-r"><select id="nu-fat-mes" onchange="curMes=this.value;renderCartao('nu')"></select><select id="nu-fat-cat" onchange="renderCartao('nu')"><option value="">Todas categorias</option></select><input type="text" id="nu-fat-busca" placeholder="Buscar..." style="width:120px" oninput="renderCartao('nu')"></div></div>
   <div style="padding:0"><div id="nu-fat-empty" class="empty" style="display:none"><div style="font-size:20px;opacity:.1;margin-bottom:8px">💳</div>Nenhuma fatura Nubank importada.</div>
     <div id="nu-fat-wrap"><div style="max-height:calc(100vh - 110px);overflow-y:auto"><table><thead><tr><th>Dt. Pgto</th><th>Dt. Compet.</th><th>Descrição</th><th>Subcategoria</th><th>Categoria</th><th>Parcela</th><th style="text-align:right">Valor</th></tr></thead><tbody id="nu-fat-tbody"></tbody></table></div>
     <div style="padding:7px 14px;border-top:1px solid var(--border);background:var(--bg);display:flex;justify-content:space-between;font-size:10px;color:var(--txt3);font-family:var(--mono)"><span id="nu-fat-count"></span><span>Total: <strong id="nu-fat-total" class="red"></strong></span></div></div>
@@ -183,7 +183,7 @@ select:focus,input:focus{border-color:#333}
 
 <!-- NUBANK: EXTRATO -->
 <div id="pg-nu-extrato" class="page">
-  <div class="topbar"><div class="tb-t">Extrato Conta</div><div class="tb-s" style="color:var(--nu)">Nubank</div><div class="tb-r"><select id="nu-ext-mes" onchange="renderExtrato('nu')"></select><select id="nu-ext-tipo" onchange="renderExtrato('nu')"><option value="">Todos</option><option value="e">Entradas</option><option value="s">Saídas</option></select><select id="nu-ext-cat" onchange="renderExtrato('nu')"><option value="">Todas categorias</option></select><input type="text" id="nu-ext-busca" placeholder="Buscar..." style="width:120px" oninput="renderExtrato('nu')"></div></div>
+  <div class="topbar"><div class="tb-t">Extrato Conta</div><div class="tb-s" style="color:var(--nu)">Nubank</div><div class="tb-r"><select id="nu-ext-mes" onchange="curMes=this.value;renderExtrato('nu')"></select><select id="nu-ext-tipo" onchange="renderExtrato('nu')"><option value="">Todos</option><option value="e">Entradas</option><option value="s">Saídas</option></select><select id="nu-ext-cat" onchange="renderExtrato('nu')"><option value="">Todas categorias</option></select><input type="text" id="nu-ext-busca" placeholder="Buscar..." style="width:120px" oninput="renderExtrato('nu')"></div></div>
   <div style="padding:0"><div id="nu-ext-empty" class="empty" style="display:none"><div style="font-size:20px;opacity:.1;margin-bottom:8px">🏦</div>Nenhum extrato Nubank importado.</div>
     <div id="nu-ext-wrap"><div style="max-height:calc(100vh - 110px);overflow-y:auto"><table><thead><tr><th>Data</th><th>Descrição</th><th>Origem/Destino</th><th>Subcategoria</th><th>Categoria</th><th style="text-align:right">Valor</th></tr></thead><tbody id="nu-ext-tbody"></tbody></table></div>
     <div style="padding:7px 14px;border-top:1px solid var(--border);background:var(--bg);display:flex;justify-content:space-between;font-size:10px;color:var(--txt3);font-family:var(--mono)"><span id="nu-ext-count"></span><div style="display:flex;gap:12px"><span>Ent: <strong id="nu-ext-in" class="grn"></strong></span><span>Saí: <strong id="nu-ext-out" class="red"></strong></span><span>Saldo: <strong id="nu-ext-saldo"></strong></span></div></div></div>
@@ -221,7 +221,7 @@ select:focus,input:focus{border-color:#333}
 
 <!-- SANTANDER: CARTÃO -->
 <div id="pg-st-cartao" class="page">
-  <div class="topbar"><div class="tb-t">Cartão</div><div class="tb-s" style="color:var(--st)">Santander</div><div class="tb-r"><select id="st-fat-mes" onchange="renderCartao('st')"></select><select id="st-fat-cat" onchange="renderCartao('st')"><option value="">Todas categorias</option></select><input type="text" id="st-fat-busca" placeholder="Buscar..." style="width:120px" oninput="renderCartao('st')"></div></div>
+  <div class="topbar"><div class="tb-t">Cartão</div><div class="tb-s" style="color:var(--st)">Santander</div><div class="tb-r"><select id="st-fat-mes" onchange="curMes=this.value;renderCartao('st')"></select><select id="st-fat-cat" onchange="renderCartao('st')"><option value="">Todas categorias</option></select><input type="text" id="st-fat-busca" placeholder="Buscar..." style="width:120px" oninput="renderCartao('st')"></div></div>
   <div style="padding:0"><div id="st-fat-empty" class="empty" style="display:none"><div style="font-size:20px;opacity:.1;margin-bottom:8px">💳</div>Nenhuma fatura Santander importada.</div>
     <div id="st-fat-wrap"><div style="max-height:calc(100vh - 110px);overflow-y:auto"><table><thead><tr><th>Dt. Pgto</th><th>Dt. Compet.</th><th>Descrição</th><th>Subcategoria</th><th>Categoria</th><th>Parcela</th><th style="text-align:right">Valor</th></tr></thead><tbody id="st-fat-tbody"></tbody></table></div>
     <div style="padding:7px 14px;border-top:1px solid var(--border);background:var(--bg);display:flex;justify-content:space-between;font-size:10px;color:var(--txt3);font-family:var(--mono)"><span id="st-fat-count"></span><span>Total: <strong id="st-fat-total" class="red"></strong></span></div></div>
@@ -230,7 +230,7 @@ select:focus,input:focus{border-color:#333}
 
 <!-- SANTANDER: EXTRATO -->
 <div id="pg-st-extrato" class="page">
-  <div class="topbar"><div class="tb-t">Extrato Conta</div><div class="tb-s" style="color:var(--st)">Santander</div><div class="tb-r"><select id="st-ext-mes" onchange="renderExtrato('st')"></select><select id="st-ext-tipo" onchange="renderExtrato('st')"><option value="">Todos</option><option value="e">Entradas</option><option value="s">Saídas</option></select><select id="st-ext-cat" onchange="renderExtrato('st')"><option value="">Todas categorias</option></select><input type="text" id="st-ext-busca" placeholder="Buscar..." style="width:120px" oninput="renderExtrato('st')"></div></div>
+  <div class="topbar"><div class="tb-t">Extrato Conta</div><div class="tb-s" style="color:var(--st)">Santander</div><div class="tb-r"><select id="st-ext-mes" onchange="curMes=this.value;renderExtrato('st')"></select><select id="st-ext-tipo" onchange="renderExtrato('st')"><option value="">Todos</option><option value="e">Entradas</option><option value="s">Saídas</option></select><select id="st-ext-cat" onchange="renderExtrato('st')"><option value="">Todas categorias</option></select><input type="text" id="st-ext-busca" placeholder="Buscar..." style="width:120px" oninput="renderExtrato('st')"></div></div>
   <div style="padding:0"><div id="st-ext-empty" class="empty" style="display:none"><div style="font-size:20px;opacity:.1;margin-bottom:8px">🏦</div>Nenhum extrato Santander importado.</div>
     <div id="st-ext-wrap"><div style="max-height:calc(100vh - 110px);overflow-y:auto"><table><thead><tr><th>Data</th><th>Descrição</th><th>Origem/Destino</th><th>Subcategoria</th><th>Categoria</th><th style="text-align:right">Valor</th></tr></thead><tbody id="st-ext-tbody"></tbody></table></div>
     <div style="padding:7px 14px;border-top:1px solid var(--border);background:var(--bg);display:flex;justify-content:space-between;font-size:10px;color:var(--txt3);font-family:var(--mono)"><span id="st-ext-count"></span><div style="display:flex;gap:12px"><span>Ent: <strong id="st-ext-in" class="grn"></strong></span><span>Saí: <strong id="st-ext-out" class="red"></strong></span><span>Saldo: <strong id="st-ext-saldo"></strong></span></div></div></div>
@@ -515,20 +515,42 @@ function renderDash(){
   const rec=tot.receitaExt+tot.almocoBenefit;
 
   const metas=gMetas();
-  const saldo=rec-tot.despTotal-tot.invTotal;
+  // Resultado = Receita - Despesas apenas. Investimentos são POSITIVOS (não são gastos).
+  // "Você investiu R$ X além do que sobrou" é diferente de "você está devendo".
+  const resultadoOperacional=rec-tot.despTotal; // sobrou depois de viver
+  const saldoFinal=resultadoOperacional-tot.invTotal; // quanto ficou em conta depois de investir
   const taxaPoup=rec>0?tot.invTotal/rec*100:0;
   const burnRateDay=tot.despTotal>0?(tot.despTotal/30):0;
 
   // ── KPIs PRINCIPAIS (3 grandes)
   const TIPS_MAIN=[
     'Soma de todas as receitas do mês: salário detectado no extrato + outras receitas recebidas + benefício do almoço da Edi.',
-    `Tudo que saiu como despesa real (excluindo investimentos). Meta: manter abaixo de ${metas.despesas}% da receita. Quanto menor, melhor.`,
-    'O que sobrou depois de pagar todas as despesas E investir. Positivo = você viveu dentro do que ganhou.'
+    `Tudo que saiu como despesa de consumo (excluindo investimentos). Meta: abaixo de ${metas.despesas}% da receita.`,
+    'Receita menos despesas de consumo. Positivo = sua vida cabe no que você ganha. Investimentos são mostrados separadamente — investir não é "gastar".'
   ];
   document.getElementById('dash-kpis-main').innerHTML=[
-    {l:'Receita Total',v:rec>0?BRL(rec):'—',s:salario>0?`Salário ${BRL(salario)}`+(outrasRecTotal>0?` + extras ${BRL(outrasRecTotal)}`:'')+(tot.almocoBenefit>0?` + Edi ${BRL(tot.almocoBenefit)}`:''):'Importe extrato',c:'var(--grn)',border:'2px solid #2a7a5022'},
-    {l:'Custo de Vida',v:BRL(tot.despTotal),s:rec>0?`${(tot.despTotal/rec*100).toFixed(1)}% da receita — meta ${metas.despesas}%`:'—',c:rec>0&&tot.despTotal/rec*100>metas.despesas?'var(--red)':'var(--txt)',border:'2px solid #c0404022'},
-    {l:'Resultado Líquido',v:rec>0?BRL(Math.abs(saldo)):'—',s:saldo>=0?'✓ sobrou após despesas e investimentos':'⚠ gastou mais do que entrou',c:saldo>=0?'var(--grn)':'var(--red)',border:`2px solid ${saldo>=0?'#2a7a5022':'#c0404022'}`},
+    {
+      l:'Receita Total',
+      v:rec>0?BRL(rec):'—',
+      s:salario>0?`Salário ${BRL(salario)}`+(outrasRecTotal>0?` + extras ${BRL(outrasRecTotal)}`:'')+(tot.almocoBenefit>0?` + Edi ${BRL(tot.almocoBenefit)}`:''):'Importe extrato',
+      c:'var(--grn)',border:'2px solid #2a7a5022'
+    },
+    {
+      l:'Custo de Vida',
+      v:BRL(tot.despTotal),
+      s:rec>0?`${(tot.despTotal/rec*100).toFixed(1)}% da receita — meta ${metas.despesas}%`:'—',
+      c:rec>0&&tot.despTotal/rec*100>metas.despesas?'var(--red)':'var(--txt)',
+      border:'2px solid #c0404022'
+    },
+    {
+      l:'Resultado Operacional',
+      v:rec>0?BRL(Math.abs(resultadoOperacional)):'—',
+      s:resultadoOperacional>=0
+        ?`✓ sobrou ${BRL(resultadoOperacional)} depois das despesas`+(saldoFinal<0?` · usou ${BRL(Math.abs(saldoFinal))} de poupança p/ investir`:'')
+        :`⚠ despesas ${BRL(Math.abs(resultadoOperacional))} acima da receita`,
+      c:resultadoOperacional>=0?'var(--grn)':'var(--red)',
+      border:`2px solid ${resultadoOperacional>=0?'#2a7a5022':'#c0404022'}`
+    },
   ].map((k,i)=>`<div class="card tip" data-tip="${TIPS_MAIN[i]}" style="margin:0;border:${k.border};padding:18px;cursor:default">
     <div class="clbl" style="margin-bottom:6px">${k.l}</div>
     <div style="font-family:var(--mono);font-size:26px;font-weight:600;color:${k.c};margin:4px 0 6px">${k.v}</div>
@@ -538,15 +560,15 @@ function renderDash(){
   // ── KPIs SECUNDÁRIOS (4 médios)
   const metaInv=(metas.invPessoal+metas.invFin+metas.planos+metas.prev);
   const TIPS_SEC=[
-    `Percentual da receita que foi para investimentos. Meta ideal: 20%+. Abaixo de 10% é sinal de alerta. Fórmula: Total Investido ÷ Receita.`,
+    `Percentual da receita direcionado a investimentos. Meta ideal: 20%+. Fórmula: Total Investido ÷ Receita.`,
     `Soma de Inv. Pessoal + Inv. Financeiro + Planos Pessoais + Previdência. Meta configurada: ${metaInv}% da receita.`,
-    `Quanto custa sua vida por dia em média. Útil para saber quantos dias de trabalho cada mês cobre seus gastos. Fórmula: Despesas ÷ 30.`,
-    `Benefício corporativo de almoço: ${tot.almocoInfo&&tot.almocoInfo.diasTotais?tot.almocoInfo.diasTotais+' dias úteis no mês.':''} Dias com Giovaniburgue em dia de semana são descontados.`
+    `Quanto custa sua vida por dia em média. Fórmula: Despesas ÷ 30. Útil para saber quantos dias de salário você "gasta" por mês.`,
+    `Benefício corporativo de almoço: ${tot.almocoInfo&&tot.almocoInfo.diasTotais?tot.almocoInfo.diasTotais+' dias úteis no mês. ':''} Dias com Giovaniburgue em dia de semana são descontados.`
   ];
   document.getElementById('dash-kpis-sec').innerHTML=[
-    {l:'Taxa de Poupança',v:rec>0?taxaPoup.toFixed(1)+'%':'—',s:taxaPoup>=20?'✓ acima de 20%':taxaPoup>=10?'⚠ abaixo do ideal':'⚠ baixa',c:taxaPoup>=20?'var(--grn)':taxaPoup>=10?'var(--amber)':'var(--red)'},
-    {l:'Total Investido',v:BRL(tot.invTotal),s:rec>0?`${(tot.invTotal/rec*100).toFixed(1)}% — meta ${metaInv}%`:'—',c:'#2050a0'},
-    {l:'Burn Rate Diário',v:BRL(burnRateDay),s:'custo médio por dia',c:'var(--txt2)'},
+    {l:'Taxa de Poupança',v:rec>0?taxaPoup.toFixed(1)+'%':'—',s:taxaPoup>=20?'✓ acima de 20%':taxaPoup>=10?'⚠ abaixo do ideal (20%)':'⚠ baixa — meta 20%+',c:taxaPoup>=20?'var(--grn)':taxaPoup>=10?'var(--amber)':'var(--red)'},
+    {l:'Total Investido',v:BRL(tot.invTotal),s:rec>0?`${(tot.invTotal/rec*100).toFixed(1)}% da receita — meta ${metaInv}%`:'—',c:'#2050a0'},
+    {l:'Burn Rate Diário',v:BRL(burnRateDay),s:'custo médio por dia de vida',c:'var(--txt2)'},
     {l:'Almoço da Edi',v:tot.almocoBenefit>0?BRL(tot.almocoBenefit):'—',s:tot.almocoBenefit>0?`${tot.almocoInfo.diasUsados}d / ${tot.almocoInfo.diasTotais}d úteis`:'Configure em ⚙',c:'var(--amber)'},
   ].map((k,i)=>`<div class="card tip" data-tip="${TIPS_SEC[i]}" style="margin:0;padding:14px;cursor:default">
     <div class="clbl" style="margin-bottom:4px">${k.l}</div>
@@ -609,7 +631,8 @@ function renderDash(){
   if(rec>0){
     const p=tot.despTotal/rec*100;
     als.push(p>metas.despesas?{t:'w',m:`⚠ Despesas em ${p.toFixed(0)}% da receita — meta é ${metas.despesas}%`}:{t:'ok',m:`✓ Despesas em ${p.toFixed(0)}% da receita — dentro da meta de ${metas.despesas}%`});
-    if(saldo<0)als.push({t:'w',m:`⚠ Mês no vermelho: ${BRL(Math.abs(saldo))} acima da receita`});
+    if(resultadoOperacional<0)als.push({t:'w',m:`⚠ Custo de vida ${BRL(Math.abs(resultadoOperacional))} acima da receita — revise despesas`});
+    if(saldoFinal<0&&resultadoOperacional>=0)als.push({t:'i',m:`ℹ Você usou ${BRL(Math.abs(saldoFinal))} de poupança prévia para cobrir investimentos — nada errado, só para ciência`});
     if(taxaPoup<10)als.push({t:'w',m:`⚠ Taxa de poupança baixa: ${taxaPoup.toFixed(1)}% — meta mínima é 20%`});
     if(tot.almocoInfo&&tot.almocoInfo.diasPerdidos>0)als.push({t:'i',m:`🍽 Giovaniburgue em ${tot.almocoInfo.diasPerdidos} dia(s) útil(eis) — possível substituto do almoço da Edi`});
     const uberTotal=allTx.filter(t=>t.subcategoria==='Uber').reduce((s,t)=>s+Math.abs(t.valor),0);
