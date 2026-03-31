@@ -90,6 +90,16 @@ select:focus,input:focus{border-color:#333}
 .dmeta{font-size:10px;color:var(--txt3);font-family:var(--mono)}
 .prog{height:3px;background:#141414;border-radius:2px;width:70px;overflow:hidden;flex-shrink:0}
 .prog-f{height:100%;border-radius:2px;transition:width .4s}
+
+/* TOOLTIP */
+.tip{position:relative;}
+.tip::after{content:attr(data-tip);position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);background:#1c1c1c;color:#a8a5a0;font-size:10px;font-family:var(--sans);line-height:1.55;padding:8px 11px;border-radius:5px;white-space:normal;width:200px;z-index:200;border:1px solid #2a2a2a;pointer-events:none;opacity:0;transition:opacity .15s;}
+.tip:hover::after{opacity:1;}
+
+/* PILLS MELHORADOS */
+.pill-btn{font-size:10px;font-family:var(--mono);padding:4px 12px;border-radius:4px;cursor:pointer;white-space:nowrap;transition:all .1s;border:1px solid var(--border2);background:var(--bg2);color:var(--txt3);}
+.pill-btn:hover{color:var(--txt2);border-color:#333;}
+.pill-btn.active{background:#1e1e1e;color:var(--white);border-color:#333;}
 </style>
 </head>
 <body>
@@ -199,7 +209,12 @@ select:focus,input:focus{border-color:#333}
   <div class="topbar"><div class="tb-t">DRE</div><div class="tb-s" style="color:var(--nu)">Nubank</div><div class="tb-r"><div id="nu-dre-pills" style="display:flex;gap:4px"></div><button class="btn-g btn-sm" onclick="goTo('config')">⚙ Metas</button></div></div>
   <div class="pb" style="max-width:860px">
     <div id="nu-dre-empty" class="empty" style="display:none"><div style="font-size:20px;opacity:.1;margin-bottom:8px">📋</div>Nenhum dado Nubank.</div>
-    <div class="card" style="margin-bottom:10px"><div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px"><div><div class="clbl">Receita do mês</div><div style="font-size:10px;color:var(--txt3);margin-top:2px" id="nu-dre-hint">Informe a receita</div></div><div style="display:flex;align-items:center;gap:8px"><span style="font-size:11px;color:var(--txt3)">R$</span><input type="number" id="nu-rec-inp" placeholder="0,00" style="width:140px;font-family:var(--mono);font-size:14px;font-weight:600;color:var(--white);background:#111;border-color:#222;padding:7px 10px" oninput="saveRec('nu');renderDRE('nu')"><span style="font-size:10px;color:var(--txt3)" id="nu-rec-ref"></span></div></div></div>
+    <div id="nu-dre-rec-card" class="card" style="margin-bottom:10px;display:none">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">
+        <div><div class="clbl">Receita detectada</div><div style="font-size:10px;color:var(--txt3);margin-top:2px" id="nu-dre-hint"></div></div>
+        <div style="font-family:var(--mono);font-size:20px;font-weight:600;color:var(--grn)" id="nu-dre-rec-val"></div>
+      </div>
+    </div>
     <div id="nu-dre-content"></div>
   </div>
 </div>
@@ -241,7 +256,12 @@ select:focus,input:focus{border-color:#333}
   <div class="topbar"><div class="tb-t">DRE</div><div class="tb-s" style="color:var(--st)">Santander</div><div class="tb-r"><div id="st-dre-pills" style="display:flex;gap:4px"></div><button class="btn-g btn-sm" onclick="goTo('config')">⚙ Metas</button></div></div>
   <div class="pb" style="max-width:860px">
     <div id="st-dre-empty" class="empty" style="display:none"><div style="font-size:20px;opacity:.1;margin-bottom:8px">📋</div>Nenhum dado Santander.</div>
-    <div class="card" style="margin-bottom:10px"><div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px"><div><div class="clbl">Receita do mês</div><div style="font-size:10px;color:var(--txt3);margin-top:2px" id="st-dre-hint">Receita detectada no extrato Santander</div></div><div style="display:flex;align-items:center;gap:8px"><span style="font-size:11px;color:var(--txt3)">R$</span><input type="number" id="st-rec-inp" placeholder="0,00" style="width:140px;font-family:var(--mono);font-size:14px;font-weight:600;color:var(--white);background:#111;border-color:#222;padding:7px 10px" oninput="saveRec('st');renderDRE('st')"><span style="font-size:10px;color:var(--txt3)" id="st-rec-ref"></span></div></div></div>
+    <div id="st-dre-rec-card" class="card" style="margin-bottom:10px;display:none">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">
+        <div><div class="clbl">Receita detectada</div><div style="font-size:10px;color:var(--txt3);margin-top:2px" id="st-dre-hint"></div></div>
+        <div style="font-family:var(--mono);font-size:20px;font-weight:600;color:var(--grn)" id="st-dre-rec-val"></div>
+      </div>
+    </div>
     <div id="st-dre-content"></div>
   </div>
 </div>
@@ -251,7 +271,12 @@ select:focus,input:focus{border-color:#333}
   <div class="topbar"><div class="tb-t">DRE Consolidado</div><div class="tb-s">Nubank + Santander</div><div class="tb-r"><div id="an-dre-pills" style="display:flex;gap:4px"></div><button class="btn-g btn-sm" onclick="goTo('config')">⚙ Metas</button></div></div>
   <div class="pb" style="max-width:860px">
     <div id="an-dre-empty" class="empty" style="display:none"><div style="font-size:20px;opacity:.1;margin-bottom:8px">📊</div>Nenhum dado importado.</div>
-    <div class="card" style="margin-bottom:10px"><div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px"><div><div class="clbl">Receita do mês</div><div style="font-size:10px;color:var(--txt3);margin-top:2px" id="an-dre-hint">Receita consolidada de todas as fontes</div></div><div style="display:flex;align-items:center;gap:8px"><span style="font-size:11px;color:var(--txt3)">R$</span><input type="number" id="an-rec-inp" placeholder="0,00" style="width:140px;font-family:var(--mono);font-size:14px;font-weight:600;color:var(--white);background:#111;border-color:#222;padding:7px 10px" oninput="saveRec('an');renderDRE('an')"><span style="font-size:10px;color:var(--txt3)" id="an-rec-ref"></span></div></div></div>
+    <div id="an-dre-rec-card" class="card" style="margin-bottom:10px;display:none">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">
+        <div><div class="clbl">Receita detectada — todas as fontes</div><div style="font-size:10px;color:var(--txt3);margin-top:2px" id="an-dre-hint"></div></div>
+        <div style="font-family:var(--mono);font-size:20px;font-weight:600;color:var(--grn)" id="an-dre-rec-val"></div>
+      </div>
+    </div>
     <div id="an-dre-content"></div>
   </div>
 </div>
@@ -383,10 +408,19 @@ const badge=c=>{const cor=catCor(c);return`<span class="badge" style="background
 const getAllSubs=()=>{const s=[];for(const d of Object.values(CATS))for(const a of Object.values(d.grupos))s.push(...a);return s;};
 const subToCat=sub=>{for(const[cat,d]of Object.entries(CATS))for(const[g,subs]of Object.entries(d.grupos))if(subs.includes(sub))return{cat,g};return{cat:'DESPESA',g:'Pessoal'};};
 
-function renderPills(id,cb){
+// Mapa de callbacks para pills (resolve o bug de arrow function como string)
+const _CB={};
+function regCB(name,fn){_CB[name]=fn;}
+function _callCB(name){if(_CB[name])_CB[name]();}
+
+function renderPills(id,cbName){
   const el=document.getElementById(id);if(!el)return;
-  el.innerHTML=mesesAll().slice(0,8).map(k=>{const[y,m]=k.split('-');
-    return`<button style="font-size:10px;background:${k===curMes?'#1a1a1a':'#0f0f0f'};border:1px solid ${k===curMes?'#2a2a2a':'#161616'};color:${k===curMes?'#e8e5de':'#333'};padding:3px 10px;border-radius:3px;cursor:pointer;font-family:var(--mono);white-space:nowrap" onclick="curMes='${k}';renderPills('${id}','${cb}');${cb}()">${MESES[parseInt(m)-1].slice(0,3)}/${y.slice(2)}</button>`;
+  const meses=mesesAll();
+  if(!meses.length){el.innerHTML='';return;}
+  el.innerHTML=meses.slice(0,8).map(k=>{
+    const[y,m]=k.split('-');
+    const isActive=k===curMes;
+    return`<button class="pill-btn${isActive?' active':''}" onclick="curMes='${k}';renderPills('${id}','${cbName}');_callCB('${cbName}')">${MESES[parseInt(m)-1].slice(0,3)}/${y.slice(2)}</button>`;
   }).join('');
 }
 function popMesSel(id,meses){
@@ -477,26 +511,16 @@ function renderDash(){
   const burnRateDay=tot.despTotal>0?(tot.despTotal/30):0;
 
   // ── KPIs PRINCIPAIS (3 grandes)
+  const TIPS_MAIN=[
+    'Soma de todas as receitas do mês: salário detectado no extrato + outras receitas recebidas + benefício do almoço da Edi.',
+    `Tudo que saiu como despesa real (excluindo investimentos). Meta: manter abaixo de ${metas.despesas}% da receita. Quanto menor, melhor.`,
+    'O que sobrou depois de pagar todas as despesas E investir. Positivo = você viveu dentro do que ganhou.'
+  ];
   document.getElementById('dash-kpis-main').innerHTML=[
-    {
-      l:'Receita Total',
-      v:rec>0?BRL(rec):'—',
-      s:salario>0?`Salário ${BRL(salario)}`+(outrasRecTotal>0?` + extras ${BRL(outrasRecTotal)}`:'')+(tot.almocoBenefit>0?` + Edi ${BRL(tot.almocoBenefit)}`:''):'Importe extrato',
-      c:'var(--grn)',border:'2px solid #2a7a5022'
-    },
-    {
-      l:'Custo de Vida',
-      v:BRL(tot.despTotal),
-      s:rec>0?`${(tot.despTotal/rec*100).toFixed(1)}% da receita — meta ${metas.despesas}%`:'—',
-      c:rec>0&&tot.despTotal/rec*100>metas.despesas?'var(--red)':'var(--txt)',border:'2px solid #c0404022'
-    },
-    {
-      l:'Resultado Líquido',
-      v:rec>0?BRL(Math.abs(saldo)):'—',
-      s:saldo>=0?'✓ sobrou após despesas e investimentos':'⚠ gastou mais do que entrou',
-      c:saldo>=0?'var(--grn)':'var(--red)',border:`2px solid ${saldo>=0?'#2a7a5022':'#c0404022'}`
-    },
-  ].map(k=>`<div class="card" style="margin:0;border:${k.border};padding:18px">
+    {l:'Receita Total',v:rec>0?BRL(rec):'—',s:salario>0?`Salário ${BRL(salario)}`+(outrasRecTotal>0?` + extras ${BRL(outrasRecTotal)}`:'')+(tot.almocoBenefit>0?` + Edi ${BRL(tot.almocoBenefit)}`:''):'Importe extrato',c:'var(--grn)',border:'2px solid #2a7a5022'},
+    {l:'Custo de Vida',v:BRL(tot.despTotal),s:rec>0?`${(tot.despTotal/rec*100).toFixed(1)}% da receita — meta ${metas.despesas}%`:'—',c:rec>0&&tot.despTotal/rec*100>metas.despesas?'var(--red)':'var(--txt)',border:'2px solid #c0404022'},
+    {l:'Resultado Líquido',v:rec>0?BRL(Math.abs(saldo)):'—',s:saldo>=0?'✓ sobrou após despesas e investimentos':'⚠ gastou mais do que entrou',c:saldo>=0?'var(--grn)':'var(--red)',border:`2px solid ${saldo>=0?'#2a7a5022':'#c0404022'}`},
+  ].map((k,i)=>`<div class="card tip" data-tip="${TIPS_MAIN[i]}" style="margin:0;border:${k.border};padding:18px;cursor:default">
     <div class="clbl" style="margin-bottom:6px">${k.l}</div>
     <div style="font-family:var(--mono);font-size:26px;font-weight:600;color:${k.c};margin:4px 0 6px">${k.v}</div>
     <div style="font-size:10px;color:var(--txt3);line-height:1.5">${k.s}</div>
@@ -504,32 +528,18 @@ function renderDash(){
 
   // ── KPIs SECUNDÁRIOS (4 médios)
   const metaInv=(metas.invPessoal+metas.invFin+metas.planos+metas.prev);
+  const TIPS_SEC=[
+    `Percentual da receita que foi para investimentos. Meta ideal: 20%+. Abaixo de 10% é sinal de alerta. Fórmula: Total Investido ÷ Receita.`,
+    `Soma de Inv. Pessoal + Inv. Financeiro + Planos Pessoais + Previdência. Meta configurada: ${metaInv}% da receita.`,
+    `Quanto custa sua vida por dia em média. Útil para saber quantos dias de trabalho cada mês cobre seus gastos. Fórmula: Despesas ÷ 30.`,
+    `Benefício corporativo de almoço: ${tot.almocoInfo&&tot.almocoInfo.diasTotais?tot.almocoInfo.diasTotais+' dias úteis no mês.':''} Dias com Giovaniburgue em dia de semana são descontados.`
+  ];
   document.getElementById('dash-kpis-sec').innerHTML=[
-    {
-      l:'Taxa de Poupança',
-      v:rec>0?taxaPoup.toFixed(1)+'%':'—',
-      s:taxaPoup>=20?'✓ acima de 20%':taxaPoup>=10?'⚠ abaixo do ideal (20%)':'⚠ baixa — meta é 20%+',
-      c:taxaPoup>=20?'var(--grn)':taxaPoup>=10?'var(--amber)':'var(--red)'
-    },
-    {
-      l:'Total Investido',
-      v:BRL(tot.invTotal),
-      s:rec>0?`${(tot.invTotal/rec*100).toFixed(1)}% — meta ${metaInv}%`:'—',
-      c:'#2050a0'
-    },
-    {
-      l:'Burn Rate Diário',
-      v:BRL(burnRateDay),
-      s:'custo médio por dia',
-      c:'var(--txt2)'
-    },
-    {
-      l:'Almoço da Edi',
-      v:tot.almocoBenefit>0?BRL(tot.almocoBenefit):'—',
-      s:tot.almocoBenefit>0?`${tot.almocoInfo.diasUsados}d usados / ${tot.almocoInfo.diasTotais}d úteis`:'Configure em ⚙',
-      c:'var(--amber)'
-    },
-  ].map(k=>`<div class="card" style="margin:0;padding:14px">
+    {l:'Taxa de Poupança',v:rec>0?taxaPoup.toFixed(1)+'%':'—',s:taxaPoup>=20?'✓ acima de 20%':taxaPoup>=10?'⚠ abaixo do ideal':'⚠ baixa',c:taxaPoup>=20?'var(--grn)':taxaPoup>=10?'var(--amber)':'var(--red)'},
+    {l:'Total Investido',v:BRL(tot.invTotal),s:rec>0?`${(tot.invTotal/rec*100).toFixed(1)}% — meta ${metaInv}%`:'—',c:'#2050a0'},
+    {l:'Burn Rate Diário',v:BRL(burnRateDay),s:'custo médio por dia',c:'var(--txt2)'},
+    {l:'Almoço da Edi',v:tot.almocoBenefit>0?BRL(tot.almocoBenefit):'—',s:tot.almocoBenefit>0?`${tot.almocoInfo.diasUsados}d / ${tot.almocoInfo.diasTotais}d úteis`:'Configure em ⚙',c:'var(--amber)'},
+  ].map((k,i)=>`<div class="card tip" data-tip="${TIPS_SEC[i]}" style="margin:0;padding:14px;cursor:default">
     <div class="clbl" style="margin-bottom:4px">${k.l}</div>
     <div style="font-family:var(--mono);font-size:18px;font-weight:600;color:${k.c};margin:3px 0 4px">${k.v}</div>
     <div style="font-size:10px;color:var(--txt3)">${k.s}</div>
@@ -707,7 +717,8 @@ function renderFluxo(scope){
   if(!all.length){document.getElementById(emptyId).style.display='block';document.getElementById(contentId).style.display='none';return;}
   if(!all.includes(curMes))curMes=all[0];
   document.getElementById(emptyId).style.display='none';document.getElementById(contentId).style.display='block';
-  renderPills(scope+'-cf-pills','()=>renderFluxo("'+scope+'")');
+  const cbName=scope+'Fluxo';
+  renderPills(scope+'-cf-pills',cbName);
   const tab=cfTabs[scope];
   const txns=buildCFTxns(curMes,scope,tab);
   const te=txns.reduce((s,t)=>s+t.entrada,0),ts=txns.reduce((s,t)=>s+t.saida,0),sf=te-ts;
@@ -744,39 +755,43 @@ function renderFluxo(scope){
 }
 
 // ─── DRE (genérico) ────────────────────────────────────────────────────────────
-function saveRec(sc){const inp=document.getElementById(sc+'-rec-inp');const v=parseFloat(inp.value)||0;sRec(sc,curMes,v);}
 
 function renderDRE(scope){
   const all=mesesAll();if(!all.length){document.getElementById(scope+'-dre-empty').style.display='block';document.getElementById(scope+'-dre-content').innerHTML='';return;}
   if(!all.includes(curMes))curMes=all[0];
   document.getElementById(scope+'-dre-empty').style.display='none';
-  renderPills(scope+'-dre-pills','()=>renderDRE("'+scope+'")');
+  renderPills(scope+'-dre-pills',scope+'DRE');
 
   const txns=getTxnsByScope(curMes,scope);
   const tot=calcTot(curMes,txns);
-  // Sempre usa tot.receitaExt (soma de todas RECEITA_LIQUIDA importadas) + almoço Edi
-  // Input manual só sobrescreve se o usuário digitou explicitamente (e for diferente do auto)
-  const recAuto=tot.receitaExt+tot.almocoBenefit;
-  const recManualRaw=gRec(scope,curMes);
-  // Usa manual só se foi setado manualmente E diferente do auto (evita override pelo save do extrato)
-  const rec=recManualRaw>0&&Math.abs(recManualRaw-tot.receitaExt)>1?recManualRaw+tot.almocoBenefit:recAuto;
+  // Receita 100% automática — soma tudo que foi importado como RECEITA_LIQUIDA + almoço Edi
+  const rec=tot.receitaExt+tot.almocoBenefit;
 
-  const inp=document.getElementById(scope+'-rec-inp');
-  if(inp&&!inp.value&&rec>0)inp.value=recManual>0?recManual:tot.receitaExt;
+  // Atualizar card informativo de receita
+  const recCard=document.getElementById(scope+'-dre-rec-card');
+  const recVal=document.getElementById(scope+'-dre-rec-val');
+  const hintEl=document.getElementById(scope+'-dre-hint');
+  if(recCard){
+    if(rec>0){
+      recCard.style.display='block';
+      if(recVal)recVal.textContent=BRL(rec);
+      if(hintEl){
+        const salTot=txns.filter(t=>t.cat==='RECEITA_LIQUIDA'&&t.subcategoria==='Salário'&&t.valor>0).reduce((s,t)=>s+t.valor,0);
+        const extrasTot=txns.filter(t=>t.cat==='RECEITA_LIQUIDA'&&t.subcategoria!=='Salário'&&t.valor>0).reduce((s,t)=>s+t.valor,0);
+        let parts=[];
+        if(salTot>0)parts.push(`Salário ${BRL(salTot)}`);
+        if(extrasTot>0)parts.push(`Outras receitas ${BRL(extrasTot)}`);
+        if(tot.almocoBenefit>0)parts.push(`Almoço Edi ${BRL(tot.almocoBenefit)} (${tot.almocoInfo.diasUsados}d)`);
+        hintEl.textContent=parts.join(' + ')||'Detectado automaticamente';
+      }
+    } else {
+      recCard.style.display='none';
+    }
+  }
+
 
   const hint=document.getElementById(scope+'-dre-hint');
-  if(hint){
-    const salTot=txns.filter(t=>t.cat==='RECEITA_LIQUIDA'&&t.subcategoria==='Salário'&&t.valor>0).reduce((s,t)=>s+t.valor,0);
-    const extrasTot=txns.filter(t=>t.cat==='RECEITA_LIQUIDA'&&t.subcategoria!=='Salário'&&t.valor>0).reduce((s,t)=>s+t.valor,0);
-    let h='Informe a receita líquida';
-    if(salTot>0)h=`Salário: ${BRL(salTot)}`;
-    if(extrasTot>0)h+=` + Outras receitas: ${BRL(extrasTot)}`;
-    if(tot.almocoBenefit>0)h+=` + Almoço da Edi: ${BRL(tot.almocoBenefit)} (${tot.almocoInfo.diasUsados}d)`;
-    if(tot.receitaExt>0)h+=` = ${BRL(rec)}`;
-    hint.textContent=h;
-  }
   const[y,m]=curMes.split('-');
-  const refEl=document.getElementById(scope+'-rec-ref');if(refEl)refEl.textContent=MESES[parseInt(m)-1]+' '+y;
 
   const metas=gMetas();
   function pct(v){return rec>0?(v/rec*100).toFixed(1)+'%':'—';}
@@ -1124,6 +1139,15 @@ function salvarMetas(){sMetas({despesas:+document.getElementById('meta-despesas'
 function limparDados(){if(confirm('Apagar tudo?')){['fc_nu_fat','fc_nu_ext','fc_st_fat','fc_st_ext','fc_metas','fc_almoco','fc_fat','fc_ext'].forEach(k=>localStorage.removeItem(k));mesesAll().forEach(m=>['nu','st','an'].forEach(s=>localStorage.removeItem(`fc_rec_${s}_${m}`)));initMes();goTo('dash');}}
 
 // ─── INIT ──────────────────────────────────────────────────────────────────────
+// Registrar callbacks para pills (fix do bug de scope)
+regCB('renderDash', renderDash);
+regCB('nuFluxo', ()=>renderFluxo('nu'));
+regCB('stFluxo', ()=>renderFluxo('st'));
+regCB('anFluxo', ()=>renderFluxo('an'));
+regCB('nuDRE',   ()=>renderDRE('nu'));
+regCB('stDRE',   ()=>renderDRE('st'));
+regCB('anDRE',   ()=>renderDRE('an'));
+
 renderDash();
 </script>
 </body>
