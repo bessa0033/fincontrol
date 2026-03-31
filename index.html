@@ -1247,6 +1247,8 @@ function updateAlmocoPreview(){
 function salvarMetas(){sMetas({despesas:+document.getElementById('meta-despesas').value||50,faculdade:+document.getElementById('meta-faculdade').value||25,invPessoal:+document.getElementById('meta-invPessoal').value||10,invFin:+document.getElementById('meta-invFin').value||10,planos:+document.getElementById('meta-planos').value||5,prev:+document.getElementById('meta-prev').value||10});alert('Metas salvas!');}
 function limparDados(){if(confirm('Apagar tudo?')){['fc_nu_fat','fc_nu_ext','fc_st_fat','fc_st_ext','fc_metas','fc_almoco','fc_fat','fc_ext'].forEach(k=>localStorage.removeItem(k));mesesAll().forEach(m=>['nu','st','an'].forEach(s=>localStorage.removeItem(`fc_rec_${s}_${m}`)));initMes();goTo('dash');}}
 
+</script>
+
 <!-- CHAT FLUTUANTE -->
 <button class="chat-fab" onclick="toggleChat()" title="Assistente FinControl">
   <svg viewBox="0 0 24 24" fill="none" stroke="#080808" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
@@ -1460,6 +1462,8 @@ document.addEventListener('DOMContentLoaded',()=>{
   if(inp)inp.addEventListener('input',function(){this.style.height='auto';this.style.height=Math.min(this.scrollHeight,90)+'px';});
 });
 </script>
+<script>
+// ─── INIT ──────────────────────────────────────────────────────────────────────
 // Registrar callbacks para pills (fix do bug de scope)
 regCB('renderDash', renderDash);
 regCB('nuFluxo', ()=>renderFluxo('nu'));
