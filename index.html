@@ -353,7 +353,7 @@ const CATS={
   PREVIDENCIA:{cor:'#107060',label:'Previdência',grupos:{'Previdência':['CXSE3','CMIG4','PETR4','JHSF3','Renda Fixa','Outros Previdência']}},
   TRANSFERENCIA:{cor:'#2a2a2a',label:'Transferência',grupos:{'Transferência':['Pagamento Fatura','Resgate RDB','Aplicação RDB','Transferência entre contas','NuInvest','Outros']}},
 };
-const METAS_DEF={despesas:50,invPessoal:10,invFin:10,planos:10,prev:10};
+const METAS_DEF={despesas:50,faculdade:25,invPessoal:10,invFin:10,planos:5,prev:10};
 
 function buildDict(){let o='';for(const[c,d]of Object.entries(CATS))for(const[g,s]of Object.entries(d.grupos))s.forEach(x=>{o+=`"${x}" → cat:${c}, grupo:${g}\n`;});return o;}
 
@@ -727,15 +727,19 @@ function buildCFTxns(mes,scope,tab){
   const addFat=(fat,banco)=>fat.forEach(t=>txns.push({...t,banco,fonte:'Cartão',dl:t.descricao,data:t.data_competencia||t.data_pagamento,entrada:0,saida:Math.abs(t.valor)}));
   const addExt=(ext,banco)=>ext.forEach(t=>txns.push({...t,banco,fonte:'Conta',dl:t.descricao_limpa||t.descricao,entrada:t.valor>0?t.valor:0,saida:t.valor<0?Math.abs(t.valor):0}));
 
+  // REGRA ANTI-DUPLA-CONTAGEM:
+  // Consolidado/todos = apenas extrato. O pagamento da fatura no extrato já representa
+  // o total do cartão em bloco. Incluir fatura junto inflaria as saídas.
+  // Tab 'cartao' = apenas fatura (para ver detalhamento por estabelecimento).
   if(scope==='nu'){
     if(tab==='consolidado'||tab==='extrato')addExt(txNuExt(mes),'Nubank');
-    if(tab==='consolidado'||tab==='cartao')addFat(txNuFat(mes),'Nubank');
+    if(tab==='cartao')addFat(txNuFat(mes),'Nubank');
   } else if(scope==='st'){
     if(tab==='consolidado'||tab==='extrato')addExt(txStExt(mes),'Santander');
-    if(tab==='consolidado'||tab==='cartao')addFat(txStFat(mes),'Santander');
+    if(tab==='cartao')addFat(txStFat(mes),'Santander');
   } else if(scope==='an'){
-    if(tab==='todos'||tab==='nubank'){addExt(txNuExt(mes),'Nubank');addFat(txNuFat(mes),'Nubank');}
-    if(tab==='todos'||tab==='santander'){addExt(txStExt(mes),'Santander');addFat(txStFat(mes),'Santander');}
+    if(tab==='todos'||tab==='nubank')addExt(txNuExt(mes),'Nubank');
+    if(tab==='todos'||tab==='santander')addExt(txStExt(mes),'Santander');
   }
 
   if(tab==='consolidado'||tab==='todos')txns=txns.filter(t=>t.cat!=='TRANSFERENCIA');
@@ -894,18 +898,30 @@ function renderDRE(scope){
   const resAntes=rec-tot.despTotal;
   html+=`<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 14px;margin-bottom:8px;background:#0a0a0a;border:1px solid var(--border);border-radius:4px">
     <span style="font-size:10px;color:var(--txt3);font-family:var(--mono);text-transform:uppercase;letter-spacing:.5px">= Resultado antes de investimentos</span>
-    <span class="tm" style="font-size:12px;color:${resAntes>=0?'var(--grn)':'var(--red)'};font-weight:600">${rec>0?BRL(Math.abs(resAntes)):'—'}</span>
+    <span class="tm" style="font-size:12px;color:${resAntes>=0?'var(--grn)':'var(--red)'};font-weight:600">${rec>0?(resAntes>=0?'+ ':'-')+BRL(Math.abs(resAntes)):'—'}</span>
   </div>`;
 
-  [{label:'INVESTIMENTO PESSOAL',cat:'INVESTIMENTO_PESSOAL',total:tot.invPessoal,meta:metas.invPessoal,cor:'#2050a0'},
-   {label:'INVESTIMENTO FINANCEIRO',cat:'INVESTIMENTO_FINANCEIRO',total:tot.invFin,meta:metas.invFin,cor:'#107060'},
-   {label:'PLANOS PESSOAIS',cat:'PLANOS_PESSOAIS',total:tot.planos,meta:metas.planos,cor:'#906010'},
-   {label:'PREVIDÊNCIA',cat:'PREVIDENCIA',total:tot.prev,meta:metas.prev,cor:'#107060'},
+  // Separar Faculdade do restante do Inv. Pessoal
+  const faculdadeTotal=txns.filter(t=>t.cat==='INVESTIMENTO_PESSOAL'&&t.subcategoria==='Faculdade').reduce((s,t)=>s+Math.abs(t.valor),0);
+  const invPessoalSemFac=tot.invPessoal-faculdadeTotal;
+
+  [{label:'FACULDADE',cat:'INVESTIMENTO_PESSOAL',sub:'Faculdade',total:faculdadeTotal,meta:metas.faculdade||25,cor:'#2050a0',note:'meta independente — custo fixo alto'},
+   {label:'INVESTIMENTO PESSOAL',cat:'INVESTIMENTO_PESSOAL',sub:null,total:invPessoalSemFac,meta:metas.invPessoal,cor:'#3060c0'},
+   {label:'INVESTIMENTO FINANCEIRO',cat:'INVESTIMENTO_FINANCEIRO',sub:null,total:tot.invFin,meta:metas.invFin,cor:'#107060'},
+   {label:'PLANOS PESSOAIS',cat:'PLANOS_PESSOAIS',sub:null,total:tot.planos,meta:metas.planos,cor:'#906010'},
+   {label:'PREVIDÊNCIA',cat:'PREVIDENCIA',sub:null,total:tot.prev,meta:metas.prev,cor:'#107060'},
   ].forEach(b=>{
     if(b.total<=0)return;
-    const subT={};txns.filter(t=>t.cat===b.cat).forEach(t=>{subT[t.subcategoria]=(subT[t.subcategoria]||0)+Math.abs(t.valor);});
+    const subT={};
+    txns.filter(t=>t.cat===b.cat&&(b.sub?t.subcategoria===b.sub:t.subcategoria!=='Faculdade'||b.cat!=='INVESTIMENTO_PESSOAL'))
+        .forEach(t=>{subT[t.subcategoria]=(subT[t.subcategoria]||0)+Math.abs(t.valor);});
+    // Para Inv. Pessoal sem faculdade, excluir Faculdade do subT
+    if(b.cat==='INVESTIMENTO_PESSOAL'&&!b.sub)delete subT['Faculdade'];
     html+=`<div class="card" style="padding:0;overflow:hidden;margin-bottom:8px">
-      <div class="drow hdr"><span class="dlbl b" style="color:${b.cor}">(-) ${b.label}</span><div style="display:flex;align-items:center;gap:12px">${metaBar(b.total,b.meta)}<span class="dval b" style="color:${b.cor}">${BRL(b.total)}</span></div></div>
+      <div class="drow hdr">
+        <span class="dlbl b" style="color:${b.cor}">(-) ${b.label}${b.note?`<span style="font-size:9px;color:var(--txt3);font-weight:400;margin-left:8px">${b.note}</span>`:''}</span>
+        <div style="display:flex;align-items:center;gap:12px">${metaBar(b.total,b.meta)}<span class="dval b" style="color:${b.cor}">${BRL(b.total)}</span></div>
+      </div>
       ${Object.entries(subT).map(([s,v])=>`<div class="drow sub"><span class="dlbl" style="color:var(--txt3)">${s}</span><span class="dval" style="color:var(--txt3)">${BRL(v)}</span></div>`).join('')}
     </div>`;
   });
@@ -1176,9 +1192,13 @@ function saveStFat(d,k){sStFat(d);}function saveStExt(d,k){sStExt(d);}
 function initConfig(){
   const metas=gMetas();
   document.getElementById('metas-form').innerHTML=[
-    {k:'despesas',l:'Despesas totais'},{k:'invPessoal',l:'Investimento Pessoal'},
-    {k:'invFin',l:'Investimento Financeiro'},{k:'planos',l:'Planos Pessoais'},{k:'prev',l:'Previdência'},
-  ].map(r=>`<div style="display:flex;align-items:center;gap:10px;margin-bottom:10px"><label style="font-size:11px;color:var(--txt2);width:200px;flex-shrink:0">${r.l}</label><input type="number" id="meta-${r.k}" value="${metas[r.k]}" min="0" max="100" style="width:70px"><span style="font-size:10px;color:var(--txt3)">%</span></div>`).join('');
+    {k:'despesas',l:'Despesas totais'},
+    {k:'faculdade',l:'Faculdade (Inv. Pessoal)'},
+    {k:'invPessoal',l:'Outros Inv. Pessoal'},
+    {k:'invFin',l:'Investimento Financeiro'},
+    {k:'planos',l:'Planos Pessoais'},
+    {k:'prev',l:'Previdência'},
+  ].map(r=>`<div style="display:flex;align-items:center;gap:10px;margin-bottom:10px"><label style="font-size:11px;color:var(--txt2);width:200px;flex-shrink:0">${r.l}</label><input type="number" id="meta-${r.k}" value="${metas[r.k]||0}" min="0" max="100" style="width:70px"><span style="font-size:10px;color:var(--txt3)">%</span></div>`).join('');
   const cfg=gAlmoco();
   document.getElementById('almoco-valor').value=cfg.valor||'';
   document.getElementById('almoco-ativo').value=cfg.ativo?'1':'0';
@@ -1196,7 +1216,7 @@ function updateAlmocoPreview(){
   const mes=curMes||all[0];const a=calcAlmoco(mes);
   prev.innerHTML=`Mês atual: ${a.diasTotais} dias úteis − ${a.diasPerdidos} Giovaniburgue = <strong style="color:var(--grn)">${a.diasUsados}d × ${BRL(cfg.valor)} = ${BRL(a.benefit)}</strong>`;
 }
-function salvarMetas(){sMetas({despesas:+document.getElementById('meta-despesas').value||50,invPessoal:+document.getElementById('meta-invPessoal').value||10,invFin:+document.getElementById('meta-invFin').value||10,planos:+document.getElementById('meta-planos').value||10,prev:+document.getElementById('meta-prev').value||10});alert('Metas salvas!');}
+function salvarMetas(){sMetas({despesas:+document.getElementById('meta-despesas').value||50,faculdade:+document.getElementById('meta-faculdade').value||25,invPessoal:+document.getElementById('meta-invPessoal').value||10,invFin:+document.getElementById('meta-invFin').value||10,planos:+document.getElementById('meta-planos').value||5,prev:+document.getElementById('meta-prev').value||10});alert('Metas salvas!');}
 function limparDados(){if(confirm('Apagar tudo?')){['fc_nu_fat','fc_nu_ext','fc_st_fat','fc_st_ext','fc_metas','fc_almoco','fc_fat','fc_ext'].forEach(k=>localStorage.removeItem(k));mesesAll().forEach(m=>['nu','st','an'].forEach(s=>localStorage.removeItem(`fc_rec_${s}_${m}`)));initMes();goTo('dash');}}
 
 // ─── INIT ──────────────────────────────────────────────────────────────────────
