@@ -100,6 +100,34 @@ select:focus,input:focus{border-color:#333}
 .pill-btn{font-size:10px;font-family:var(--mono);padding:4px 12px;border-radius:4px;cursor:pointer;white-space:nowrap;transition:all .1s;border:1px solid var(--border2);background:var(--bg2);color:var(--txt3);}
 .pill-btn:hover{color:var(--txt2);border-color:#333;}
 .pill-btn.active{background:#1e1e1e;color:var(--white);border-color:#333;}
+
+/* CHAT FLUTUANTE */
+.chat-fab{position:fixed;bottom:24px;right:24px;width:46px;height:46px;border-radius:50%;background:var(--white);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:500;box-shadow:0 4px 20px #00000060;transition:all .2s;}
+.chat-fab:hover{transform:scale(1.08);}
+.chat-fab svg{width:20px;height:20px;}
+.chat-panel{position:fixed;bottom:80px;right:24px;width:380px;max-height:560px;background:#0e0e0e;border:1px solid var(--border2);border-radius:10px;display:flex;flex-direction:column;z-index:499;box-shadow:0 8px 40px #00000080;animation:fadeUp .2s ease;}
+.chat-panel.hidden{display:none;}
+.chat-hdr{padding:12px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+.chat-hdr-t{font-family:var(--mono);font-size:11px;font-weight:600;color:var(--white);}
+.chat-hdr-s{font-size:10px;color:var(--txt3);margin-top:2px;}
+.chat-msgs{flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:10px;min-height:0;}
+.chat-msg{max-width:88%;line-height:1.55;font-size:11px;border-radius:8px;padding:9px 12px;}
+.chat-msg.u{background:#161616;color:var(--txt);align-self:flex-end;border:1px solid var(--border2);}
+.chat-msg.a{background:#0a0a0a;color:var(--txt2);align-self:flex-start;border:1px solid #161616;}
+.chat-msg.a strong{color:var(--white);}
+.chat-msg.a .fix-badge{display:inline-block;font-size:9px;font-family:var(--mono);background:#2a7a5022;color:var(--grn);border:1px solid #2a7a5033;padding:1px 6px;border-radius:3px;margin:2px 2px 0 0;cursor:pointer;}
+.chat-msg.a .fix-badge:hover{background:#2a7a5044;}
+.chat-inp-area{padding:10px 12px;border-top:1px solid var(--border);display:flex;gap:8px;flex-shrink:0;}
+.chat-inp{flex:1;background:#0a0a0a;border:1px solid var(--border2);color:var(--txt);padding:8px 10px;border-radius:6px;font-family:var(--sans);font-size:11px;outline:none;resize:none;line-height:1.5;min-height:36px;max-height:90px;}
+.chat-inp:focus{border-color:#333;}
+.chat-send{background:var(--white);border:none;border-radius:6px;padding:0 12px;cursor:pointer;color:#080808;font-weight:600;font-size:11px;flex-shrink:0;}
+.chat-send:disabled{opacity:.3;cursor:not-allowed;}
+.chat-typing{display:flex;gap:4px;align-items:center;padding:6px 0;}
+.chat-typing span{width:5px;height:5px;border-radius:50%;background:var(--txt3);animation:bounce .9s infinite;}
+.chat-typing span:nth-child(2){animation-delay:.2s;}
+.chat-typing span:nth-child(3){animation-delay:.4s;}
+@keyframes bounce{0%,80%,100%{transform:scale(.7)}40%{transform:scale(1)}}
+.chat-ctx{font-size:9px;color:var(--txt3);padding:6px 12px;border-bottom:1px solid var(--border);font-family:var(--mono);}
 </style>
 </head>
 <body>
@@ -1219,7 +1247,219 @@ function updateAlmocoPreview(){
 function salvarMetas(){sMetas({despesas:+document.getElementById('meta-despesas').value||50,faculdade:+document.getElementById('meta-faculdade').value||25,invPessoal:+document.getElementById('meta-invPessoal').value||10,invFin:+document.getElementById('meta-invFin').value||10,planos:+document.getElementById('meta-planos').value||5,prev:+document.getElementById('meta-prev').value||10});alert('Metas salvas!');}
 function limparDados(){if(confirm('Apagar tudo?')){['fc_nu_fat','fc_nu_ext','fc_st_fat','fc_st_ext','fc_metas','fc_almoco','fc_fat','fc_ext'].forEach(k=>localStorage.removeItem(k));mesesAll().forEach(m=>['nu','st','an'].forEach(s=>localStorage.removeItem(`fc_rec_${s}_${m}`)));initMes();goTo('dash');}}
 
-// ─── INIT ──────────────────────────────────────────────────────────────────────
+<!-- CHAT FLUTUANTE -->
+<button class="chat-fab" onclick="toggleChat()" title="Assistente FinControl">
+  <svg viewBox="0 0 24 24" fill="none" stroke="#080808" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+</button>
+
+<div id="chat-panel" class="chat-panel hidden">
+  <div class="chat-hdr">
+    <div>
+      <div class="chat-hdr-t">Assistente FinControl</div>
+      <div class="chat-hdr-s" id="chat-ctx-lbl">Contexto: —</div>
+    </div>
+    <button onclick="toggleChat()" style="background:none;border:none;color:var(--txt3);cursor:pointer;font-size:16px;padding:2px 6px;">×</button>
+  </div>
+  <div id="chat-msgs" class="chat-msgs">
+    <div class="chat-msg a">Olá! Posso ajudar a <strong>corrigir categorizações</strong>, fazer <strong>correções em lote</strong> e gerar <strong>insights do mês</strong>.<br><br>Exemplos:<br>• <em>"FUMEC está errado, é Faculdade"</em><br>• <em>"todos os lançamentos de Igor são óculos"</em><br>• <em>"analisa meu mês de janeiro"</em><br>• <em>"quais transações parecem erradas?"</em></div>
+  </div>
+  <div class="chat-inp-area">
+    <textarea id="chat-inp" class="chat-inp" placeholder="Pergunte ou peça uma correção..." rows="1" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendChat();}"></textarea>
+    <button id="chat-send" class="chat-send" onclick="sendChat()">→</button>
+  </div>
+</div>
+
+<script>
+// ─── CHAT ─────────────────────────────────────────────────────────────────────
+let chatHistory=[];
+let chatOpen=false;
+
+function toggleChat(){
+  chatOpen=!chatOpen;
+  document.getElementById('chat-panel').classList.toggle('hidden',!chatOpen);
+  if(chatOpen){
+    updateChatCtx();
+    document.getElementById('chat-inp').focus();
+  }
+}
+
+function updateChatCtx(){
+  const all=mesesAll();
+  const mes=curMes||(all.length?all[0]:null);
+  if(!mes){document.getElementById('chat-ctx-lbl').textContent='Nenhum dado importado';return;}
+  const[y,m]=mes.split('-');
+  const txCount=getTxnsByScope(mes,'an').length;
+  document.getElementById('chat-ctx-lbl').textContent=`${MESES[parseInt(m)-1]} ${y} · ${txCount} transações`;
+}
+
+function buildChatSystemPrompt(){
+  const mes=curMes||mesesAll()[0];
+  if(!mes)return'Assistente financeiro pessoal FinControl. Sem dados ainda.';
+  const txns=getTxnsByScope(mes,'an');
+  const tot=calcTot(mes,txns);
+  const[y,m]=mes.split('-');
+
+  // Serializar transações para o contexto
+  const txList=txns.map(t=>`id:${t.id}|banco:${t.banco||'?'}|fonte:${t.data_pagamento?'fat':'ext'}|data:${t.data||t.data_competencia||'?'}|desc:${t.descricao_limpa||t.descricao}|sub:${t.subcategoria}|cat:${t.cat}|val:${t.valor}`).join('\n');
+
+  const catList=Object.entries(CATS).map(([c,d])=>{
+    const subs=Object.values(d.grupos).flat().join(', ');
+    return`${c}: ${subs}`;
+  }).join('\n');
+
+  return`Você é o assistente financeiro integrado do FinControl, um ERP pessoal.
+Mês atual: ${MESES[parseInt(m)-1]} ${y}
+Receita detectada: ${BRL(tot.receitaExt)}
+Despesas: ${BRL(tot.despTotal)}
+Investimentos: ${BRL(tot.invTotal)}
+
+TRANSAÇÕES DO MÊS (${txns.length} total):
+${txList}
+
+CATEGORIAS DISPONÍVEIS:
+${catList}
+
+CAPACIDADES:
+1. Responder perguntas sobre os dados do mês
+2. Identificar e sugerir correções de categorização
+3. Gerar insights financeiros
+
+QUANDO SUGERIR CORREÇÕES, responda em JSON dentro de bloco \`\`\`json no seguinte formato:
+{"correções":[{"id":123,"banco":"nu","fonte":"fat","subcategoria":"Faculdade","cat":"INVESTIMENTO_PESSOAL","grupo":"Investimento Pessoal"}]}
+
+Se for apenas conversa ou análise, responda em texto normal em português.
+Se for correção em lote (ex: "todos os lançamentos de X"), inclua todos os IDs afetados no JSON.
+Seja direto e objetivo. Use linguagem informal.`;
+}
+
+function addMsg(role,html){
+  const msgs=document.getElementById('chat-msgs');
+  const div=document.createElement('div');
+  div.className='chat-msg '+role;
+  div.innerHTML=html;
+  msgs.appendChild(div);
+  msgs.scrollTop=msgs.scrollHeight;
+  return div;
+}
+
+function showTyping(){
+  const msgs=document.getElementById('chat-msgs');
+  const div=document.createElement('div');
+  div.className='chat-msg a';div.id='chat-typing';
+  div.innerHTML='<div class="chat-typing"><span></span><span></span><span></span></div>';
+  msgs.appendChild(div);msgs.scrollTop=msgs.scrollHeight;
+}
+function hideTyping(){const t=document.getElementById('chat-typing');if(t)t.remove();}
+
+function applyCorrection(id,banco,fonte,sub,cat,grupo){
+  const{g}=subToCat(sub);
+  const catFinal=cat||(g?subToCat(sub).cat:'DESPESA');
+  const grupoFinal=grupo||(g||'Pessoal');
+
+  if(fonte==='fat'){
+    const gF=banco==='nu'?gNuFat:gStFat;const sF=banco==='nu'?sNuFat:sStFat;
+    const d=gF();const mes=curMes||mesesAll()[0];if(!d[mes])return false;
+    const t=d[mes].find(t=>t.id===id);if(!t)return false;
+    t.subcategoria=sub;t.cat=catFinal;t.grupo=grupoFinal;sF(d);
+  } else {
+    const gE=banco==='nu'?gNuExt:gStExt;const sE=banco==='nu'?sNuExt:sStExt;
+    const d=gE();const mes=curMes||mesesAll()[0];if(!d[mes])return false;
+    const t=d[mes].find(t=>t.id===id);if(!t)return false;
+    t.subcategoria=sub;t.cat=catFinal;t.grupo=grupoFinal;sE(d);
+  }
+  return true;
+}
+
+function parseAndRenderResponse(raw){
+  // Verificar se tem JSON de correções
+  const jsonMatch=raw.match(/```json\s*([\s\S]*?)```/);
+  if(jsonMatch){
+    try{
+      const parsed=JSON.parse(jsonMatch[1].trim());
+      const correcoes=parsed.correções||parsed.correcoes||[];
+      if(correcoes.length>0){
+        // Renderizar texto antes do JSON
+        const textoPre=raw.replace(/```json[\s\S]*?```/,'').trim();
+        let html=textoPre?`<p style="margin-bottom:8px">${textoPre.replace(/\n/g,'<br>')}</p>`:'';
+        html+=`<p style="margin-bottom:6px;color:var(--white);font-weight:600">${correcoes.length} correção(ões) disponível(is):</p>`;
+        correcoes.forEach(c=>{
+          const txns=getTxnsByScope(curMes||mesesAll()[0],'an');
+          const t=txns.find(x=>x.id===c.id);
+          const desc=t?(t.descricao_limpa||t.descricao).substring(0,28):'ID '+c.id;
+          html+=`<span class="fix-badge" onclick="doFix(${c.id},'${c.banco||'nu'}','${c.fonte||'ext'}','${c.subcategoria}','${c.cat}','${c.grupo||''}')">✓ ${desc} → ${c.subcategoria}</span>`;
+        });
+        html+=`<br><button onclick="applyAllFixes(${JSON.stringify(correcoes).replace(/"/g,'&quot;')})" style="margin-top:8px;background:#2a7a50;color:#fff;border:none;border-radius:4px;padding:5px 12px;font-size:10px;cursor:pointer;font-family:var(--mono)">Aplicar todas (${correcoes.length})</button>`;
+        return html;
+      }
+    }catch(e){}
+  }
+  // Texto simples com formatação básica
+  return raw.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/\n/g,'<br>');
+}
+
+window.doFix=function(id,banco,fonte,sub,cat,grupo){
+  const ok=applyCorrection(id,banco,fonte,sub,cat,grupo);
+  if(ok){addMsg('a',`✓ Corrigido: <strong>${sub}</strong>`);refreshCurrentPage();}
+  else addMsg('a','⚠ Não encontrei essa transação.');
+};
+
+window.applyAllFixes=function(correcoes){
+  let n=0;
+  correcoes.forEach(c=>{if(applyCorrection(c.id,c.banco||'nu',c.fonte||'ext',c.subcategoria,c.cat,c.grupo||''))n++;});
+  addMsg('a',`✓ <strong>${n} correção(ões)</strong> aplicada(s). Páginas atualizadas.`);
+  refreshCurrentPage();
+};
+
+function refreshCurrentPage(){
+  // Re-renderizar a página atual para refletir as correções
+  const active=document.querySelector('.page.active');
+  if(!active)return;
+  const id=active.id.replace('pg-','');
+  if(PAGE_FN[id])PAGE_FN[id]();
+}
+
+async function sendChat(){
+  const inp=document.getElementById('chat-inp');
+  const msg=inp.value.trim();
+  if(!msg)return;
+  const sendBtn=document.getElementById('chat-send');
+  inp.value='';inp.style.height='auto';
+  sendBtn.disabled=true;
+
+  addMsg('u',msg.replace(/</g,'&lt;'));
+  chatHistory.push({role:'user',content:msg});
+  showTyping();
+
+  try{
+    const sysPrompt=buildChatSystemPrompt();
+    const res=await fetch('/api/claude',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
+      model:'claude-sonnet-4-20250514',
+      max_tokens:1500,
+      system:sysPrompt,
+      messages:chatHistory.slice(-10) // Manter últimas 10 mensagens para não explodir o contexto
+    })});
+    if(!res.ok)throw new Error('API '+res.status);
+    const data=await res.json();
+    if(data.error)throw new Error(data.error.message||'Erro API');
+    const raw=data.content.map(b=>b.text||'').join('');
+    chatHistory.push({role:'assistant',content:raw});
+    hideTyping();
+    addMsg('a',parseAndRenderResponse(raw));
+  }catch(e){
+    hideTyping();
+    addMsg('a',`⚠ Erro: ${e.message}`);
+    chatHistory.pop();
+  }
+  sendBtn.disabled=false;
+  inp.focus();
+}
+
+// Auto-resize do textarea
+document.addEventListener('DOMContentLoaded',()=>{
+  const inp=document.getElementById('chat-inp');
+  if(inp)inp.addEventListener('input',function(){this.style.height='auto';this.style.height=Math.min(this.scrollHeight,90)+'px';});
+});
+</script>
 // Registrar callbacks para pills (fix do bug de scope)
 regCB('renderDash', renderDash);
 regCB('nuFluxo', ()=>renderFluxo('nu'));
