@@ -349,6 +349,16 @@ select:focus,input:focus{border-color:#333}
       <div style="display:flex;align-items:center;gap:10px"><label style="font-size:11px;color:var(--txt2);width:180px;flex-shrink:0">Ativo no DRE</label><select id="almoco-ativo" onchange="salvarAlmoco()"><option value="1">Sim</option><option value="0">Não</option></select></div>
       <div style="margin-top:10px;font-size:10px;color:var(--txt3)" id="almoco-preview"></div>
     </div>
+    <div class="card" style="margin-bottom:10px">
+      <div class="clbl" style="margin-bottom:8px">Backup de dados</div>
+      <div style="font-size:10px;color:var(--txt3);margin-bottom:12px;line-height:1.6">Exporte todos os dados para um arquivo JSON. Use para backup ou para migrar de navegador.</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn btn-sm" onclick="exportarBackup()">⬇ Exportar backup</button>
+        <button class="btn-g btn-sm" onclick="document.getElementById('backup-file-input').click()">⬆ Importar backup</button>
+        <input type="file" id="backup-file-input" accept=".json" style="display:none" onchange="importarBackup(this.files[0])">
+      </div>
+      <div id="backup-status" style="margin-top:8px;font-size:10px;display:none"></div>
+    </div>
     <div class="card"><div class="clbl">Dados salvos</div><div id="cfg-dados" style="font-size:11px;color:var(--txt2);margin:8px 0;line-height:1.8"></div><button class="btn-d" onclick="limparDados()">Limpar todos os dados</button></div>
   </div>
 </div>
@@ -360,6 +370,12 @@ pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/p
 const MESES=['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
 const BRL=v=>'R$ '+Math.abs(v).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
 const MK=(y,m)=>y+'-'+String(m).padStart(2,'0');
+
+// ─── HELPER: dias reais do mês ─────────────────────────────────────────────────
+function diasNoMes(mesKey){
+  const[y,m]=mesKey.split('-').map(Number);
+  return new Date(y,m,0).getDate(); // dia 0 do próximo mês = último dia deste mês
+}
 
 // ─── CATEGORIAS ────────────────────────────────────────────────────────────────
 const CATS={
@@ -419,6 +435,80 @@ function migrateOldData(){
   if(oldExt&&!localStorage.getItem('fc_nu_ext')){localStorage.setItem('fc_nu_ext',oldExt);}
 }
 migrateOldData();
+
+// ─── BACKUP / EXPORTAR / IMPORTAR ─────────────────────────────────────────────
+const BACKUP_VERSION=1;
+const BACKUP_KEYS=['fc_nu_fat','fc_nu_ext','fc_st_fat','fc_st_ext','fc_metas','fc_almoco'];
+
+function exportarBackup(){
+  const data={};
+  BACKUP_KEYS.forEach(k=>{const v=localStorage.getItem(k);if(v)data[k]=JSON.parse(v);});
+  // Incluir fc_rec_* (receitas salvas por mês)
+  const allM=mesesAll();
+  allM.forEach(m=>{['nu','st','an'].forEach(s=>{
+    const k=`fc_rec_${s}_${m}`;const v=localStorage.getItem(k);
+    if(v)data[k]=v;
+  });});
+  const backup={
+    version:BACKUP_VERSION,
+    exported_at:new Date().toISOString(),
+    app:'FinControl',
+    data
+  };
+  const blob=new Blob([JSON.stringify(backup,null,2)],{type:'application/json'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;
+  const now=new Date();
+  a.download=`fincontrol-backup-${now.getFullYear()}${String(now.getMonth()+1).padStart(2,'0')}${String(now.getDate()).padStart(2,'0')}.json`;
+  document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(url);
+  showBackupStatus('aok','✓ Backup exportado com sucesso.');
+}
+
+function importarBackup(file){
+  if(!file)return;
+  const statusEl=document.getElementById('backup-status');
+  const reader=new FileReader();
+  reader.onload=function(e){
+    try{
+      const backup=JSON.parse(e.target.result);
+      // Validação
+      if(!backup.version||!backup.data||backup.app!=='FinControl'){
+        showBackupStatus('aw','⚠ Arquivo inválido — não é um backup FinControl.');return;
+      }
+      if(backup.version>BACKUP_VERSION){
+        showBackupStatus('aw','⚠ Backup de versão mais nova (v'+backup.version+'). Atualize o FinControl.');return;
+      }
+      // Confirmar
+      const txCount=Object.values(backup.data).reduce((s,v)=>{
+        if(typeof v==='object'&&!Array.isArray(v)){return s+Object.values(v).reduce((ss,arr)=>ss+(Array.isArray(arr)?arr.length:0),0);}
+        return s;
+      },0);
+      const exportDate=backup.exported_at?new Date(backup.exported_at).toLocaleDateString('pt-BR'):'desconhecida';
+      if(!confirm(`Importar backup de ${exportDate}?\n\nIsso vai SUBSTITUIR todos os dados atuais.\n\nContinuar?`))return;
+      // Aplicar
+      Object.entries(backup.data).forEach(([k,v])=>{
+        if(typeof v==='string')localStorage.setItem(k,v);
+        else localStorage.setItem(k,JSON.stringify(v));
+      });
+      showBackupStatus('aok','✓ Backup restaurado! Recarregando...');
+      setTimeout(()=>location.reload(),1200);
+    }catch(err){
+      showBackupStatus('aw','⚠ Erro ao ler o arquivo: '+err.message);
+    }
+  };
+  reader.readAsText(file);
+  // Limpar o input para permitir reimportar o mesmo arquivo
+  document.getElementById('backup-file-input').value='';
+}
+
+function showBackupStatus(cls,msg){
+  const el=document.getElementById('backup-status');
+  el.className='alert '+cls;
+  el.textContent=msg;
+  el.style.display='block';
+  setTimeout(()=>{el.style.display='none';},5000);
+}
 
 // ─── STATE ─────────────────────────────────────────────────────────────────────
 let curMes=null;
@@ -543,12 +633,12 @@ function renderDash(){
   const rec=tot.receitaExt+tot.almocoBenefit;
 
   const metas=gMetas();
-  // Resultado = Receita - Despesas apenas. Investimentos são POSITIVOS (não são gastos).
-  // "Você investiu R$ X além do que sobrou" é diferente de "você está devendo".
-  const resultadoOperacional=rec-tot.despTotal; // sobrou depois de viver
-  const saldoFinal=resultadoOperacional-tot.invTotal; // quanto ficou em conta depois de investir
+  const resultadoOperacional=rec-tot.despTotal;
+  const saldoFinal=resultadoOperacional-tot.invTotal;
   const taxaPoup=rec>0?tot.invTotal/rec*100:0;
-  const burnRateDay=tot.despTotal>0?(tot.despTotal/30):0;
+  // FIX 0.2: Burn rate usando dias reais do mês
+  const diasReais=diasNoMes(curMes);
+  const burnRateDay=tot.despTotal>0?(tot.despTotal/diasReais):0;
 
   // ── KPIs PRINCIPAIS (3 grandes)
   const TIPS_MAIN=[
@@ -590,13 +680,13 @@ function renderDash(){
   const TIPS_SEC=[
     `Percentual da receita direcionado a investimentos. Meta ideal: 20%+. Fórmula: Total Investido ÷ Receita.`,
     `Soma de Inv. Pessoal + Inv. Financeiro + Planos Pessoais + Previdência. Meta configurada: ${metaInv}% da receita.`,
-    `Quanto custa sua vida por dia em média. Fórmula: Despesas ÷ 30. Útil para saber quantos dias de salário você "gasta" por mês.`,
+    `Quanto custa sua vida por dia em média. Fórmula: Despesas ÷ ${diasReais} dias (dias reais de ${MESES[parseInt(curMes.split('-')[1])-1]}).`,
     `Benefício corporativo de almoço: ${tot.almocoInfo&&tot.almocoInfo.diasTotais?tot.almocoInfo.diasTotais+' dias úteis no mês. ':''} Dias com Giovaniburgue em dia de semana são descontados.`
   ];
   document.getElementById('dash-kpis-sec').innerHTML=[
     {l:'Taxa de Poupança',v:rec>0?taxaPoup.toFixed(1)+'%':'—',s:taxaPoup>=20?'✓ acima de 20%':taxaPoup>=10?'⚠ abaixo do ideal (20%)':'⚠ baixa — meta 20%+',c:taxaPoup>=20?'var(--grn)':taxaPoup>=10?'var(--amber)':'var(--red)'},
     {l:'Total Investido',v:BRL(tot.invTotal),s:rec>0?`${(tot.invTotal/rec*100).toFixed(1)}% da receita — meta ${metaInv}%`:'—',c:'#2050a0'},
-    {l:'Burn Rate Diário',v:BRL(burnRateDay),s:'custo médio por dia de vida',c:'var(--txt2)'},
+    {l:'Burn Rate Diário',v:BRL(burnRateDay),s:`custo médio/dia (${diasReais}d)`,c:'var(--txt2)'},
     {l:'Almoço da Edi',v:tot.almocoBenefit>0?BRL(tot.almocoBenefit):'—',s:tot.almocoBenefit>0?`${tot.almocoInfo.diasUsados}d / ${tot.almocoInfo.diasTotais}d úteis`:'Configure em ⚙',c:'var(--amber)'},
   ].map((k,i)=>`<div class="card tip" data-tip="${TIPS_SEC[i]}" style="margin:0;padding:14px;cursor:default">
     <div class="clbl" style="margin-bottom:4px">${k.l}</div>
@@ -628,9 +718,10 @@ function renderDash(){
   } else {extrasEl.innerHTML='';}
 
   // ── GRÁFICO — waterfall horizontal por bloco
+  // FIX 0.1: Corrigido saldo → saldoFinal
   const despGrupos=Object.entries(tot.despGrupos).sort((a,b)=>b[1]-a[1]);
   const labels=['Salário',...(outrasRecTotal>0?['+ Extras']:[]),...(tot.almocoBenefit>0?['+ Edi']:[]),'Despesas',...despGrupos.map(([g])=>g),'Investido','Saldo'];
-  const values=[salario,...(outrasRecTotal>0?[outrasRecTotal]:[]),...(tot.almocoBenefit>0?[tot.almocoBenefit]:[]),-tot.despTotal,...despGrupos.map(([,v])=>-v),-tot.invTotal,saldo];
+  const values=[salario,...(outrasRecTotal>0?[outrasRecTotal]:[]),...(tot.almocoBenefit>0?[tot.almocoBenefit]:[]),-tot.despTotal,...despGrupos.map(([,v])=>-v),-tot.invTotal,saldoFinal];
   const colors=values.map((v,i)=>{
     if(i===0||i===labels.indexOf('+ Extras')||i===labels.indexOf('+ Edi'))return '#2a7a5066';
     if(labels[i]==='Despesas')return '#c0404088';
@@ -755,10 +846,6 @@ function buildCFTxns(mes,scope,tab){
   const addFat=(fat,banco)=>fat.forEach(t=>txns.push({...t,banco,fonte:'Cartão',dl:t.descricao,data:t.data_competencia||t.data_pagamento,entrada:0,saida:Math.abs(t.valor)}));
   const addExt=(ext,banco)=>ext.forEach(t=>txns.push({...t,banco,fonte:'Conta',dl:t.descricao_limpa||t.descricao,entrada:t.valor>0?t.valor:0,saida:t.valor<0?Math.abs(t.valor):0}));
 
-  // REGRA ANTI-DUPLA-CONTAGEM:
-  // Consolidado/todos = apenas extrato. O pagamento da fatura no extrato já representa
-  // o total do cartão em bloco. Incluir fatura junto inflaria as saídas.
-  // Tab 'cartao' = apenas fatura (para ver detalhamento por estabelecimento).
   if(scope==='nu'){
     if(tab==='consolidado'||tab==='extrato')addExt(txNuExt(mes),'Nubank');
     if(tab==='cartao')addFat(txNuFat(mes),'Nubank');
@@ -828,10 +915,8 @@ function renderDRE(scope){
 
   const txns=getTxnsByScope(curMes,scope);
   const tot=calcTot(curMes,txns);
-  // Receita = só transações reais importadas. Almoço da Edi fica APENAS no Dashboard.
   const rec=tot.receitaExt;
 
-  // Card informativo de receita (sem Edi)
   const recCard=document.getElementById(scope+'-dre-rec-card');
   const recVal=document.getElementById(scope+'-dre-rec-val');
   const hintEl=document.getElementById(scope+'-dre-hint');
@@ -860,10 +945,8 @@ function renderDRE(scope){
 
   let html=`<div style="font-family:var(--mono);font-size:9px;color:var(--txt3);letter-spacing:1px;text-transform:uppercase;margin-bottom:10px">DRE — ${MESES[parseInt(m)-1]} ${y}</div>`;
 
-  // ── RECEITA: cada transação individual com origem real
   const recTxns=txns.filter(t=>t.cat==='RECEITA_LIQUIDA'&&t.valor>0);
 
-  // Agrupar por subcategoria, mas dentro mostrar cada transação
   const recPorSub={};
   recTxns.forEach(t=>{
     const sub=t.subcategoria||'Outros';
@@ -882,12 +965,10 @@ function renderDRE(scope){
       const extraBadge=!isSalario?'<span style="font-size:8px;background:#2a7a5022;color:var(--grn);padding:1px 5px;border-radius:3px;font-family:var(--mono);margin-left:6px">extra</span>':'';
 
       if(txList.length===1){
-        // Uma transação só: mostrar com origem
         const t=txList[0];
         const descr=t.descricao_limpa||t.origem||t.descricao||sub;
         html+=`<div class="drow sub"><span class="dlbl" style="color:${cor};display:flex;align-items:center">${descr}${extraBadge}</span><span class="dval" style="color:${cor}">${BRL(t.valor)}</span></div>`;
       } else {
-        // Várias transações: mostrar grupo clicável com detalhe
         html+=`<div class="drow" style="cursor:pointer" onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display==='none'?'block':'none'">
           <span class="dlbl" style="display:flex;align-items:center;color:${cor}">${sub}${extraBadge}<span style="font-size:10px;color:var(--txt3);margin-left:6px">${txList.length}x ▸</span></span>
           <span class="dval" style="color:${cor}">${BRL(subTotal)}</span>
@@ -929,7 +1010,6 @@ function renderDRE(scope){
     <span class="tm" style="font-size:12px;color:${resAntes>=0?'var(--grn)':'var(--red)'};font-weight:600">${rec>0?(resAntes>=0?'+ ':'-')+BRL(Math.abs(resAntes)):'—'}</span>
   </div>`;
 
-  // Separar Faculdade do restante do Inv. Pessoal
   const faculdadeTotal=txns.filter(t=>t.cat==='INVESTIMENTO_PESSOAL'&&t.subcategoria==='Faculdade').reduce((s,t)=>s+Math.abs(t.valor),0);
   const invPessoalSemFac=tot.invPessoal-faculdadeTotal;
 
@@ -943,7 +1023,6 @@ function renderDRE(scope){
     const subT={};
     txns.filter(t=>t.cat===b.cat&&(b.sub?t.subcategoria===b.sub:t.subcategoria!=='Faculdade'||b.cat!=='INVESTIMENTO_PESSOAL'))
         .forEach(t=>{subT[t.subcategoria]=(subT[t.subcategoria]||0)+Math.abs(t.valor);});
-    // Para Inv. Pessoal sem faculdade, excluir Faculdade do subT
     if(b.cat==='INVESTIMENTO_PESSOAL'&&!b.sub)delete subT['Faculdade'];
     html+=`<div class="card" style="padding:0;overflow:hidden;margin-bottom:8px">
       <div class="drow hdr">
@@ -1140,7 +1219,6 @@ async function processarImp(){
       const rows=rawRows||[];
       pending=json.transacoes.map((t,i)=>{
         const orig=rows[t.id]||rows[i]||{};
-        // Para PDF (st-ext): descricao vem do Claude (descricao_limpa). Para CSV (nu-ext): vem do orig
         const descRaw=orig.descricao||t.descricao_limpa||t.descricao||'';
         return{id:i,data:t.data||orig.data||'',descricao:descRaw,descricao_limpa:t.descricao_limpa||descRaw,origem:t.origem||'',subcategoria:t.subcategoria||'Outros',cat:t.cat||'TRANSFERENCIA',grupo:t.grupo||'Transferência',valor:parseFloat(t.valor!==undefined?t.valor:orig.valor)||0};
       }).filter(t=>t.descricao_limpa||t.descricao);
@@ -1301,7 +1379,6 @@ function buildChatSystemPrompt(){
   const tot=calcTot(mes,txns);
   const[y,m]=mes.split('-');
 
-  // Serializar transações para o contexto
   const txList=txns.map(t=>`id:${t.id}|banco:${t.banco||'?'}|fonte:${t.data_pagamento?'fat':'ext'}|data:${t.data||t.data_competencia||'?'}|desc:${t.descricao_limpa||t.descricao}|sub:${t.subcategoria}|cat:${t.cat}|val:${t.valor}`).join('\n');
 
   const catList=Object.entries(CATS).map(([c,d])=>{
@@ -1373,14 +1450,12 @@ function applyCorrection(id,banco,fonte,sub,cat,grupo){
 }
 
 function parseAndRenderResponse(raw){
-  // Verificar se tem JSON de correções
   const jsonMatch=raw.match(/```json\s*([\s\S]*?)```/);
   if(jsonMatch){
     try{
       const parsed=JSON.parse(jsonMatch[1].trim());
       const correcoes=parsed.correções||parsed.correcoes||[];
       if(correcoes.length>0){
-        // Renderizar texto antes do JSON
         const textoPre=raw.replace(/```json[\s\S]*?```/,'').trim();
         let html=textoPre?`<p style="margin-bottom:8px">${textoPre.replace(/\n/g,'<br>')}</p>`:'';
         html+=`<p style="margin-bottom:6px;color:var(--white);font-weight:600">${correcoes.length} correção(ões) disponível(is):</p>`;
@@ -1395,7 +1470,6 @@ function parseAndRenderResponse(raw){
       }
     }catch(e){}
   }
-  // Texto simples com formatação básica
   return raw.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/\n/g,'<br>');
 }
 
@@ -1413,7 +1487,6 @@ window.applyAllFixes=function(correcoes){
 };
 
 function refreshCurrentPage(){
-  // Re-renderizar a página atual para refletir as correções
   const active=document.querySelector('.page.active');
   if(!active)return;
   const id=active.id.replace('pg-','');
@@ -1438,7 +1511,7 @@ async function sendChat(){
       model:'claude-sonnet-4-20250514',
       max_tokens:1500,
       system:sysPrompt,
-      messages:chatHistory.slice(-10) // Manter últimas 10 mensagens para não explodir o contexto
+      messages:chatHistory.slice(-10)
     })});
     if(!res.ok)throw new Error('API '+res.status);
     const data=await res.json();
@@ -1464,7 +1537,6 @@ document.addEventListener('DOMContentLoaded',()=>{
 </script>
 <script>
 // ─── INIT ──────────────────────────────────────────────────────────────────────
-// Registrar callbacks para pills (fix do bug de scope)
 regCB('renderDash', renderDash);
 regCB('nuFluxo', ()=>renderFluxo('nu'));
 regCB('stFluxo', ()=>renderFluxo('st'));
