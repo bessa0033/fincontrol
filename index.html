@@ -101,6 +101,20 @@ select:focus,input:focus{border-color:#333}
 .pill-btn:hover{color:var(--txt2);border-color:#333;}
 .pill-btn.active{background:#1e1e1e;color:var(--white);border-color:#333;}
 
+/* DASHBOARD V2 — Cards estilo Investidor10 */
+.dash-section-lbl{font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:1.5px;color:var(--txt3);margin-bottom:8px;padding-left:2px;font-family:var(--mono)}
+.dash-row{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px}
+.dash-card{background:var(--bg2);border:1px solid var(--border);border-radius:6px;padding:16px 18px;flex:1;min-width:155px;position:relative;overflow:visible;transition:all .18s;cursor:default}
+.dash-card:hover{border-color:var(--border2);box-shadow:0 4px 16px #00000030;transform:translateY(-1px)}
+.dash-card .dc-accent{position:absolute;top:0;left:0;right:0;height:3px;border-radius:6px 6px 0 0}
+.dash-card .dc-lbl{font-size:9px;letter-spacing:1.2px;text-transform:uppercase;color:var(--txt3);margin-bottom:8px;font-family:var(--mono);display:flex;align-items:center;gap:5px}
+.dash-card .dc-val{font-family:var(--mono);font-size:22px;font-weight:600;color:var(--white);line-height:1.1}
+.dash-card .dc-sub{font-size:10px;color:var(--txt3);margin-top:6px;display:flex;align-items:center;gap:4px}
+.dash-card .dc-sub.up{color:var(--grn)}.dash-card .dc-sub.dn{color:var(--red)}
+.dash-card .dc-tip{position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);background:#1a1a1a;color:#a8a5a0;font-size:10px;line-height:1.5;padding:9px 12px;border-radius:6px;white-space:normal;width:220px;z-index:200;border:1px solid #2a2a2a;pointer-events:none;opacity:0;transition:opacity .15s;font-family:var(--sans)}
+.dash-card:hover .dc-tip{opacity:1}
+.dash-card .dc-tip::after{content:'';position:absolute;bottom:-5px;left:50%;transform:translateX(-50%) rotate(45deg);width:9px;height:9px;background:#1a1a1a;border-right:1px solid #2a2a2a;border-bottom:1px solid #2a2a2a}
+
 /* CHAT FLUTUANTE */
 .chat-fab{position:fixed;bottom:24px;right:24px;width:46px;height:46px;border-radius:50%;background:var(--white);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:500;box-shadow:0 4px 20px #00000060;transition:all .2s;}
 .chat-fab:hover{transform:scale(1.08);}
@@ -171,31 +185,18 @@ select:focus,input:focus{border-color:#333}
   <div class="pb">
     <div id="dash-empty" class="empty" style="display:none"><div style="font-size:22px;opacity:.1;margin-bottom:10px">📊</div>Nenhum dado. <span style="cursor:pointer;color:var(--txt2);text-decoration:underline" onclick="goTo('import')">Importar →</span></div>
     <div id="dash-content">
-
-      <!-- ALERTAS -->
       <div id="dash-alerts" style="margin-bottom:14px"></div>
-
-      <!-- KPIs PRINCIPAIS — 3 grandes -->
-      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:12px" id="dash-kpis-main"></div>
-
-      <!-- KPIs SECUNDÁRIOS — 4 médios -->
-      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px" id="dash-kpis-sec"></div>
-
-      <!-- RECEITAS EXTRAS (aparece só se tiver) -->
+      <div id="dash-kpis-row1"></div>
+      <div id="dash-kpis-row2"></div>
       <div id="dash-receitas-extras" style="margin-bottom:14px"></div>
-
-      <!-- GRÁFICO PRINCIPAL -->
       <div class="card" style="margin-bottom:14px">
         <div class="clbl" style="margin-bottom:10px">Alocação da receita</div>
         <canvas id="ch-bar" height="120"></canvas>
       </div>
-
-      <!-- TOP GASTOS -->
       <div class="g2">
         <div class="card" style="padding:0;overflow:hidden"><div style="padding:9px 14px;border-bottom:1px solid var(--border)"><div class="clbl">Top gastos — Nubank Cartão</div></div><table><tbody id="dash-top-nu"></tbody></table></div>
         <div class="card" style="padding:0;overflow:hidden"><div style="padding:9px 14px;border-bottom:1px solid var(--border)"><div class="clbl">Top gastos — Santander Cartão</div></div><table><tbody id="dash-top-st"></tbody></table></div>
       </div>
-
     </div>
   </div>
 </div>
@@ -371,10 +372,9 @@ const MESES=['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agos
 const BRL=v=>'R$ '+Math.abs(v).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
 const MK=(y,m)=>y+'-'+String(m).padStart(2,'0');
 
-// ─── HELPER: dias reais do mês ─────────────────────────────────────────────────
 function diasNoMes(mesKey){
   const[y,m]=mesKey.split('-').map(Number);
-  return new Date(y,m,0).getDate(); // dia 0 do próximo mês = último dia deste mês
+  return new Date(y,m,0).getDate();
 }
 
 // ─── CATEGORIAS ────────────────────────────────────────────────────────────────
@@ -428,7 +428,6 @@ const mesesStFat=()=>Object.keys(gStFat()).sort().reverse();
 const mesesStExt=()=>Object.keys(gStExt()).sort().reverse();
 const mesesAll=()=>[...new Set([...mesesNuFat(),...mesesNuExt(),...mesesStFat(),...mesesStExt()])].sort().reverse();
 
-// Compatibilidade com dados antigos
 function migrateOldData(){
   const oldFat=localStorage.getItem('fc_fat');const oldExt=localStorage.getItem('fc_ext');
   if(oldFat&&!localStorage.getItem('fc_nu_fat')){localStorage.setItem('fc_nu_fat',oldFat);}
@@ -436,29 +435,22 @@ function migrateOldData(){
 }
 migrateOldData();
 
-// ─── BACKUP / EXPORTAR / IMPORTAR ─────────────────────────────────────────────
+// ─── BACKUP ────────────────────────────────────────────────────────────────────
 const BACKUP_VERSION=1;
 const BACKUP_KEYS=['fc_nu_fat','fc_nu_ext','fc_st_fat','fc_st_ext','fc_metas','fc_almoco'];
 
 function exportarBackup(){
   const data={};
   BACKUP_KEYS.forEach(k=>{const v=localStorage.getItem(k);if(v)data[k]=JSON.parse(v);});
-  // Incluir fc_rec_* (receitas salvas por mês)
   const allM=mesesAll();
   allM.forEach(m=>{['nu','st','an'].forEach(s=>{
     const k=`fc_rec_${s}_${m}`;const v=localStorage.getItem(k);
     if(v)data[k]=v;
   });});
-  const backup={
-    version:BACKUP_VERSION,
-    exported_at:new Date().toISOString(),
-    app:'FinControl',
-    data
-  };
+  const backup={version:BACKUP_VERSION,exported_at:new Date().toISOString(),app:'FinControl',data};
   const blob=new Blob([JSON.stringify(backup,null,2)],{type:'application/json'});
   const url=URL.createObjectURL(blob);
-  const a=document.createElement('a');
-  a.href=url;
+  const a=document.createElement('a');a.href=url;
   const now=new Date();
   a.download=`fincontrol-backup-${now.getFullYear()}${String(now.getMonth()+1).padStart(2,'0')}${String(now.getDate()).padStart(2,'0')}.json`;
   document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(url);
@@ -467,46 +459,29 @@ function exportarBackup(){
 
 function importarBackup(file){
   if(!file)return;
-  const statusEl=document.getElementById('backup-status');
   const reader=new FileReader();
   reader.onload=function(e){
     try{
       const backup=JSON.parse(e.target.result);
-      // Validação
-      if(!backup.version||!backup.data||backup.app!=='FinControl'){
-        showBackupStatus('aw','⚠ Arquivo inválido — não é um backup FinControl.');return;
-      }
-      if(backup.version>BACKUP_VERSION){
-        showBackupStatus('aw','⚠ Backup de versão mais nova (v'+backup.version+'). Atualize o FinControl.');return;
-      }
-      // Confirmar
-      const txCount=Object.values(backup.data).reduce((s,v)=>{
-        if(typeof v==='object'&&!Array.isArray(v)){return s+Object.values(v).reduce((ss,arr)=>ss+(Array.isArray(arr)?arr.length:0),0);}
-        return s;
-      },0);
+      if(!backup.version||!backup.data||backup.app!=='FinControl'){showBackupStatus('aw','⚠ Arquivo inválido.');return;}
+      if(backup.version>BACKUP_VERSION){showBackupStatus('aw','⚠ Backup de versão mais nova.');return;}
       const exportDate=backup.exported_at?new Date(backup.exported_at).toLocaleDateString('pt-BR'):'desconhecida';
       if(!confirm(`Importar backup de ${exportDate}?\n\nIsso vai SUBSTITUIR todos os dados atuais.\n\nContinuar?`))return;
-      // Aplicar
       Object.entries(backup.data).forEach(([k,v])=>{
         if(typeof v==='string')localStorage.setItem(k,v);
         else localStorage.setItem(k,JSON.stringify(v));
       });
       showBackupStatus('aok','✓ Backup restaurado! Recarregando...');
       setTimeout(()=>location.reload(),1200);
-    }catch(err){
-      showBackupStatus('aw','⚠ Erro ao ler o arquivo: '+err.message);
-    }
+    }catch(err){showBackupStatus('aw','⚠ Erro: '+err.message);}
   };
   reader.readAsText(file);
-  // Limpar o input para permitir reimportar o mesmo arquivo
   document.getElementById('backup-file-input').value='';
 }
 
 function showBackupStatus(cls,msg){
   const el=document.getElementById('backup-status');
-  el.className='alert '+cls;
-  el.textContent=msg;
-  el.style.display='block';
+  el.className='alert '+cls;el.textContent=msg;el.style.display='block';
   setTimeout(()=>{el.style.display='none';},5000);
 }
 
@@ -526,7 +501,6 @@ const badge=c=>{const cor=catCor(c);return`<span class="badge" style="background
 const getAllSubs=()=>{const s=[];for(const d of Object.values(CATS))for(const a of Object.values(d.grupos))s.push(...a);return s;};
 const subToCat=sub=>{for(const[cat,d]of Object.entries(CATS))for(const[g,subs]of Object.entries(d.grupos))if(subs.includes(sub))return{cat,g};return{cat:'DESPESA',g:'Pessoal'};};
 
-// Mapa de callbacks para pills (resolve o bug de arrow function como string)
 const _CB={};
 function regCB(name,fn){_CB[name]=fn;}
 function _callCB(name){if(_CB[name])_CB[name]();}
@@ -535,17 +509,12 @@ function renderPills(id,cbName){
   const el=document.getElementById(id);if(!el)return;
   const meses=mesesAll();
   if(!meses.length){el.innerHTML='';return;}
-
-  // Garante que curMes é um mês válido
   if(!meses.includes(curMes))curMes=meses[0];
-
   el.innerHTML=meses.slice(0,12).map(k=>{
     const[y,m]=k.split('-');
     const isActive=k===curMes;
     return`<button class="pill-btn${isActive?' active':''}" onclick="curMes='${k}';renderPills('${id}','${cbName}');_callCB('${cbName}')">${MESES[parseInt(m)-1].slice(0,3)}/${y.slice(2)}</button>`;
   }).join('');
-
-  // Atualizar indicador de mês no topbar se existir
   const[y,m]=curMes.split('-');
   const mesLabel=`${MESES[parseInt(m)-1].slice(0,3)}/${y.slice(2)}`;
   document.querySelectorAll('.topbar-mes-ind').forEach(el=>el.textContent=mesLabel);
@@ -597,6 +566,82 @@ function getTxnsByScope(mes,scope){
   return[];
 }
 
+// ─── NOVOS INDICADORES V2 ──────────────────────────────────────────────────────
+
+// Principal Despesa: categoria top + item top dentro dela
+function calcPrincipalDespesa(txns){
+  const byGrupo={};
+  const byItem={};
+  txns.filter(t=>t.cat==='DESPESA').forEach(t=>{
+    const v=Math.abs(t.valor);
+    const g=t.grupo||'Outros';
+    byGrupo[g]=(byGrupo[g]||0)+v;
+    const desc=(t.descricao||'').trim().split(/\s+/).slice(0,4).join(' ');
+    const key=g+'|||'+desc;
+    if(!byItem[key])byItem[key]={grupo:g,desc,valor:0};
+    byItem[key].valor+=v;
+  });
+  const topGrupo=Object.entries(byGrupo).sort((a,b)=>b[1]-a[1])[0];
+  if(!topGrupo)return{categoria:'—',catValor:0,item:'—',itemValor:0};
+  const grupoNome=topGrupo[0];
+  const topItem=Object.values(byItem).filter(i=>i.grupo===grupoNome).sort((a,b)=>b.valor-a.valor)[0];
+  return{
+    categoria:grupoNome,
+    catValor:topGrupo[1],
+    item:topItem?topItem.desc:'—',
+    itemValor:topItem?topItem.valor:0
+  };
+}
+
+// Comprometimento de renda: % da receita em gastos fixos/recorrentes
+function calcComprometimento(txns,rec){
+  const FIXOS=['Aluguel/Prestação','Condomínio','Luz','Água','Gás','Internet',
+    'Plano de Saúde','TIM','Streaming','Academia','Faculdade',
+    'Padre Paulo Ricardo','Guilherme Freire','Li Flos Carmeli',
+    'Dízimo','INSS','IRRF','Dentista'];
+  let fixoTotal=0;
+  txns.filter(t=>t.cat==='DESPESA'||t.cat==='INVESTIMENTO_PESSOAL').forEach(t=>{
+    if(FIXOS.includes(t.subcategoria))fixoTotal+=Math.abs(t.valor);
+  });
+  return rec>0?(fixoTotal/rec*100):0;
+}
+
+// Parcelas ativas: total comprometido futuro
+function calcParcelasAtivas(mes){
+  const allFat=[...txNuFat(mes),...txStFat(mes)];
+  let totalFuturo=0,qtd=0;
+  const seen={};
+  allFat.forEach(t=>{
+    if(!t.parcela)return;
+    const m=t.parcela.match(/(\d+)\s*\/\s*(\d+)/);
+    if(!m)return;
+    const atual=parseInt(m[1]),total=parseInt(m[2]);
+    if(atual>=total)return;
+    const restantes=total-atual;
+    const valorParcela=Math.abs(t.valor);
+    const key=(t.descricao||'').trim().substring(0,20)+'_'+total;
+    if(seen[key])return;
+    seen[key]=true;
+    totalFuturo+=restantes*valorParcela;
+    qtd++;
+  });
+  return{total:totalFuturo,qtd};
+}
+
+// Variação MoM: % de mudança nos gastos vs mês anterior
+function calcMoM(curMes){
+  const all=mesesAll();
+  const idx=all.indexOf(curMes);
+  if(idx<0||idx>=all.length-1)return null;
+  const prevMes=all[idx+1];
+  const txCur=getTxnsByScope(curMes,'an');
+  const txPrev=getTxnsByScope(prevMes,'an');
+  const despCur=txCur.filter(t=>t.cat==='DESPESA').reduce((s,t)=>s+Math.abs(t.valor),0);
+  const despPrev=txPrev.filter(t=>t.cat==='DESPESA').reduce((s,t)=>s+Math.abs(t.valor),0);
+  if(despPrev===0)return null;
+  return((despCur-despPrev)/despPrev*100);
+}
+
 // ─── NAV ───────────────────────────────────────────────────────────────────────
 const PAGE_FN={
   dash:renderDash,
@@ -615,7 +660,19 @@ function goTo(p){
   (PAGE_FN[p]||(() => {}))();
 }
 
-// ─── DASHBOARD ─────────────────────────────────────────────────────────────────
+// ─── DASHBOARD V2 ──────────────────────────────────────────────────────────────
+function dashCard(o){
+  const tipHTML=o.tip?`<div class="dc-tip">${o.tip}</div>`:'';
+  const accentHTML=o.accent?`<div class="dc-accent" style="background:${o.accent}"></div>`:'';
+  const trendCls=o.trend==='up'?' up':o.trend==='down'?' dn':'';
+  const arrow=o.trend==='up'?'▲ ':o.trend==='down'?'▼ ':'';
+  return`<div class="dash-card">${accentHTML}${tipHTML}
+    <div class="dc-lbl">${o.icon||''} ${o.label}</div>
+    <div class="dc-val" style="${o.valColor?'color:'+o.valColor:''}">${o.value}</div>
+    ${o.sub?`<div class="dc-sub${trendCls}">${arrow}${o.sub}</div>`:''}
+  </div>`;
+}
+
 function renderDash(){
   const all=mesesAll();
   if(!all.length){document.getElementById('dash-empty').style.display='block';document.getElementById('dash-content').style.display='none';return;}
@@ -625,84 +682,113 @@ function renderDash(){
 
   const allTx=getTxnsByScope(curMes,'an');
   const tot=calcTot(curMes,allTx);
+  const metas=gMetas();
 
-  // Receitas detalhadas
+  // Receita
   const salario=allTx.filter(t=>t.cat==='RECEITA_LIQUIDA'&&t.subcategoria==='Salário'&&t.valor>0).reduce((s,t)=>s+t.valor,0);
   const outrasRec=allTx.filter(t=>t.cat==='RECEITA_LIQUIDA'&&t.subcategoria!=='Salário'&&t.valor>0);
   const outrasRecTotal=outrasRec.reduce((s,t)=>s+t.valor,0);
   const rec=tot.receitaExt+tot.almocoBenefit;
 
-  const metas=gMetas();
+  // Métricas derivadas
   const resultadoOperacional=rec-tot.despTotal;
   const saldoFinal=resultadoOperacional-tot.invTotal;
-  const taxaPoup=rec>0?tot.invTotal/rec*100:0;
-  // FIX 0.2: Burn rate usando dias reais do mês
   const diasReais=diasNoMes(curMes);
   const burnRateDay=tot.despTotal>0?(tot.despTotal/diasReais):0;
+  const taxaPoup=rec>0?(resultadoOperacional/rec*100):0; // Resultado Op / Receita (exclui investimentos)
+  const gastoDia=burnRateDay;
+  const principal=calcPrincipalDespesa(allTx);
+  const comprometimento=calcComprometimento(allTx,rec);
+  const parcelas=calcParcelasAtivas(curMes);
+  const mom=calcMoM(curMes);
 
-  // ── KPIs PRINCIPAIS (3 grandes)
-  const TIPS_MAIN=[
-    'Soma de todas as receitas do mês: salário detectado no extrato + outras receitas recebidas + benefício do almoço da Edi.',
-    `Tudo que saiu como despesa de consumo (excluindo investimentos). Meta: abaixo de ${metas.despesas}% da receita.`,
-    'Receita menos despesas de consumo. Positivo = sua vida cabe no que você ganha. Investimentos são mostrados separadamente — investir não é "gastar".'
-  ];
-  document.getElementById('dash-kpis-main').innerHTML=[
-    {
-      l:'Receita Total',
-      v:rec>0?BRL(rec):'—',
-      s:salario>0?`Salário ${BRL(salario)}`+(outrasRecTotal>0?` + extras ${BRL(outrasRecTotal)}`:'')+(tot.almocoBenefit>0?` + Edi ${BRL(tot.almocoBenefit)}`:''):'Importe extrato',
-      c:'var(--grn)',border:'2px solid #2a7a5022'
-    },
-    {
-      l:'Custo de Vida',
-      v:BRL(tot.despTotal),
-      s:rec>0?`${(tot.despTotal/rec*100).toFixed(1)}% da receita — meta ${metas.despesas}%`:'—',
-      c:rec>0&&tot.despTotal/rec*100>metas.despesas?'var(--red)':'var(--txt)',
-      border:'2px solid #c0404022'
-    },
-    {
-      l:'Resultado Operacional',
-      v:rec>0?BRL(Math.abs(resultadoOperacional)):'—',
-      s:resultadoOperacional>=0
-        ?`✓ sobrou ${BRL(resultadoOperacional)} depois das despesas`+(saldoFinal<0?` · usou ${BRL(Math.abs(saldoFinal))} de poupança p/ investir`:'')
-        :`⚠ despesas ${BRL(Math.abs(resultadoOperacional))} acima da receita`,
-      c:resultadoOperacional>=0?'var(--grn)':'var(--red)',
-      border:`2px solid ${resultadoOperacional>=0?'#2a7a5022':'#c0404022'}`
-    },
-  ].map((k,i)=>`<div class="card tip" data-tip="${TIPS_MAIN[i]}" style="margin:0;border:${k.border};padding:18px;cursor:default">
-    <div class="clbl" style="margin-bottom:6px">${k.l}</div>
-    <div style="font-family:var(--mono);font-size:26px;font-weight:600;color:${k.c};margin:4px 0 6px">${k.v}</div>
-    <div style="font-size:10px;color:var(--txt3);line-height:1.5">${k.s}</div>
-  </div>`).join('');
+  // ── ROW 1: FINANCEIRO (4 cards)
+  let row1=`<div class="dash-section-lbl">Financeiro</div><div class="dash-row">`;
+  row1+=dashCard({
+    label:'Receita Total', icon:'↗', accent:'var(--grn)',
+    value:rec>0?BRL(rec):'—',
+    sub:salario>0?`Salário ${BRL(salario)}`+(tot.almocoBenefit>0?` + Edi ${BRL(tot.almocoBenefit)}`:''):'Importe extrato',
+    trend:rec>0?'up':null,
+    tip:'Soma de todas as entradas: salário (extrato) + outras receitas + benefício Almoço da Edi.'
+  });
+  row1+=dashCard({
+    label:'Gastos Totais', icon:'↘', accent:'var(--red)',
+    value:BRL(tot.despTotal),
+    sub:rec>0?`${(tot.despTotal/rec*100).toFixed(1)}% da receita — meta ${metas.despesas}%`:'—',
+    trend:rec>0&&tot.despTotal/rec*100<=metas.despesas?'up':'down',
+    valColor:'var(--red)',
+    tip:'Soma de todas as saídas classificadas como despesa (exclui investimentos e transferências).'
+  });
+  row1+=dashCard({
+    label:'Principal Despesa', icon:'⚑', accent:'var(--amber)',
+    value:principal.categoria,
+    sub:BRL(principal.catValor),
+    tip:`Maior gasto dentro: ${principal.item} — ${BRL(principal.itemValor)}`
+  });
+  row1+=dashCard({
+    label:'Gasto / Dia', icon:'◷', accent:'var(--txt3)',
+    value:BRL(gastoDia),
+    sub:`média diária (${diasReais} dias em ${MESES[parseInt(curMes.split('-')[1])-1].slice(0,3)})`,
+    tip:`Fórmula: Gastos Totais ÷ ${diasReais} dias reais do mês.`
+  });
+  row1+=`</div>`;
+  document.getElementById('dash-kpis-row1').innerHTML=row1;
 
-  // ── KPIs SECUNDÁRIOS (4 médios)
-  const metaInv=(metas.invPessoal+metas.invFin+metas.planos+metas.prev);
-  const TIPS_SEC=[
-    `Percentual da receita direcionado a investimentos. Meta ideal: 20%+. Fórmula: Total Investido ÷ Receita.`,
-    `Soma de Inv. Pessoal + Inv. Financeiro + Planos Pessoais + Previdência. Meta configurada: ${metaInv}% da receita.`,
-    `Quanto custa sua vida por dia em média. Fórmula: Despesas ÷ ${diasReais} dias (dias reais de ${MESES[parseInt(curMes.split('-')[1])-1]}).`,
-    `Benefício corporativo de almoço: ${tot.almocoInfo&&tot.almocoInfo.diasTotais?tot.almocoInfo.diasTotais+' dias úteis no mês. ':''} Dias com Giovaniburgue em dia de semana são descontados.`
-  ];
-  document.getElementById('dash-kpis-sec').innerHTML=[
-    {l:'Taxa de Poupança',v:rec>0?taxaPoup.toFixed(1)+'%':'—',s:taxaPoup>=20?'✓ acima de 20%':taxaPoup>=10?'⚠ abaixo do ideal (20%)':'⚠ baixa — meta 20%+',c:taxaPoup>=20?'var(--grn)':taxaPoup>=10?'var(--amber)':'var(--red)'},
-    {l:'Total Investido',v:BRL(tot.invTotal),s:rec>0?`${(tot.invTotal/rec*100).toFixed(1)}% da receita — meta ${metaInv}%`:'—',c:'#2050a0'},
-    {l:'Burn Rate Diário',v:BRL(burnRateDay),s:`custo médio/dia (${diasReais}d)`,c:'var(--txt2)'},
-    {l:'Almoço da Edi',v:tot.almocoBenefit>0?BRL(tot.almocoBenefit):'—',s:tot.almocoBenefit>0?`${tot.almocoInfo.diasUsados}d / ${tot.almocoInfo.diasTotais}d úteis`:'Configure em ⚙',c:'var(--amber)'},
-  ].map((k,i)=>`<div class="card tip" data-tip="${TIPS_SEC[i]}" style="margin:0;padding:14px;cursor:default">
-    <div class="clbl" style="margin-bottom:4px">${k.l}</div>
-    <div style="font-family:var(--mono);font-size:18px;font-weight:600;color:${k.c};margin:3px 0 4px">${k.v}</div>
-    <div style="font-size:10px;color:var(--txt3)">${k.s}</div>
-  </div>`).join('');
+  // ── ROW 2: INDICADORES (5 cards)
+  let row2=`<div class="dash-section-lbl">Indicadores</div><div class="dash-row">`;
+  row2+=dashCard({
+    label:'Taxa de Poupança', icon:'◉', accent:'var(--grn)',
+    value:rec>0?taxaPoup.toFixed(1)+'%':'—',
+    sub:taxaPoup>=30?'✓ acima da meta':taxaPoup>=20?'aceitável — meta 30%':'⚠ abaixo do ideal',
+    trend:taxaPoup>=20?'up':'down',
+    tip:'(Receita − Despesas) ÷ Receita. Investimento pessoal NÃO entra como despesa.'
+  });
+  row2+=dashCard({
+    label:'Burn Rate', icon:'⏳', accent:burnRateDay>0&&(saldoFinal/burnRateDay)<15?'var(--red)':'var(--amber)',
+    value:burnRateDay>0&&saldoFinal>0?Math.floor(saldoFinal/burnRateDay)+' dias':'—',
+    sub:'saldo ÷ gasto médio diário',
+    tip:'Quantos dias o saldo atual cobre no ritmo de gasto. Inclui investimentos como saída de caixa.'
+  });
+  row2+=dashCard({
+    label:'Comprometimento', icon:'🔒', accent:comprometimento>70?'var(--red)':'#2050a0',
+    value:comprometimento>0?comprometimento.toFixed(1)+'%':'—',
+    sub:comprometimento>70?'⚠ acima de 70%':comprometimento>50?'moderado':'saudável',
+    trend:comprometimento<=60?'up':'down',
+    tip:'% da receita em gastos fixos/recorrentes (aluguel, plano, streaming, faculdade, etc).'
+  });
+  row2+=dashCard({
+    label:'Parcelas Ativas', icon:'📋', accent:'#6a50c0',
+    value:parcelas.total>0?BRL(parcelas.total):'—',
+    sub:parcelas.qtd>0?`${parcelas.qtd} parcela(s) em andamento`:'nenhuma parcela',
+    tip:'Total comprometido em parcelas futuras. Passivo que já comeu seu caixa futuro.'
+  });
+  if(mom!==null){
+    row2+=dashCard({
+      label:'Variação MoM', icon:'📊', accent:mom<=0?'var(--grn)':'var(--red)',
+      value:(mom>0?'+':'')+mom.toFixed(1)+'%',
+      sub:'gastos vs mês anterior',
+      trend:mom<=0?'up':'down',
+      tip:'Variação percentual dos gastos totais comparado ao mês anterior. Negativo = gastou menos.'
+    });
+  } else {
+    row2+=dashCard({
+      label:'Variação MoM', icon:'📊', accent:'var(--txt3)',
+      value:'—', sub:'sem mês anterior para comparar',
+      tip:'Precisa de 2+ meses importados para calcular.'
+    });
+  }
+  row2+=`</div>`;
+  document.getElementById('dash-kpis-row2').innerHTML=row2;
 
   // ── RECEITAS EXTRAS
   const extrasEl=document.getElementById('dash-receitas-extras');
-  if(outrasRec.length>0){
+  if(outrasRec.length>0||tot.almocoBenefit>0){
     const bySource={};
     outrasRec.forEach(t=>{const k=t.subcategoria||t.descricao_limpa||t.descricao;bySource[k]=(bySource[k]||0)+t.valor;});
     extrasEl.innerHTML=`<div class="card" style="border:1px solid #2a7a5022">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
         <div class="clbl" style="margin:0">Receitas além do salário</div>
-        <span style="font-family:var(--mono);font-size:11px;color:var(--grn);font-weight:600">${BRL(outrasRecTotal)} total</span>
+        <span style="font-family:var(--mono);font-size:11px;color:var(--grn);font-weight:600">${BRL(outrasRecTotal+tot.almocoBenefit)} total</span>
       </div>
       <div style="display:flex;gap:10px;flex-wrap:wrap">
         ${Object.entries(bySource).map(([k,v])=>`<div style="background:#0a0a0a;border:1px solid #161616;border-radius:5px;padding:8px 12px;min-width:140px">
@@ -717,8 +803,7 @@ function renderDash(){
     </div>`;
   } else {extrasEl.innerHTML='';}
 
-  // ── GRÁFICO — waterfall horizontal por bloco
-  // FIX 0.1: Corrigido saldo → saldoFinal
+  // ── GRÁFICO WATERFALL
   const despGrupos=Object.entries(tot.despGrupos).sort((a,b)=>b[1]-a[1]);
   const labels=['Salário',...(outrasRecTotal>0?['+ Extras']:[]),...(tot.almocoBenefit>0?['+ Edi']:[]),'Despesas',...despGrupos.map(([g])=>g),'Investido','Saldo'];
   const values=[salario,...(outrasRecTotal>0?[outrasRecTotal]:[]),...(tot.almocoBenefit>0?[tot.almocoBenefit]:[]),-tot.despTotal,...despGrupos.map(([,v])=>-v),-tot.invTotal,saldoFinal];
@@ -750,13 +835,13 @@ function renderDash(){
   if(rec>0){
     const p=tot.despTotal/rec*100;
     als.push(p>metas.despesas?{t:'w',m:`⚠ Despesas em ${p.toFixed(0)}% da receita — meta é ${metas.despesas}%`}:{t:'ok',m:`✓ Despesas em ${p.toFixed(0)}% da receita — dentro da meta de ${metas.despesas}%`});
-    if(resultadoOperacional<0)als.push({t:'w',m:`⚠ Custo de vida ${BRL(Math.abs(resultadoOperacional))} acima da receita — revise despesas`});
-    if(saldoFinal<0&&resultadoOperacional>=0)als.push({t:'i',m:`ℹ Você usou ${BRL(Math.abs(saldoFinal))} de poupança prévia para cobrir investimentos — nada errado, só para ciência`});
-    if(taxaPoup<10)als.push({t:'w',m:`⚠ Taxa de poupança baixa: ${taxaPoup.toFixed(1)}% — meta mínima é 20%`});
-    if(tot.almocoInfo&&tot.almocoInfo.diasPerdidos>0)als.push({t:'i',m:`🍽 Giovaniburgue em ${tot.almocoInfo.diasPerdidos} dia(s) útil(eis) — possível substituto do almoço da Edi`});
-    const uberTotal=allTx.filter(t=>t.subcategoria==='Uber').reduce((s,t)=>s+Math.abs(t.valor),0);
-    if(uberTotal>0&&tot.despTotal>0&&uberTotal/tot.despTotal>0.15)als.push({t:'w',m:`🚗 Uber: ${BRL(uberTotal)} — ${(uberTotal/tot.despTotal*100).toFixed(0)}% das despesas`});
-    if(outrasRecTotal>0)als.push({t:'i',m:`💡 Receitas extras além do salário: ${BRL(outrasRecTotal)} este mês`});
+    if(resultadoOperacional<0)als.push({t:'w',m:`⚠ Custo de vida ${BRL(Math.abs(resultadoOperacional))} acima da receita`});
+    if(saldoFinal<0&&resultadoOperacional>=0)als.push({t:'i',m:`ℹ Usou ${BRL(Math.abs(saldoFinal))} de poupança prévia para investir`});
+    if(taxaPoup<10)als.push({t:'w',m:`⚠ Taxa de poupança baixa: ${taxaPoup.toFixed(1)}%`});
+    if(tot.almocoInfo&&tot.almocoInfo.diasPerdidos>0)als.push({t:'i',m:`🍽 Giovaniburgue em ${tot.almocoInfo.diasPerdidos} dia(s) útil(eis)`});
+    if(comprometimento>70)als.push({t:'w',m:`🔒 Comprometimento de renda em ${comprometimento.toFixed(0)}% — acima de 70%`});
+    if(parcelas.total>0)als.push({t:'i',m:`📋 ${parcelas.qtd} parcela(s) ativa(s) — ${BRL(parcelas.total)} comprometido`});
+    if(mom!==null&&mom>10)als.push({t:'w',m:`📊 Gastos subiram ${mom.toFixed(0)}% vs mês anterior`});
   }
   document.getElementById('dash-alerts').innerHTML=als.map(a=>`<div class="alert ${a.t==='w'?'aw':a.t==='i'?'ai':'aok'}">${a.m}</div>`).join('');
 }
@@ -929,9 +1014,7 @@ function renderDRE(scope){
         const nFontes=[...new Set(recTxns.map(t=>t.subcategoria||t.descricao_limpa||t.descricao))].slice(0,3);
         hintEl.textContent=nFontes.join(' · ')||'Detectado automaticamente';
       }
-    } else {
-      recCard.style.display='none';
-    }
+    } else {recCard.style.display='none';}
   }
 
   const[y,m]=curMes.split('-');
@@ -946,24 +1029,17 @@ function renderDRE(scope){
   let html=`<div style="font-family:var(--mono);font-size:9px;color:var(--txt3);letter-spacing:1px;text-transform:uppercase;margin-bottom:10px">DRE — ${MESES[parseInt(m)-1]} ${y}</div>`;
 
   const recTxns=txns.filter(t=>t.cat==='RECEITA_LIQUIDA'&&t.valor>0);
-
   const recPorSub={};
-  recTxns.forEach(t=>{
-    const sub=t.subcategoria||'Outros';
-    if(!recPorSub[sub])recPorSub[sub]=[];
-    recPorSub[sub].push(t);
-  });
+  recTxns.forEach(t=>{const sub=t.subcategoria||'Outros';if(!recPorSub[sub])recPorSub[sub]=[];recPorSub[sub].push(t);});
 
   if(recTxns.length>0){
     html+=`<div class="card" style="padding:0;overflow:hidden;margin-bottom:8px">
       <div class="drow hdr"><span class="dlbl b" style="color:var(--grn)">(+) RECEITA LÍQUIDA</span><span class="dval b" style="color:var(--grn)">${BRL(rec)}</span></div>`;
-
     Object.entries(recPorSub).forEach(([sub,txList])=>{
       const subTotal=txList.reduce((s,t)=>s+t.valor,0);
       const isSalario=sub==='Salário';
       const cor=isSalario?'var(--txt)':'var(--grn)';
       const extraBadge=!isSalario?'<span style="font-size:8px;background:#2a7a5022;color:var(--grn);padding:1px 5px;border-radius:3px;font-family:var(--mono);margin-left:6px">extra</span>':'';
-
       if(txList.length===1){
         const t=txList[0];
         const descr=t.descricao_limpa||t.origem||t.descricao||sub;
@@ -978,7 +1054,6 @@ function renderDRE(scope){
         </div>`;
       }
     });
-
     html+=`</div>`;
   } else {
     html+=`<div class="card" style="padding:0;overflow:hidden;margin-bottom:8px">
@@ -986,7 +1061,6 @@ function renderDRE(scope){
     </div>`;
   }
 
-  // DESPESAS
   const despGrupos={};txns.filter(t=>t.cat==='DESPESA').forEach(t=>{if(!despGrupos[t.grupo])despGrupos[t.grupo]=[];despGrupos[t.grupo].push(t);});
   const gioWarn=tot.almocoInfo&&tot.almocoInfo.diasPerdidos>0?`<div style="font-size:9px;color:var(--amber);padding:5px 14px;background:#1a1000;border-top:1px solid #2a1800">⚠ ${tot.almocoInfo.diasPerdidos} dia(s) com Giovaniburgue em dia útil</div>`:'';
 
@@ -1350,17 +1424,13 @@ function limparDados(){if(confirm('Apagar tudo?')){['fc_nu_fat','fc_nu_ext','fc_
 </div>
 
 <script>
-// ─── CHAT ─────────────────────────────────────────────────────────────────────
 let chatHistory=[];
 let chatOpen=false;
 
 function toggleChat(){
   chatOpen=!chatOpen;
   document.getElementById('chat-panel').classList.toggle('hidden',!chatOpen);
-  if(chatOpen){
-    updateChatCtx();
-    document.getElementById('chat-inp').focus();
-  }
+  if(chatOpen){updateChatCtx();document.getElementById('chat-inp').focus();}
 }
 
 function updateChatCtx(){
@@ -1378,14 +1448,8 @@ function buildChatSystemPrompt(){
   const txns=getTxnsByScope(mes,'an');
   const tot=calcTot(mes,txns);
   const[y,m]=mes.split('-');
-
   const txList=txns.map(t=>`id:${t.id}|banco:${t.banco||'?'}|fonte:${t.data_pagamento?'fat':'ext'}|data:${t.data||t.data_competencia||'?'}|desc:${t.descricao_limpa||t.descricao}|sub:${t.subcategoria}|cat:${t.cat}|val:${t.valor}`).join('\n');
-
-  const catList=Object.entries(CATS).map(([c,d])=>{
-    const subs=Object.values(d.grupos).flat().join(', ');
-    return`${c}: ${subs}`;
-  }).join('\n');
-
+  const catList=Object.entries(CATS).map(([c,d])=>{const subs=Object.values(d.grupos).flat().join(', ');return`${c}: ${subs}`;}).join('\n');
   return`Você é o assistente financeiro integrado do FinControl, um ERP pessoal.
 Mês atual: ${MESES[parseInt(m)-1]} ${y}
 Receita detectada: ${BRL(tot.receitaExt)}
@@ -1434,7 +1498,6 @@ function applyCorrection(id,banco,fonte,sub,cat,grupo){
   const{g}=subToCat(sub);
   const catFinal=cat||(g?subToCat(sub).cat:'DESPESA');
   const grupoFinal=grupo||(g||'Pessoal');
-
   if(fonte==='fat'){
     const gF=banco==='nu'?gNuFat:gStFat;const sF=banco==='nu'?sNuFat:sStFat;
     const d=gF();const mes=curMes||mesesAll()[0];if(!d[mes])return false;
@@ -1500,18 +1563,13 @@ async function sendChat(){
   const sendBtn=document.getElementById('chat-send');
   inp.value='';inp.style.height='auto';
   sendBtn.disabled=true;
-
   addMsg('u',msg.replace(/</g,'&lt;'));
   chatHistory.push({role:'user',content:msg});
   showTyping();
-
   try{
     const sysPrompt=buildChatSystemPrompt();
     const res=await fetch('/api/claude',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
-      model:'claude-sonnet-4-20250514',
-      max_tokens:1500,
-      system:sysPrompt,
-      messages:chatHistory.slice(-10)
+      model:'claude-sonnet-4-20250514',max_tokens:1500,system:sysPrompt,messages:chatHistory.slice(-10)
     })});
     if(!res.ok)throw new Error('API '+res.status);
     const data=await res.json();
@@ -1529,14 +1587,12 @@ async function sendChat(){
   inp.focus();
 }
 
-// Auto-resize do textarea
 document.addEventListener('DOMContentLoaded',()=>{
   const inp=document.getElementById('chat-inp');
   if(inp)inp.addEventListener('input',function(){this.style.height='auto';this.style.height=Math.min(this.scrollHeight,90)+'px';});
 });
 </script>
 <script>
-// ─── INIT ──────────────────────────────────────────────────────────────────────
 regCB('renderDash', renderDash);
 regCB('nuFluxo', ()=>renderFluxo('nu'));
 regCB('stFluxo', ()=>renderFluxo('st'));
@@ -1544,7 +1600,6 @@ regCB('anFluxo', ()=>renderFluxo('an'));
 regCB('nuDRE',   ()=>renderDRE('nu'));
 regCB('stDRE',   ()=>renderDRE('st'));
 regCB('anDRE',   ()=>renderDRE('an'));
-
 renderDash();
 </script>
 </body>
