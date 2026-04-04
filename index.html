@@ -526,7 +526,13 @@ function calcAlmoco(mes){const cfg=gAlmoco();if(!cfg.ativo||cfg.valor<=0)return{
 
 // ─── CÁLCULO TOTAIS ────────────────────────────────────────────────────────────
 function calcTot(mes,txns){const r={despGrupos:{},despTotal:0,invPessoal:0,invFin:0,planos:0,prev:0,receitaExt:0};txns.forEach(t=>{const v=Math.abs(t.valor);if(t.cat==='RECEITA_LIQUIDA'&&t.valor>0)r.receitaExt+=t.valor;if(t.cat==='DESPESA'){r.despGrupos[t.grupo]=(r.despGrupos[t.grupo]||0)+v;r.despTotal+=v;}if(t.cat==='INVESTIMENTO_PESSOAL')r.invPessoal+=v;if(t.cat==='INVESTIMENTO_FINANCEIRO')r.invFin+=v;if(t.cat==='PLANOS_PESSOAIS')r.planos+=v;if(t.cat==='PREVIDENCIA')r.prev+=v;});r.invTotal=r.invPessoal+r.invFin+r.planos+r.prev;const a=calcAlmoco(mes);r.almocoBenefit=a.benefit;r.almocoInfo=a;return r;}
-function getTxnsByScope(mes,scope){if(scope==='nu')return[...txNuFat(mes),...txNuExt(mes)];if(scope==='st')return[...txStFat(mes),...txStExt(mes)];if(scope==='an')return[...txNuFat(mes),...txNuExt(mes),...txStFat(mes),...txStExt(mes)];return[];}
+function tagTxns(txns,banco,fonte){return txns.map(t=>({...t,_uid:`${banco}-${fonte}-${t.id}`,_banco:banco,_fonte:fonte}));}
+function getTxnsByScope(mes,scope){
+  const nf=tagTxns(txNuFat(mes),'nu','fat'),ne=tagTxns(txNuExt(mes),'nu','ext');
+  const sf=tagTxns(txStFat(mes),'st','fat'),se=tagTxns(txStExt(mes),'st','ext');
+  if(scope==='nu')return[...nf,...ne];if(scope==='st')return[...sf,...se];
+  if(scope==='an')return[...nf,...ne,...sf,...se];return[];
+}
 
 // ─── INDICADORES ───────────────────────────────────────────────────────────────
 function calcPrincipalDespesa(txns){const byG={},byI={};txns.filter(t=>t.cat==='DESPESA').forEach(t=>{const v=Math.abs(t.valor),g=t.grupo||'Outros';byG[g]=(byG[g]||0)+v;const desc=(t.descricao||'').trim().split(/\s+/).slice(0,4).join(' ');const key=g+'|||'+desc;if(!byI[key])byI[key]={grupo:g,desc,valor:0};byI[key].valor+=v;});const top=Object.entries(byG).sort((a,b)=>b[1]-a[1])[0];if(!top)return{categoria:'—',catValor:0,item:'—',itemValor:0};const tI=Object.values(byI).filter(i=>i.grupo===top[0]).sort((a,b)=>b.valor-a.valor)[0];return{categoria:top[0],catValor:top[1],item:tI?tI.desc:'—',itemValor:tI?tI.valor:0};}
@@ -970,14 +976,98 @@ function limparDados(){if(confirm('Apagar tudo?')){['fc_nu_fat','fc_nu_ext','fc_
 let chatHistory=[];let chatOpen=false;
 function toggleChat(){chatOpen=!chatOpen;document.getElementById('chat-panel').classList.toggle('hidden',!chatOpen);if(chatOpen){updateChatCtx();document.getElementById('chat-inp').focus();}}
 function updateChatCtx(){const all=mesesAll();const mes=curMes||(all.length?all[0]:null);if(!mes){document.getElementById('chat-ctx-lbl').textContent='Nenhum dado importado';return;}const[y,m]=mes.split('-');document.getElementById('chat-ctx-lbl').textContent=`${MESES[parseInt(m)-1]} ${y} · ${getTxnsByScope(mes,'an').length} transações`;}
-function buildChatSystemPrompt(){const mes=curMes||mesesAll()[0];if(!mes)return'Assistente financeiro pessoal FinControl. Sem dados.';const txns=getTxnsByScope(mes,'an');const tot=calcTot(mes,txns);const[y,m]=mes.split('-');const txList=txns.map(t=>`id:${t.id}|banco:${t.banco||'?'}|fonte:${t.data_pagamento?'fat':'ext'}|data:${t.data||t.data_competencia||'?'}|desc:${t.descricao_limpa||t.descricao}|sub:${t.subcategoria}|cat:${t.cat}|val:${t.valor}`).join('\n');const catList=Object.entries(CATS).map(([c,d])=>{const subs=Object.values(d.grupos).flat().join(', ');return`${c}: ${subs}`;}).join('\n');return`Você é o assistente financeiro integrado do FinControl.\nMês: ${MESES[parseInt(m)-1]} ${y}\nReceita: ${BRL(tot.receitaExt)}, Despesas: ${BRL(tot.despTotal)}, Investimentos: ${BRL(tot.invTotal)}\n\nTRANSAÇÕES (${txns.length}):\n${txList}\n\nCATEGORIAS:\n${catList}\n\nQuando sugerir correções, use JSON:\n\`\`\`json\n{"correções":[{"id":123,"banco":"nu","fonte":"fat","subcategoria":"X","cat":"Y","grupo":"Z"}]}\n\`\`\`\nSeja direto. Português informal.`;}
+function buildChatSystemPrompt(){const mes=curMes||mesesAll()[0];if(!mes)return'Assistente financeiro pessoal FinControl. Sem dados.';const txns=getTxnsByScope(mes,'an');const tot=calcTot(mes,txns);const[y,m]=mes.split('-');const txList=txns.map(t=>`uid:${t._uid}|data:${t.data||t.data_competencia||'?'}|desc:${t.descricao_limpa||t.descricao}|sub:${t.subcategoria}|cat:${t.cat}|val:${t.valor}`).join('\n');const catList=Object.entries(CATS).map(([c,d])=>{const subs=Object.values(d.grupos).flat().join(', ');return`${c}: ${subs}`;}).join('\n');return`Você é o assistente financeiro integrado do FinControl.
+Mês: ${MESES[parseInt(m)-1]} ${y}
+Receita: ${BRL(tot.receitaExt)}, Despesas: ${BRL(tot.despTotal)}, Investimentos: ${BRL(tot.invTotal)}
+
+TRANSAÇÕES DO MÊS (${txns.length} total):
+${txList}
+
+CATEGORIAS DISPONÍVEIS:
+${catList}
+
+═══ REGRAS OBRIGATÓRIAS ═══
+
+1. QUANDO O USUÁRIO PEDIR CORREÇÃO de categorização (ex: "muda X para Y", "FUMEC é Faculdade", "todos os Igor são óculos"):
+   - Você DEVE responder com um bloco JSON OBRIGATORIAMENTE.
+   - O JSON deve estar dentro de \`\`\`json ... \`\`\`
+   - Formato EXATO: {"correções":[{"uid":"nu-fat-3","subcategoria":"Faculdade","cat":"INVESTIMENTO_PESSOAL","grupo":"Investimento Pessoal"}]}
+   - O campo "uid" é OBRIGATÓRIO. Pegue da lista de transações acima (campo uid).
+   - Para correção em lote, inclua TODOS os UIDs afetados.
+   - NUNCA diga "pronto, alterei" sem incluir o JSON. Sem JSON = nada acontece.
+
+2. QUANDO FOR CONVERSA ou ANÁLISE (ex: "analisa meu mês", "quais gastos parecem errados"):
+   - Responda em texto normal, sem JSON.
+   - Pode sugerir correções, mas se sugerir, inclua o JSON junto.
+
+3. NUNCA invente UIDs. Use apenas os UIDs listados acima.
+4. Seja direto. Português informal.`;}
+
 function addMsg(role,html){const msgs=document.getElementById('chat-msgs');const div=document.createElement('div');div.className='chat-msg '+role;div.innerHTML=html;msgs.appendChild(div);msgs.scrollTop=msgs.scrollHeight;return div;}
 function showTyping(){const msgs=document.getElementById('chat-msgs');const div=document.createElement('div');div.className='chat-msg a';div.id='chat-typing';div.innerHTML='<div class="chat-typing"><span></span><span></span><span></span></div>';msgs.appendChild(div);msgs.scrollTop=msgs.scrollHeight;}
 function hideTyping(){const t=document.getElementById('chat-typing');if(t)t.remove();}
-function applyCorrection(id,banco,fonte,sub,cat,grupo){const catFinal=cat||subToCat(sub).cat;const grupoFinal=grupo||subToCat(sub).g;if(fonte==='fat'){const gF=banco==='nu'?gNuFat:gStFat;const sF=banco==='nu'?sNuFat:sStFat;const d=gF();const mes=curMes||mesesAll()[0];if(!d[mes])return false;const t=d[mes].find(t=>t.id===id);if(!t)return false;t.subcategoria=sub;t.cat=catFinal;t.grupo=grupoFinal;sF(d);}else{const gE=banco==='nu'?gNuExt:gStExt;const sE=banco==='nu'?sNuExt:sStExt;const d=gE();const mes=curMes||mesesAll()[0];if(!d[mes])return false;const t=d[mes].find(t=>t.id===id);if(!t)return false;t.subcategoria=sub;t.cat=catFinal;t.grupo=grupoFinal;sE(d);}return true;}
-function parseAndRenderResponse(raw){const jsonMatch=raw.match(/```json\s*([\s\S]*?)```/);if(jsonMatch){try{const parsed=JSON.parse(jsonMatch[1].trim());const correcoes=parsed.correções||parsed.correcoes||[];if(correcoes.length>0){const textoPre=raw.replace(/```json[\s\S]*?```/,'').trim();let html=textoPre?`<p style="margin-bottom:8px">${textoPre.replace(/\n/g,'<br>')}</p>`:'';html+=`<p style="margin-bottom:6px;color:var(--white);font-weight:600">${correcoes.length} correção(ões):</p>`;correcoes.forEach(c=>{const txns=getTxnsByScope(curMes||mesesAll()[0],'an');const t=txns.find(x=>x.id===c.id);const desc=t?(t.descricao_limpa||t.descricao).substring(0,28):'ID '+c.id;html+=`<span class="fix-badge" onclick="doFix(${c.id},'${c.banco||'nu'}','${c.fonte||'ext'}','${c.subcategoria}','${c.cat}','${c.grupo||''}')">✓ ${desc} → ${c.subcategoria}</span>`;});html+=`<br><button onclick="applyAllFixes(${JSON.stringify(correcoes).replace(/"/g,'&quot;')})" style="margin-top:8px;background:var(--grn);color:#fff;border:none;border-radius:var(--radius);padding:6px 14px;font-size:11px;cursor:pointer;font-family:var(--mono)">Aplicar todas (${correcoes.length})</button>`;return html;}}catch(e){}}return raw.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/\n/g,'<br>');}
-window.doFix=function(id,banco,fonte,sub,cat,grupo){const ok=applyCorrection(id,banco,fonte,sub,cat,grupo);if(ok){addMsg('a',`✓ Corrigido: <strong>${sub}</strong>`);refreshCurrentPage();}else addMsg('a','⚠ Transação não encontrada.');};
-window.applyAllFixes=function(correcoes){let n=0;correcoes.forEach(c=>{if(applyCorrection(c.id,c.banco||'nu',c.fonte||'ext',c.subcategoria,c.cat,c.grupo||''))n++;});addMsg('a',`✓ <strong>${n} correção(ões)</strong> aplicada(s).`);refreshCurrentPage();};
+function applyCorrection(uid,sub,cat,grupo){
+  // uid format: "nu-fat-3" or "st-ext-12"
+  const parts=uid.split('-');if(parts.length<3)return false;
+  const banco=parts[0],fonte=parts[1],id=parseInt(parts.slice(2).join('-'));
+  const catFinal=cat||subToCat(sub).cat;const grupoFinal=grupo||subToCat(sub).g;
+  const getStore=()=>{
+    if(banco==='nu'&&fonte==='fat')return{g:gNuFat,s:sNuFat};
+    if(banco==='nu'&&fonte==='ext')return{g:gNuExt,s:sNuExt};
+    if(banco==='st'&&fonte==='fat')return{g:gStFat,s:sStFat};
+    if(banco==='st'&&fonte==='ext')return{g:gStExt,s:sStExt};
+    return null;
+  };
+  const store=getStore();if(!store)return false;
+  const d=store.g();const mes=curMes||mesesAll()[0];
+  if(!d[mes])return false;
+  const t=d[mes].find(t=>t.id===id);if(!t)return false;
+  const oldSub=t.subcategoria;
+  t.subcategoria=sub;t.cat=catFinal;t.grupo=grupoFinal;
+  store.s(d);
+  return{desc:t.descricao_limpa||t.descricao||'?',oldSub,newSub:sub};
+}
+function parseAndRenderResponse(raw){
+  const jsonMatch=raw.match(/```json\s*([\s\S]*?)```/);
+  if(jsonMatch){
+    try{
+      const parsed=JSON.parse(jsonMatch[1].trim());
+      const correcoes=parsed.correções||parsed.correcoes||[];
+      if(correcoes.length>0){
+        // AUTO-APPLY all corrections immediately
+        const results=[];
+        correcoes.forEach(c=>{
+          const res=applyCorrection(c.uid,c.subcategoria,c.cat,c.grupo);
+          if(res) results.push(res);
+        });
+        // Refresh page after applying
+        if(results.length>0) refreshCurrentPage();
+        // Build feedback HTML
+        const textoPre=raw.replace(/```json[\s\S]*?```/,'').trim();
+        let html=textoPre?`<p style="margin-bottom:8px">${textoPre.replace(/\n/g,'<br>')}</p>`:'';
+        if(results.length>0){
+          html+=`<div style="background:#22c55e10;border:1px solid #22c55e25;border-radius:var(--radius);padding:10px 12px;margin-top:6px">`;
+          html+=`<div style="color:var(--grn);font-weight:600;font-size:12px;margin-bottom:6px">✓ ${results.length} correção(ões) aplicada(s) no localStorage:</div>`;
+          results.forEach(r=>{
+            html+=`<div style="font-size:11px;color:var(--txt);margin:3px 0">• <strong>${(r.desc||'').substring(0,30)}</strong>: ${r.oldSub} → <span style="color:var(--grn)">${r.newSub}</span></div>`;
+          });
+          html+=`</div>`;
+        }
+        const failed=correcoes.length-results.length;
+        if(failed>0){
+          html+=`<div style="background:#ef444410;border:1px solid #ef444425;border-radius:var(--radius);padding:8px 12px;margin-top:6px;font-size:11px;color:var(--red)">⚠ ${failed} correção(ões) não encontrada(s) — UID inválido ou transação não existe neste mês.</div>`;
+        }
+        return html;
+      }
+    }catch(e){
+      return`<p>${raw.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/\n/g,'<br>')}</p><div style="font-size:10px;color:var(--red);margin-top:6px">⚠ JSON inválido na resposta da IA. Nada foi alterado.</div>`;
+    }
+  }
+  return raw.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/\n/g,'<br>');
+}
+// Legacy manual fix functions (kept for backward compat but shouldn't be needed)
+window.doFix=function(uid,sub,cat,grupo){const res=applyCorrection(uid,sub,cat,grupo);if(res){addMsg('a',`✓ Corrigido: <strong>${res.desc}</strong> → ${res.newSub}`);refreshCurrentPage();}else addMsg('a','⚠ Transação não encontrada (UID: '+uid+').');};
+window.applyAllFixes=function(correcoes){let n=0;correcoes.forEach(c=>{if(applyCorrection(c.uid,c.subcategoria,c.cat,c.grupo))n++;});addMsg('a',`✓ <strong>${n} correção(ões)</strong> aplicada(s).`);refreshCurrentPage();};
 function refreshCurrentPage(){const active=document.querySelector('.page.active');if(!active)return;const id=active.id.replace('pg-','');if(PAGE_FN[id])PAGE_FN[id]();}
 async function sendChat(){const inp=document.getElementById('chat-inp');const msg=inp.value.trim();if(!msg)return;const sendBtn=document.getElementById('chat-send');inp.value='';inp.style.height='auto';sendBtn.disabled=true;addMsg('u',msg.replace(/</g,'&lt;'));chatHistory.push({role:'user',content:msg});showTyping();try{const res=await fetch('/api/claude',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1500,system:buildChatSystemPrompt(),messages:chatHistory.slice(-10)})});if(!res.ok)throw new Error('API '+res.status);const data=await res.json();if(data.error)throw new Error(data.error.message||'Erro');const raw=data.content.map(b=>b.text||'').join('');chatHistory.push({role:'assistant',content:raw});hideTyping();addMsg('a',parseAndRenderResponse(raw));}catch(e){hideTyping();addMsg('a',`⚠ Erro: ${e.message}`);chatHistory.pop();}sendBtn.disabled=false;inp.focus();}
 document.addEventListener('DOMContentLoaded',()=>{const inp=document.getElementById('chat-inp');if(inp)inp.addEventListener('input',function(){this.style.height='auto';this.style.height=Math.min(this.scrollHeight,90)+'px';});});
