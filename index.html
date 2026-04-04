@@ -815,11 +815,24 @@ async function processarImp(){
       document.getElementById('imp-msg').textContent=`Mês detectado: ${mesRef} — Claude categorizando...`;
       prompt=impTab==='nu-fat'?buildNuFatPrompt(rawText,mesRef):impTab==='st-fat'?buildStFatPrompt(rawText,mesRef):buildStExtPrompt(rawText,mesRef);
     }
-    const res=await fetch('/api/claude',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:8000,messages:[{role:'user',content:prompt}]})});
-    if(!res.ok)throw new Error('API '+res.status+': '+await res.text());
-    const data=await res.json();if(data.error)throw new Error(data.error.message||JSON.stringify(data.error));
+    const res=await fetch('/api/claude',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:16000,messages:[{role:'user',content:prompt}]})});
+    if(!res.ok){const errBody=await res.text().catch(()=>'');throw new Error('API HTTP '+res.status+(errBody?' — '+errBody.substring(0,200):''));}
+    const resText=await res.text();
+    if(!resText||!resText.trim())throw new Error('Resposta da API veio completamente vazia. Possível timeout do servidor.');
+    let data;
+    try{data=JSON.parse(resText);}catch(parseErr){
+      throw new Error('Resposta da API não é JSON válido. Início: '+resText.substring(0,300));
+    }
+    if(data.error)throw new Error(data.error.message||JSON.stringify(data.error));
+    if(!data.content||!data.content.length)throw new Error('Resposta da API veio sem content.');
+    if(data.stop_reason==='max_tokens')throw new Error('Resposta truncada — fatura muito grande para processar de uma vez.');
     const txt=data.content.map(b=>b.text||'').join('');
-    const json=JSON.parse(txt.replace(/```json|```/g,'').trim());
+    if(!txt.trim())throw new Error('IA retornou resposta vazia.');
+    let json;
+    try{json=JSON.parse(txt.replace(/```json|```/g,'').trim());}catch(jsonErr){
+      throw new Error('JSON da IA inválido (provavelmente cortado). Final: ...'+txt.substring(Math.max(0,txt.length-200)));
+    }
+    if(!json.transacoes||!json.transacoes.length)throw new Error('IA retornou JSON sem transações. Arquivo correto?');
 
     // Use AI-detected month or fallback
     const mesRef=json.mes_detectado||detectMonth(rawRows||rawText,impTab==='nu-ext'?'csv':'pdf')||MK(new Date().getFullYear(),new Date().getMonth()+1);
